@@ -203,7 +203,7 @@ html,body{margin:0}.bkwarn{background:var(--accent);color:var(--accent-fg);borde
     <div class="exh"><span class="exn">Kopia zapasowa</span></div>
     <div class="bkwarn" id="bkWarn" hidden></div>
     <div class="hint">Treningi zapisują się tylko w tej przeglądarce. Wyczyszczenie danych przeglądarki albo zmiana telefonu je kasuje, więc co jakiś czas zrób kopię.</div>
-    <div class="tools"><button class="mini plus" id="bkFile">Pobierz plik</button><button class="mini" id="bkCopy">Skopiuj do schowka</button><button class="mini" id="bkShow">Wczytaj kopię</button></div>
+    <div class="tools"><button class="mini plus" id="bkFile">Pobierz plik</button><button class="mini" id="bkShare" hidden>Wyślij na Dysk / mailem</button><button class="mini" id="bkCopy">Skopiuj do schowka</button><button class="mini" id="bkShow">Wczytaj kopię</button></div>
     <div class="field" id="bkBox" hidden><label class="lbl" for="bkIn">Wklej kopię albo wybierz plik</label><textarea id="bkIn" rows="3"></textarea><input type="file" id="bkFileIn" accept=".json,application/json,text/plain"><button class="mini plus" id="bkLoad">Wczytaj</button></div>
   </section>
 </div>
@@ -654,6 +654,9 @@ function backupJSON(){return JSON.stringify({app:"gora-ciala",v:1,exported:new D
 $("bkFile").onclick=()=>{try{const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([backupJSON()],{type:"application/json"}));a.download="trening-kopia-"+today()+".json";document.body.append(a);a.click();a.remove();toast("Pobrano plik z kopią.",true);bkDone()}catch(e){toast("Nie udało się pobrać. Użyj „Skopiuj do schowka”.")}};
 $("bkCopy").onclick=()=>{const t=backupJSON();navigator.clipboard&&navigator.clipboard.writeText(t).then(()=>(toast("Skopiowano. Wklej np. do notatek albo maila do siebie.",true),bkDone())).catch(()=>{$("bkBox").hidden=false;$("bkIn").value=t;$("bkIn").select();toast("Zaznaczyłem kopię – skopiuj ją ręcznie.")})||($("bkBox").hidden=false,$("bkIn").value=t,$("bkIn").select())};
 if(window.claude)$("bkFile").hidden=true;
+function bkFileObj(){return new File([backupJSON()],"trening-kopia-"+today()+".json",{type:"application/json"})}
+try{if(navigator.canShare&&navigator.canShare({files:[bkFileObj()]}))$("bkShare").hidden=false}catch(e){}
+$("bkShare").onclick=async()=>{try{await navigator.share({files:[bkFileObj()],title:"Kopia treningów"});bkDone();toast("Wysłano kopię.",true)}catch(e){if(e&&e.name!=="AbortError")toast("Nie udało się udostępnić. Użyj „Pobierz plik”.")}};
 $("bkShow").onclick=()=>{$("bkBox").hidden=!$("bkBox").hidden};
 $("bkFileIn").onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{$("bkIn").value=r.result};r.readAsText(f)};
 $("bkLoad").onclick=()=>{try{const d=JSON.parse($("bkIn").value);const list=Array.isArray(d)?d:d.sessions;if(!Array.isArray(list))throw 0;
@@ -661,7 +664,7 @@ $("bkLoad").onclick=()=>{try{const d=JSON.parse($("bkIn").value);const list=Arra
   ls.set("gora_sessions",sessions);sortS();render();renderHist();$("bkIn").value="";$("bkBox").hidden=true;toast("Wczytano "+n+" treningów.",true)}catch(e){toast("To nie wygląda na kopię z tej aplikacji.")}};
 function bkCheck(){const last=ls.get("gora_lastbk")||0;const newer=sessions.filter(x=>(x.created||0)>last).length;const days=last?Math.floor((Date.now()-last)/864e5):null;
   const w=$("bkWarn");if(newer>=2||(newer>0&&days!==null&&days>=14)){w.hidden=false;w.textContent=newer+" "+(newer===1?"trening nie ma":"treningi nie mają")+" kopii zapasowej"+(days!==null?" (ostatnia "+days+" dni temu)":"")+". Pobierz plik poniżej.";}else w.hidden=true;
-  const sec=w.closest("section");if(!w.hidden&&!$("bkTop")){const t=document.createElement("button");t.id="bkTop";t.className="bkwarn";t.style.border="0";t.style.width="100%";t.style.cursor="pointer";t.textContent="Zrób kopię zapasową treningów →";t.onclick=()=>sec.scrollIntoView({block:"center"});document.querySelector(".wrap header").after(t)}else if(w.hidden&&$("bkTop"))$("bkTop").remove()}
+  const sec=w.closest("section");if(!w.hidden&&$("bkTop"))$("bkTop").textContent="⬇ Zapisz kopię zapasową ("+newer+" bez kopii)";if(!w.hidden&&!$("bkTop")){const t=document.createElement("button");t.id="bkTop";t.className="bkwarn";t.style.border="0";t.style.width="100%";t.style.cursor="pointer";t.textContent="⬇ Zapisz kopię zapasową ("+newer+" bez kopii)";t.onclick=()=>$("bkFile").click();document.querySelector(".wrap header").after(t)}else if(w.hidden&&$("bkTop"))$("bkTop").remove()}
 function bkDone(){ls.set("gora_lastbk",Date.now());bkCheck()}
 try{navigator.storage&&navigator.storage.persist&&navigator.storage.persist()}catch(e){}
 $("restX").onclick=()=>{clearInterval(restIv);$("rest").hidden=true};
