@@ -246,7 +246,7 @@ html,body{margin:0}.rowlbl{display:flex;justify-content:space-between;align-item
     <div class="hint">Treningi zapisują się tylko w tej przeglądarce. Wyczyszczenie danych przeglądarki albo zmiana telefonu je kasuje, więc co jakiś czas zrób kopię.</div>
     <div class="tools"><button class="mini plus" id="bkFile">Pobierz plik</button><button class="mini" id="bkShare" hidden>Wyślij na Dysk / mailem</button><button class="mini" id="bkCopy">Skopiuj do schowka</button><button class="mini" id="bkShow">Wczytaj kopię</button><button class="mini" id="bkPick" hidden>Ustaw stały plik kopii</button></div>
     <div class="hint" id="bkPickInfo" hidden></div>
-    <div class="field" id="bkBox" hidden><label class="lbl" for="bkIn">Wklej kopię albo wybierz plik</label><textarea id="bkIn" rows="3"></textarea><input type="file" id="bkFileIn" accept=".json,application/json,text/plain"><button class="mini plus" id="bkLoad">Wczytaj</button></div>
+    <div class="field" id="bkBox" hidden><label class="lbl" for="bkIn">albo wklej skopiowany tekst kopii</label><textarea id="bkIn" rows="3"></textarea><button class="mini plus" id="bkPickFile">📂 Wybierz plik kopii</button><input type="file" id="bkFileIn" hidden><button class="mini" id="bkLoad">Wczytaj wklejony tekst</button></div>
   </section>
 </div>
 
@@ -773,10 +773,17 @@ function bkFileObj(){return new File([backupJSON()],"trening-kopia-"+today()+".j
 try{if(navigator.canShare&&navigator.canShare({files:[bkFileObj()]}))$("bkShare").hidden=false}catch(e){}
 $("bkShare").onclick=async()=>{try{await navigator.share({files:[bkFileObj()],title:"Kopia treningów"});bkDone();toast("Wysłano kopię.",true)}catch(e){if(e&&e.name!=="AbortError")toast("Nie udało się udostępnić. Użyj „Pobierz plik”.")}};
 $("bkShow").onclick=()=>{$("bkBox").hidden=!$("bkBox").hidden};
-$("bkFileIn").onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{$("bkIn").value=r.result};r.readAsText(f)};
-$("bkLoad").onclick=()=>{try{const d=JSON.parse($("bkIn").value);const list=Array.isArray(d)?d:d.sessions;if(!Array.isArray(list))throw 0;if(d.plan&&typeof d.plan==="object"){applyPlan(d.plan,true)}
-  const have=new Set(sessions.map(x=>x.created));let n=0;for(const x of list){if(x&&x.created&&!have.has(x.created)&&Array.isArray(x.ex)){x.local=true;x.id=x.id||"loc"+x.created;sessions.push(x);n++}}
-  ls.set("gora_sessions",sessions);sortS();render();renderHist();$("bkIn").value="";$("bkBox").hidden=true;toast("Wczytano "+n+" treningów.",true)}catch(e){toast("To nie wygląda na kopię z tej aplikacji.")}};
+$("bkPickFile").onclick=()=>{$("bkFileIn").value="";$("bkFileIn").click()};
+$("bkFileIn").onchange=e=>{const f=e.target.files&&e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>importBackup(String(r.result));r.onerror=()=>toast("Nie udało się odczytać pliku. Spróbuj jeszcze raz.");r.readAsText(f)};
+function plTr(n){return n===1?"trening":(n%10>=2&&n%10<=4&&(n%100<10||n%100>=20))?"treningi":"treningów"}
+function importBackup(txt){let d;try{d=JSON.parse(String(txt).replace(/^\uFEFF/,"").trim())}catch(e){toast("To nie jest plik kopii z tej aplikacji. Wybierz plik trening-kopia-….json.");return}
+  const list=Array.isArray(d)?d:d&&d.sessions;if(!Array.isArray(list)){toast("W tym pliku nie ma treningów z tej aplikacji.");return}
+  if(d.plan&&typeof d.plan==="object"&&Object.keys(d.plan).length)applyPlan(d.plan,true);
+  const have=new Set(sessions.map(x=>x.created));let n=0,dup=0;
+  for(const x of list){if(!x||!Array.isArray(x.ex))continue;if(!x.created)x.created=Date.parse(x.date)||Date.now()+n;if(have.has(x.created)){dup++;continue}x.local=true;x.id=x.id||"loc"+x.created;sessions.push(x);have.add(x.created);n++}
+  ls.set("gora_sessions",sessions);sortS();viewT=null;render();renderHist();$("bkIn").value="";$("bkBox").hidden=true;bkDone();
+  toast(n?"Wczytano "+n+" "+plTr(n)+(dup?" ("+dup+" już było w aplikacji)":"")+".":(dup===1?"Trening z tej kopii już jest w aplikacji":"Wszystkie treningi z tej kopii ("+dup+") już są w aplikacji")+" – nic nie trzeba wczytywać.",true)}
+$("bkLoad").onclick=()=>{const t=$("bkIn").value.trim();if(!t){toast("Wklej tekst kopii albo kliknij „Wybierz plik kopii”.");return}importBackup(t)};
 function bkCheck(){const last=ls.get("gora_lastbk")||0;const newer=sessions.filter(x=>(x.created||0)>last).length;const days=last?Math.floor((Date.now()-last)/864e5):null;
   const w=$("bkWarn");if(newer>=2||(newer>0&&days!==null&&days>=14)){w.hidden=false;w.textContent=newer+" "+(newer===1?"trening nie ma":"treningi nie mają")+" kopii zapasowej"+(days!==null?" (ostatnia "+days+" dni temu)":"")+". Pobierz plik poniżej.";}else w.hidden=true;
   const sec=w.closest("section");if(!w.hidden&&$("bkTop"))$("bkTop").textContent="⬇ Zapisz kopię zapasową ("+newer+" bez kopii)";if(!w.hidden&&!$("bkTop")){const t=document.createElement("button");t.id="bkTop";t.className="bkwarn";t.style.border="0";t.style.width="100%";t.style.cursor="pointer";t.textContent="⬇ Zapisz kopię zapasową ("+newer+" bez kopii)";t.onclick=()=>$("bkFile").click();document.querySelector(".wrap header").after(t)}else if(w.hidden&&$("bkTop"))$("bkTop").remove()}
