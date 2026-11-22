@@ -150,7 +150,12 @@ summary span{font-family:var(--f-mono);font-weight:500;font-size:12px;color:var(
 .ex.lite.dyn{border-left-color:var(--accent)}
 .lsets{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.lsets .ok{width:44px;font-family:var(--f-mono);font-size:14px}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
-html,body{margin:0}.bkwarn{background:var(--accent);color:var(--accent-fg);border-radius:10px;padding:10px 12px;font-size:14px;font-weight:500}img{max-width:100%}[hidden]{display:none!important}:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html,body{margin:0}.wkrow{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.wkrow .mini{width:40px;height:40px;font-size:20px;padding:0}.wkno{font-family:var(--f-display);font-size:28px;font-weight:700;color:var(--accent);min-width:48px;text-align:center}
+.prog{display:flex;flex-direction:column;gap:8px}.phead{display:grid;grid-template-columns:1fr 1fr 96px;gap:8px;font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+.prow{display:grid;grid-template-columns:1fr 1fr 96px;gap:8px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px}
+.pn{font-size:13px;font-weight:600;display:flex;flex-direction:column;gap:2px;min-width:0}.pd{font-family:var(--f-mono);font-size:12px;color:var(--muted);font-weight:500}.pd.up{color:var(--ok)}
+.pv{font-family:var(--f-mono);font-size:12px;color:var(--muted)}.pv b{color:var(--fg)}
+.spk{width:96px;height:28px}.spk polyline{fill:none;stroke:var(--accent);stroke-width:2;stroke-linejoin:round}.spk circle{fill:var(--accent)}.bkwarn{background:var(--accent);color:var(--accent-fg);border-radius:10px;padding:10px 12px;font-size:14px;font-weight:500}img{max-width:100%}[hidden]{display:none!important}:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 </style>
 </head><body>
 
@@ -166,10 +171,9 @@ html,body{margin:0}.bkwarn{background:var(--accent);color:var(--accent-fg);borde
     <div class="hint" id="nextHint"></div>
   </section>
 
-  <section class="sec" hidden>
+  <section class="sec">
     <div class="lbl">Tydzień</div>
-    <div class="weeks" id="weeks"></div>
-    <div class="hint" id="weekHint"></div>
+    <div class="wkrow"><button class="mini" id="wkPrev" aria-label="Poprzedni tydzień">‹</button><span class="wkno" id="wkNo">T1</span><button class="mini" id="wkNext" aria-label="Następny tydzień">›</button><span class="hint" id="weekHint"></span></div>
   </section>
 
   <section class="sec" id="exList"></section>
@@ -199,6 +203,11 @@ html,body{margin:0}.bkwarn{background:var(--accent);color:var(--accent-fg);borde
   <section class="sec">
     <div class="lbl">Historia</div>
     <div class="hist" id="hist"><div class="hint">Wczytuję…</div></div>
+  </section>
+
+  <section class="sec">
+    <div class="lbl">Postępy</div>
+    <div class="prog" id="prog"></div>
   </section>
 
   <section class="ex plain">
@@ -448,7 +457,7 @@ const WHY={mbchest:"Szybkość pchania – przenosi się na prosty cios",mbslam:
 function restOf(e){return e.m?150:90}
 for(const x of LIB)if(!INFO[x[0]])INFO[x[0]]=[x[3],x[7],x[8],x[9]];
 Object.assign(WHY,{incline:"Bez regulacji skosu? Rób wyciskanie hantli na płasko.",chestrow:"Plecy bez obciążania lędźwi",pull:"Za trudne? Zrób negatywy: wskakujesz na górę i opuszczasz się 3–5 s.",chinup:"Za trudne? Zrób negatywy: wskakujesz na górę i opuszczasz się 3–5 s."});
-const RIRT={2:"1–2",1:"1–2",1:"2–3",2:"1–2",3:"1–2",4:"1–2",5:"1–2",6:"1–2",7:"1–2",8:"4"};
+const RIRT=new Proxy({},{get:()=>"1–2"});
 const BIG=new Set(["squat","rdl","dl","legpress","thrust","hacksquat","smithsquat","frontsquat"]);
 const DB=new Set(["skull","ohext","reversefly","dbrow","dbrdl","dbohp","lunge","incline","farmer","dbbench","arnold","chestrow","hammer","curl","stepup","revlunge","bss","latraise","suitcase","stepdown"]);
 const BW=new Set(["chinup","plank","pushup","dips","pull","invrow","deadbug","sideplank","kneeraise","hyper","nordic","glutebridge","core","tib"]);
@@ -467,7 +476,7 @@ function suggest(ex,prev){
   return'<div class="sug">Zostań przy '+pl(kg)+' kg i dołóż powtórzenia (cel: '+t+' w każdej serii)</div>';
 }
 const PULL=["1 · ściąganie 3×8–12 + negatywy 3×3","2 · guma / maszyna 3×6–8","3 · podciąganie 3–5×1–3","4 · podciąganie 3×6–10"];
-const WEEK={1:{t:"",f:s=>s},2:{t:"",f:s=>s}};const NWEEK=99;
+const WEEK=new Proxy({},{get:()=>({t:"",f:s=>s})});const NWEEK=999;
 const NEXT={A:"B",B:"A"};
 
 let day="A",week=1,sessions=[],db=null,pullStage=0,sampler=null,chat=[];
@@ -487,7 +496,7 @@ function fmtDate(d){if(!d)return"";const p=String(d).split("-");return p[2]+"."+
 function r25(x){return Math.round(x/2.5)*2.5}
 function sortS(){sessions.sort((a,b)=>String(b.date).localeCompare(String(a.date))||(b.created||0)-(a.created||0))}
 function isLocal(s){return s.local||/^l(oc)?\d+$/.test(String(s.id))}
-function deriveWeek(){const l=sessions.find(x=>PLAN[x.day]);if(!l)return 1;const w=l.week||1;return l.day==="PT"?(w<NWEEK?w+1:1):w}
+function deriveWeek(){const l=sessions.find(x=>PLAN[x.day]);if(!l)return 1;const w=l.week||1;return l.day==="B"?w+1:w}
 function dayByDate(){const g=new Date().getDay();return ["PN","PN","WT","SR","CZ","PT","PN"][g]}
 function dl(d){return DAYLBL[d]||d}
 function lastFor(k){for(const s of sessions){const e=(s.ex||[]).find(x=>x.k===k&&!x.kind);if(e&&e.sets&&e.sets.some(t=>!t.w&&(t.kg||t.r)))return {s,e:Object.assign({},e,{sets:e.sets.filter(t=>!t.w)})}}return null}
@@ -507,10 +516,11 @@ function renderSeg(){
   $("nextHint").textContent=last?"Ostatnio: "+(PLAN[last.day]?dl(last.day)+" "+PLAN[last.day].sub:(OLD[last.day]||{n:last.day}).n)+" ("+fmtDate(last.date)+")"+(PLAN[last.day]?" → następny "+dl(NEXT[last.day]):""):"Brak zapisanych sesji w tym planie.";
 }
 function renderWeeks(){
-  $("weeks").innerHTML="";
-  for(let w=1;w<=0;w++){const b=document.createElement("button");b.textContent="T"+w;b.setAttribute("aria-pressed",w===week);b.onclick=()=>{week=w;ls.set("gora_weekm",{w,ts:Date.now()});render()};$("weeks").append(b)}
-  $("weekHint").textContent=WEEK[week].t;
+  $("wkNo").textContent="T"+week;
+  const ss=sessions.filter(x=>PLAN[x.day]&&x.week===week).map(x=>x.day);
+  $("weekHint").textContent=(ss.length?"zrobione w tym tygodniu: "+[...new Set(ss)].sort().join(", ")+" · ":"")+"zmienia się samo po treningu B";
 }
+function setWeek(w){week=Math.max(1,w);ls.set("gora_weekm",{w:week,ts:Date.now()});render()}
 function renderEx(fromDraft){
   const st=S();const keep=fromDraft?st.vals:snap();
   const box=$("exList");box.innerHTML="";
@@ -594,13 +604,26 @@ $("save").onclick=async()=>{
   sessions.unshift(s);sortS();
   draft[s.day]=blank();draft.common={};$("date").value=today();
   clearInterval(restIv);$("rest").hidden=true;
-  day=NEXT[s.day]||"A";week=2;
+  day=NEXT[s.day]||"A";week=deriveWeek();ls.set("gora_weekm",null);
   render(true);renderHist();window.scrollTo({top:0});
   afterSave(s);
   $("save").disabled=false;$("save").textContent="Zapisz sesję";
 };
 
-function renderHist(){setTimeout(()=>{try{bkCheck()}catch(e){}},0);
+function bestSet(e){let b=null;for(const t of (e.sets||[])){if(t.w||!(t.kg||t.r))continue;const kg=num(t.kg),r=parseInt(t.r)||0;if(!b||kg>b.kg||(kg===b.kg&&r>b.r))b={kg,r}}return b}
+function fmtSet(b){return b?(b.kg?String(b.kg).replace(".",",")+" kg × "+b.r:b.r+" powt."):"–"}
+function spark(pts){if(pts.length<2)return"";const W=96,H=28,v=pts.map(p=>p.v),mn=Math.min(...v),mx=Math.max(...v),rg=mx-mn||1;const xy=pts.map((p,i)=>[4+i*(W-8)/(pts.length-1),H-4-(p.v-mn)/rg*(H-8)]);
+  return'<svg class="spk" viewBox="0 0 '+W+' '+H+'" aria-hidden="true"><polyline points="'+xy.map(q=>q.join(",")).join(" ")+'"/><circle cx="'+xy[xy.length-1][0]+'" cy="'+xy[xy.length-1][1]+'" r="3"/></svg>'}
+function renderProg(){
+  const el=$("prog");const by={};
+  for(const s of [...sessions].reverse()){if(!PLAN[s.day])continue;for(const e of (s.ex||[])){if(e.kind)continue;const b=bestSet(e);if(!b)continue;const w=s.week||1;(by[e.k]=by[e.k]||{n:e.n,w:{}});const cur=by[e.k].w[w];const val=b.kg?b.kg*(1+b.r/30):b.r;if(!cur||val>cur.v)by[e.k].w[w]={b,v:val}}}
+  const keys=Object.keys(by);if(!keys.length){el.innerHTML='<div class="hint">Po kilku treningach zobaczysz tu, jak rosną ciężary i powtórzenia – tydzień po tygodniu.</div>';return}
+  const order=[];for(const d of DAYS)for(const e of PLAN[d].ex)if(by[e.k]&&!order.includes(e.k))order.push(e.k);for(const k of keys)if(!order.includes(k))order.push(k);
+  el.innerHTML='<div class="phead"><span>Ćwiczenie</span><span>Start → teraz</span><span></span></div>'+order.map(k=>{const o=by[k];const ws=Object.keys(o.w).map(Number).sort((a,b)=>a-b);const f=o.w[ws[0]],l=o.w[ws[ws.length-1]];
+    let d="";if(ws.length>1){if(f.b.kg&&l.b.kg){const dk=Math.round((l.b.kg-f.b.kg)*10)/10;d=dk?(dk>0?"+":"")+String(dk).replace(".",",")+" kg":(l.b.r-f.b.r?(l.b.r>f.b.r?"+":"")+(l.b.r-f.b.r)+" powt.":"bez zmian")}else{const dr=l.b.r-f.b.r;d=dr?(dr>0?"+":"")+dr+" powt.":"bez zmian"}}
+    return'<div class="prow"><div class="pn">'+esc(o.n)+'<span class="pd'+(d.startsWith("+")?" up":"")+'">'+d+'</span></div><div class="pv">T'+ws[0]+': '+fmtSet(f.b)+(ws.length>1?'<br>T'+ws[ws.length-1]+': <b>'+fmtSet(l.b)+'</b>':'')+'</div>'+spark(ws.map(w=>o.w[w]))+'</div>'}).join("");
+}
+function renderHist(){setTimeout(()=>{try{renderProg()}catch(e){}},0);setTimeout(()=>{try{bkCheck()}catch(e){}},0);
   const h=$("hist");h.innerHTML="";
   if(!sessions.length){h.innerHTML='<div class="hint">Tu pojawią się zapisane sesje.</div>';return}
   for(const s of sessions.slice(0,40)){
@@ -611,7 +634,7 @@ function renderHist(){setTimeout(()=>{try{bkCheck()}catch(e){}},0);
     if(s.bw)body+='<div><b>Masa</b>: '+esc(s.bw)+' kg</div>';
     if(s.notes)body+='<div><b>Notatki</b>: '+esc(s.notes)+'</div>';
     body+='</div><div class="tools"><button class="del" data-id="'+esc(s.id)+'">Usuń wpis</button></div><div class="ai" id="ai_'+esc(s.id)+'"></div>';
-    d.innerHTML='<summary>'+esc(PLAN[s.day]?dl(s.day)+' '+PLAN[s.day].sub:(OLD[s.day]||{n:s.day}).n)+' · '+fmtDate(s.date)+'</summary>'+body;
+    d.innerHTML='<summary>'+esc(PLAN[s.day]?dl(s.day)+' '+PLAN[s.day].sub:(OLD[s.day]||{n:s.day}).n)+' · '+fmtDate(s.date)+(s.week?' <span>T'+esc(s.week)+'</span>':'')+'</summary>'+body;
     h.append(d);
   }
   h.querySelectorAll("[data-ask]").forEach(b=>b.onclick=()=>ask(b.dataset.ask,b));
@@ -700,6 +723,7 @@ $("ssLater").onclick=()=>{$("saveSheet").hidden=true};
 $("ssFile").onclick=()=>{$("bkFile").click();$("saveSheet").hidden=true};
 $("ssShare").onclick=()=>{$("bkShare").click();$("saveSheet").hidden=true};
 if("serviceWorker" in navigator&&location.protocol==="https:")navigator.serviceWorker.register("sw.js").catch(()=>{});
+$("wkPrev").onclick=()=>setWeek(week-1);$("wkNext").onclick=()=>setWeek(week+1);
 $("restX").onclick=()=>{clearInterval(restIv);$("rest").hidden=true};
 $("restPlus").onclick=()=>{restEnd=Math.max(restEnd,Date.now())+30000;clearInterval(restIv);tick();restIv=setInterval(tick,250)};
 $("rirClose").onclick=()=>{$("rirSheet").hidden=true};
@@ -714,7 +738,7 @@ document.addEventListener("keydown",e=>{if(e.key==="Escape"){$("saveSheet").hidd
 
 function pickStart(){
   const wm=ls.get("gora_weekm");const lastTs=sessions[0]?sessions[0].created||0:0;
-  week=2;
+  week=wm&&wm.w&&wm.ts>lastTs?wm.w:deriveWeek();
   if(draft.day&&PLAN[draft.day]&&hasDraft(draft.day))day=draft.day;else{const l=sessions.find(x=>PLAN[x.day]);day=l?NEXT[l.day]:"A"}
 }
 $("date").value=today();pullStage=ls.get("gora_pull")||0;
