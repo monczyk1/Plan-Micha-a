@@ -150,7 +150,12 @@ summary span{font-family:var(--f-mono);font-weight:500;font-size:12px;color:var(
 .ex.lite.dyn{border-left-color:var(--accent)}
 .lsets{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.lsets .ok{width:44px;font-family:var(--f-mono);font-size:14px}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
-html,body{margin:0}.wkrow{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.wkrow .mini{width:40px;height:40px;font-size:20px;padding:0}.wkno{font-family:var(--f-display);font-size:28px;font-weight:700;color:var(--accent);min-width:48px;text-align:center}
+html,body{margin:0}.tgrid{display:grid;grid-template-columns:repeat(9,1fr);gap:4px}
+.tgrid button{padding:7px 0;border:1px solid var(--line);background:var(--surface);color:var(--fg);border-radius:7px;font-family:var(--f-mono);font-size:12px;cursor:pointer;min-width:0}
+.tgrid button.done{background:var(--field)}.tgrid button.cur{border-color:var(--accent);color:var(--accent);font-weight:600}
+.tgrid button.fut{opacity:.4;cursor:default}.tgrid button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-fg)}
+.pvx{display:flex;flex-direction:column;gap:4px;border-top:1px solid var(--line);padding-top:8px}.pvn{font-weight:600;font-size:14px}
+.pvs{display:flex;flex-wrap:wrap;gap:6px}.pvs span{font-family:var(--f-mono);font-size:13px;background:var(--field);border-radius:6px;padding:3px 8px}.pvs span.w{opacity:.55}.wkrow{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.wkrow .mini{width:40px;height:40px;font-size:20px;padding:0}.wkno{font-family:var(--f-display);font-size:28px;font-weight:700;color:var(--accent);min-width:48px;text-align:center}
 .prog{display:flex;flex-direction:column;gap:8px}.phead{display:grid;grid-template-columns:1fr 1fr 96px;gap:8px;font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
 .prow{display:grid;grid-template-columns:1fr 1fr 96px;gap:8px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px}
 .pn{font-size:13px;font-weight:600;display:flex;flex-direction:column;gap:2px;min-width:0}.pd{font-family:var(--f-mono);font-size:12px;color:var(--muted);font-weight:500}.pd.up{color:var(--ok)}
@@ -172,9 +177,11 @@ html,body{margin:0}.wkrow{display:flex;align-items:center;gap:10px;flex-wrap:wra
   </section>
 
   <section class="sec">
-    <div class="lbl">Tydzień</div>
-    <div class="wkrow"><button class="mini" id="wkPrev" aria-label="Poprzedni tydzień">‹</button><span class="wkno" id="wkNo">T1</span><button class="mini" id="wkNext" aria-label="Następny tydzień">›</button><span class="hint" id="weekHint"></span></div>
+    <div class="lbl" id="tLbl">Numer treningu</div>
+    <div class="tgrid" id="tgrid"></div>
+    <div class="hint" id="weekHint"></div>
   </section>
+  <section class="sec" id="pastView" hidden></section>
 
   <section class="sec" id="exList"></section>
 
@@ -511,16 +518,27 @@ function persist(){S().vals=snap();draft.day=day;draft.common={};COMMON.forEach(
 
 function renderSeg(){
   $("seg").innerHTML="";
-  for(const d of DAYS){const b=document.createElement("button");b.setAttribute("aria-pressed",d===day);b.innerHTML=dl(d)+"<small>"+PLAN[d].sub+(d!==day&&hasDraft(d)?" · w toku":"")+"</small>";b.onclick=()=>{if(d===day)return;persist();day=d;render(true)};$("seg").append(b)}
+  for(const d of DAYS){const b=document.createElement("button");b.setAttribute("aria-pressed",d===day);b.innerHTML=dl(d)+"<small>"+PLAN[d].sub+(d!==day&&hasDraft(d)?" · w toku":"")+"</small>";b.onclick=()=>{if(d===day)return;persist();day=d;viewT=null;render(true)};$("seg").append(b)}
   const last=sessions[0];
   $("nextHint").textContent=last?"Ostatnio: "+(PLAN[last.day]?dl(last.day)+" "+PLAN[last.day].sub:(OLD[last.day]||{n:last.day}).n)+" ("+fmtDate(last.date)+")"+(PLAN[last.day]?" → następny "+dl(NEXT[last.day]):""):"Brak zapisanych sesji w tym planie.";
 }
+let viewT=null;
+function sessOf(d){return sessions.filter(x=>x.day===d).sort((a,b)=>String(a.date).localeCompare(String(b.date))||(a.created||0)-(b.created||0))}
 function renderWeeks(){
-  $("wkNo").textContent="T"+week;
-  const ss=sessions.filter(x=>PLAN[x.day]&&x.week===week).map(x=>x.day);
-  $("weekHint").textContent=(ss.length?"zrobione w tym tygodniu: "+[...new Set(ss)].sort().join(", ")+" · ":"")+"zmienia się samo po treningu B";
+  const list=sessOf(day),cur=list.length+1,max=Math.max(9,cur);week=cur;
+  $("tLbl").textContent="Trening "+day+" – numer";
+  $("tgrid").innerHTML=Array.from({length:max},(_,i)=>{const t=i+1,done=t<cur,isCur=t===cur,sel=viewT===i||(viewT===null&&isCur);
+    return'<button data-t="'+i+'" class="'+(done?"done":isCur?"cur":"fut")+'" aria-pressed="'+sel+'"'+(t>cur?" disabled":"")+'>T'+t+'</button>'}).join("");
+  $("tgrid").querySelectorAll("button:not([disabled])").forEach(b=>b.onclick=()=>{const i=+b.dataset.t;viewT=i<list.length?i:null;render()});
+  $("weekHint").textContent=viewT!==null?"Podgląd T"+(viewT+1)+" · kliknij T"+cur+", żeby wrócić do dzisiejszego treningu":list.length?"Dziś: T"+cur+" · kliknij wcześniejszy numer, żeby zobaczyć, co wtedy robiłeś":"Pierwszy trening "+day+" – T1";
+  const past=viewT!==null?list[viewT]:null,pv=$("pastView");
+  pv.hidden=!past;["exList","save"].forEach(id=>{$(id).hidden=!!past});document.querySelectorAll(".ex.plain").forEach(e=>{if(!e.closest("[hidden]")&&e.querySelector("#date"))e.hidden=!!past});
+  if(past){let h='<div class="ex plain"><div class="exh"><span class="exn">Trening '+esc(past.day)+' · T'+(viewT+1)+'</span><span class="target">'+fmtDate(past.date)+'</span></div>';
+    for(const e of (past.ex||[])){const ws=(e.sets||[]).filter(t=>t.kg||t.r);if(!ws.length)continue;
+      h+='<div class="pvx"><div class="pvn">'+esc(e.n)+(e.rir?' <span class="pd">RIR '+esc(e.rir)+'</span>':'')+'</div><div class="pvs">'+ws.map(t=>'<span class="'+(t.w?"w":"")+'">'+esc((t.kg?String(t.kg).replace('.',',')+' kg × ':'')+(t.r||'–'))+'</span>').join("")+'</div></div>'}
+    if(past.notes)h+='<div class="hint">Notatki: '+esc(past.notes)+'</div>';
+    h+='<button class="mini plus" id="pvBack">← Wróć do T'+cur+'</button></div>';pv.innerHTML=h;$("pvBack").onclick=()=>{viewT=null;render();window.scrollTo({top:0})}}
 }
-function setWeek(w){week=Math.max(1,w);ls.set("gora_weekm",{w:week,ts:Date.now()});render()}
 function renderEx(fromDraft){
   const st=S();const keep=fromDraft?st.vals:snap();
   const box=$("exList");box.innerHTML="";
@@ -585,7 +603,7 @@ function render(fromDraft){
   if(fromDraft){COMMON.forEach(i=>{$(i).value=draft.common[i]||""})}
   renderSeg();renderWeeks();renderEx(fromDraft);
 }
-function collect(){
+function collect(){week=sessOf(day).length+1;
   const ex=exList().map(e=>{if(e.kind){const d=S().done;const sets=[];for(let i=0;i<nSets(e);i++)if(d[e.k+"_"+i])sets.push({r:e.r,done:true});return {k:e.k,n:e.n,kind:e.kind,sets}}
     const sets=[];if(e.m)for(let i=0;i<2;i++){const kg=$(e.k+"_wkg_"+i).value.trim(),r=$(e.k+"_wr_"+i).value.trim();if(kg||r)sets.push({kg,r,w:true})}
     for(let i=0;i<nSets(e);i++)sets.push({kg:$(e.k+"_kg_"+i).value.trim(),r:$(e.k+"_r_"+i).value.trim()});
@@ -604,7 +622,7 @@ $("save").onclick=async()=>{
   sessions.unshift(s);sortS();
   draft[s.day]=blank();draft.common={};$("date").value=today();
   clearInterval(restIv);$("rest").hidden=true;
-  day=NEXT[s.day]||"A";week=deriveWeek();ls.set("gora_weekm",null);
+  day=NEXT[s.day]||"A";viewT=null;
   render(true);renderHist();window.scrollTo({top:0});
   afterSave(s);
   $("save").disabled=false;$("save").textContent="Zapisz sesję";
@@ -616,12 +634,12 @@ function spark(pts){if(pts.length<2)return"";const W=96,H=28,v=pts.map(p=>p.v),m
   return'<svg class="spk" viewBox="0 0 '+W+' '+H+'" aria-hidden="true"><polyline points="'+xy.map(q=>q.join(",")).join(" ")+'"/><circle cx="'+xy[xy.length-1][0]+'" cy="'+xy[xy.length-1][1]+'" r="3"/></svg>'}
 function renderProg(){
   const el=$("prog");const by={};
-  for(const s of [...sessions].reverse()){if(!PLAN[s.day])continue;for(const e of (s.ex||[])){if(e.kind)continue;const b=bestSet(e);if(!b)continue;const w=s.week||1;(by[e.k]=by[e.k]||{n:e.n,w:{}});const cur=by[e.k].w[w];const val=b.kg?b.kg*(1+b.r/30):b.r;if(!cur||val>cur.v)by[e.k].w[w]={b,v:val}}}
+  for(const s of [...sessions].reverse()){if(!PLAN[s.day])continue;for(const e of (s.ex||[])){if(e.kind)continue;const b=bestSet(e);if(!b)continue;const w=s.created||0;(by[e.k]=by[e.k]||{n:e.n,w:{},d:{}});by[e.k].d[w]=fmtDate(s.date);const cur=by[e.k].w[w];const val=b.kg?b.kg*(1+b.r/30):b.r;if(!cur||val>cur.v)by[e.k].w[w]={b,v:val}}}
   const keys=Object.keys(by);if(!keys.length){el.innerHTML='<div class="hint">Po kilku treningach zobaczysz tu, jak rosną ciężary i powtórzenia – tydzień po tygodniu.</div>';return}
   const order=[];for(const d of DAYS)for(const e of PLAN[d].ex)if(by[e.k]&&!order.includes(e.k))order.push(e.k);for(const k of keys)if(!order.includes(k))order.push(k);
   el.innerHTML='<div class="phead"><span>Ćwiczenie</span><span>Start → teraz</span><span></span></div>'+order.map(k=>{const o=by[k];const ws=Object.keys(o.w).map(Number).sort((a,b)=>a-b);const f=o.w[ws[0]],l=o.w[ws[ws.length-1]];
     let d="";if(ws.length>1){if(f.b.kg&&l.b.kg){const dk=Math.round((l.b.kg-f.b.kg)*10)/10;d=dk?(dk>0?"+":"")+String(dk).replace(".",",")+" kg":(l.b.r-f.b.r?(l.b.r>f.b.r?"+":"")+(l.b.r-f.b.r)+" powt.":"bez zmian")}else{const dr=l.b.r-f.b.r;d=dr?(dr>0?"+":"")+dr+" powt.":"bez zmian"}}
-    return'<div class="prow"><div class="pn">'+esc(o.n)+'<span class="pd'+(d.startsWith("+")?" up":"")+'">'+d+'</span></div><div class="pv">T'+ws[0]+': '+fmtSet(f.b)+(ws.length>1?'<br>T'+ws[ws.length-1]+': <b>'+fmtSet(l.b)+'</b>':'')+'</div>'+spark(ws.map(w=>o.w[w]))+'</div>'}).join("");
+    return'<div class="prow"><div class="pn">'+esc(o.n)+'<span class="pd'+(d.startsWith("+")?" up":"")+'">'+d+'</span></div><div class="pv">'+o.d[ws[0]]+': '+fmtSet(f.b)+(ws.length>1?'<br>'+o.d[ws[ws.length-1]]+': <b>'+fmtSet(l.b)+'</b>':'')+'</div>'+spark(ws.map(w=>o.w[w]))+'</div>'}).join("");
 }
 function renderHist(){setTimeout(()=>{try{renderProg()}catch(e){}},0);setTimeout(()=>{try{bkCheck()}catch(e){}},0);
   const h=$("hist");h.innerHTML="";
@@ -634,7 +652,7 @@ function renderHist(){setTimeout(()=>{try{renderProg()}catch(e){}},0);setTimeout
     if(s.bw)body+='<div><b>Masa</b>: '+esc(s.bw)+' kg</div>';
     if(s.notes)body+='<div><b>Notatki</b>: '+esc(s.notes)+'</div>';
     body+='</div><div class="tools"><button class="del" data-id="'+esc(s.id)+'">Usuń wpis</button></div><div class="ai" id="ai_'+esc(s.id)+'"></div>';
-    d.innerHTML='<summary>'+esc(PLAN[s.day]?dl(s.day)+' '+PLAN[s.day].sub:(OLD[s.day]||{n:s.day}).n)+' · '+fmtDate(s.date)+(s.week?' <span>T'+esc(s.week)+'</span>':'')+'</summary>'+body;
+    d.innerHTML='<summary>'+esc(PLAN[s.day]?dl(s.day)+' '+PLAN[s.day].sub:(OLD[s.day]||{n:s.day}).n)+' · '+fmtDate(s.date)+(PLAN[s.day]?' <span>T'+(sessOf(s.day).indexOf(s)+1)+'</span>':'')+'</summary>'+body;
     h.append(d);
   }
   h.querySelectorAll("[data-ask]").forEach(b=>b.onclick=()=>ask(b.dataset.ask,b));
@@ -723,7 +741,6 @@ $("ssLater").onclick=()=>{$("saveSheet").hidden=true};
 $("ssFile").onclick=()=>{$("bkFile").click();$("saveSheet").hidden=true};
 $("ssShare").onclick=()=>{$("bkShare").click();$("saveSheet").hidden=true};
 if("serviceWorker" in navigator&&location.protocol==="https:")navigator.serviceWorker.register("sw.js").catch(()=>{});
-$("wkPrev").onclick=()=>setWeek(week-1);$("wkNext").onclick=()=>setWeek(week+1);
 $("restX").onclick=()=>{clearInterval(restIv);$("rest").hidden=true};
 $("restPlus").onclick=()=>{restEnd=Math.max(restEnd,Date.now())+30000;clearInterval(restIv);tick();restIv=setInterval(tick,250)};
 $("rirClose").onclick=()=>{$("rirSheet").hidden=true};
@@ -738,7 +755,7 @@ document.addEventListener("keydown",e=>{if(e.key==="Escape"){$("saveSheet").hidd
 
 function pickStart(){
   const wm=ls.get("gora_weekm");const lastTs=sessions[0]?sessions[0].created||0:0;
-  week=wm&&wm.w&&wm.ts>lastTs?wm.w:deriveWeek();
+  
   if(draft.day&&PLAN[draft.day]&&hasDraft(draft.day))day=draft.day;else{const l=sessions.find(x=>PLAN[x.day]);day=l?NEXT[l.day]:"A"}
 }
 $("date").value=today();pullStage=ls.get("gora_pull")||0;
