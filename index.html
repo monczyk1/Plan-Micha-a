@@ -150,7 +150,10 @@ summary span{font-family:var(--f-mono);font-weight:500;font-size:12px;color:var(
 .ex.lite.dyn{border-left-color:var(--accent)}
 .lsets{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.lsets .ok{width:44px;font-family:var(--f-mono);font-size:14px}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
-html,body{margin:0}.rsdone{display:flex;flex-direction:column;gap:8px;background:var(--ok);color:#fff;border-radius:10px;padding:12px;font-size:14px}.rsdone .mini{color:#fff;border-color:#fff}
+html,body{margin:0}.cloud{display:flex;flex-direction:column;gap:8px;border-top:1px solid var(--line);padding-top:10px}
+.cloudrow{display:grid;grid-template-columns:28px 1fr;gap:8px;align-items:start;cursor:pointer}.cloudrow input{width:24px;height:24px;margin:2px 0 0;accent-color:var(--accent)}
+.cloudst{font-size:13px;font-weight:500}.cloudst.good{color:var(--ok)}.cloudst.bad{color:var(--accent)}.cloudst.wait{color:var(--muted)}
+.cloudlist{display:flex;flex-direction:column;gap:6px}.cloudlist .mini{text-align:left}.rsdone{display:flex;flex-direction:column;gap:8px;background:var(--ok);color:#fff;border-radius:10px;padding:12px;font-size:14px}.rsdone .mini{color:#fff;border-color:#fff}
 #rsSheet{display:flex;flex-direction:column;gap:10px;z-index:10}#rsSheet .warn{color:var(--accent)}
 .pvsets{display:flex;flex-direction:column;gap:6px}.pvrow{display:grid;grid-template-columns:28px 1fr 1fr 36px;gap:6px;align-items:center}.pvrow .n{font-family:var(--f-mono);font-size:12px;color:var(--muted)}.pvrow.w input{opacity:.65}.pvrow input{padding:7px 8px;font-size:15px}
 .pvtools{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.pvtools label{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted)}.pvtools input{width:64px;padding:6px 8px}
@@ -252,6 +255,13 @@ html,body{margin:0}.rsdone{display:flex;flex-direction:column;gap:8px;background
     <div class="hint">Treningi zapisują się tylko w tej przeglądarce. Wyczyszczenie danych przeglądarki albo zmiana telefonu je kasuje, więc co jakiś czas zrób kopię.</div>
     <div class="tools"><button class="mini plus" id="bkFile">Pobierz plik</button><button class="mini" id="bkShare" hidden>Wyślij na Dysk / mailem</button><button class="mini" id="bkCopy">Skopiuj do schowka</button><button class="mini" id="bkShow">Przywróć z kopii</button><button class="mini" id="bkPick" hidden>Ustaw stały plik kopii</button></div>
     <div class="hint" id="bkPickInfo" hidden></div>
+    <div class="cloud" id="cloudBox" hidden>
+      <label class="cloudrow" for="cloudOn"><input type="checkbox" id="cloudOn"><span><b>☁ Automatyczna kopia w chmurze</b> <button class="tip" data-tip="cloud" aria-label="Wyjaśnienie">?</button><br><span class="hint">Zaznaczone: po każdym zapisanym treningu kopia trafia sama na Dysk Google Damiana. Odznaczone: nic nie jest wysyłane.</span></span></label>
+      <div class="cloudpin" id="cloudPinBox" hidden><label class="lbl" for="cloudPin">PIN do chmury (dostaniesz od Damiana)</label><div class="edadd"><input id="cloudPin" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="PIN"><button class="mini plus" id="cloudConnect">Połącz</button></div></div>
+      <div class="cloudst" id="cloudSt"></div>
+      <div class="tools"><button class="mini" id="cloudRestore">Przywróć z chmury</button><button class="mini" id="cloudNow" hidden>Wyślij teraz</button></div>
+      <div class="cloudlist" id="cloudList" hidden></div>
+    </div>
     <div class="field" id="bkBox" hidden><label class="lbl" for="bkIn">albo wklej skopiowany tekst kopii</label><textarea id="bkIn" rows="3"></textarea><button class="mini plus" id="bkPickFile">📂 Wybierz plik kopii</button><input type="file" id="bkFileIn" hidden><button class="mini" id="bkLoad">Wczytaj wklejony tekst</button></div>
   </section>
 </div>
@@ -596,7 +606,7 @@ function renderSeg(){
   $("nextHint").textContent=last?"Ostatnio: "+(PLAN[last.day]?dl(last.day)+" "+PLAN[last.day].sub:(OLD[last.day]||{n:last.day}).n)+" ("+fmtDate(last.date)+")"+(PLAN[last.day]?" → następny "+dl(NEXT[last.day]):""):"Brak zapisanych sesji w tym planie.";
 }
 let viewT=null,pvDirty=false;
-function saveSessions(){const ok=ls.set("gora_sessions",sessions);ls.set("gora_changed",Date.now());return ok}
+function saveSessions(){const ok=ls.set("gora_sessions",sessions);ls.set("gora_changed",Date.now());try{cloudDirty()}catch(e){}return ok}
 function reloadSessions(){sessions=(ls.get("gora_sessions")||[]).map(x=>Object.assign(x,{local:true}));sortS()}
 function sessOf(d){return sessions.filter(x=>x.day===d).sort((a,b)=>String(a.date).localeCompare(String(b.date))||(a.created||0)-(b.created||0))}
 function renderWeeks(){
@@ -822,7 +832,7 @@ function applySnapshot(store,label,isUndo){
     for(const k in store)if(k.startsWith("gora_")&&!SNAP_SKIP.has(k))localStorage.setItem(k,store[k]);
     localStorage.setItem("gora_undo",JSON.stringify({store:cur.storage,label:fmtTs(cur.exported)}));
     localStorage.setItem("gora_restored",JSON.stringify({label,undo:!!isUndo,ts:Date.now()}));
-    localStorage.setItem("gora_lastbk",JSON.stringify(Date.now()));
+    localStorage.setItem("gora_lastbk",JSON.stringify(Date.now()));try{const c=JSON.parse(localStorage.getItem("gora_cloudst")||"{}");c.pending=true;localStorage.setItem("gora_cloudst",JSON.stringify(c))}catch(e){}
   }catch(e){restoring=false;toast("Nie udało się przywrócić – przeglądarka nie pozwala zapisać danych.");return}
   location.reload()}
 $("rsOk").onclick=()=>{if(pendingRestore)applySnapshot(pendingRestore.store,pendingRestore.label,false)};
@@ -832,7 +842,7 @@ $("rsCancel").onclick=()=>{pendingRestore=null;$("rsSheet").hidden=true};
   $("rsDoneTxt").textContent=r.undo?"Cofnięto przywracanie – aplikacja jest w stanie sprzed wczytania kopii.":"Przywrócono kopię z "+r.label+". Wszystko jest jak w chwili jej zrobienia.";
   $("rsUndo").hidden=!u||r.undo;$("rsUndo").onclick=()=>{if(u)applySnapshot(u.store,u.label,true)};$("rsDoneX").onclick=()=>{bar.hidden=true}})();
 $("bkLoad").onclick=()=>{const t=$("bkIn").value.trim();if(!t){toast("Wklej tekst kopii albo kliknij „Wybierz plik kopii”.");return}importBackup(t)};
-function bkCheck(){const last=ls.get("gora_lastbk")||0;const newer=sessions.filter(x=>(x.created||0)>last).length;const changed=(ls.get("gora_changed")||0)>last&&sessions.length>0;const days=last?Math.floor((Date.now()-last)/864e5):null;
+function bkCheck(){let cl=0;try{cl=(cloud.on&&!cst.pending&&cst.last)||0}catch(e){}const last=Math.max(ls.get("gora_lastbk")||0,cl);const newer=sessions.filter(x=>(x.created||0)>last).length;const changed=(ls.get("gora_changed")||0)>last&&sessions.length>0;const days=last?Math.floor((Date.now()-last)/864e5):null;
   const w=$("bkWarn");const need=newer>=2||(newer>0&&days!==null&&days>=14)||(changed&&newer===0&&days!==null&&days>=1);
   const txt=newer?newer+" "+(newer===1?"trening bez kopii":newer<5?"treningi bez kopii":"treningów bez kopii"):"zmiany bez kopii";
   if(need){w.hidden=false;w.textContent="Masz "+txt+(days!==null?" (ostatnia kopia "+days+" dni temu)":"")+". Zapisz kopię poniżej."}else w.hidden=true;
@@ -852,6 +862,7 @@ if(fsOK){$("bkPick").hidden=false;idbGet().then(h=>{fh=h;showPick()});
 async function afterSave(s){
   const label="Trening "+s.day+", "+fmtDate(s.date);
   if(fh&&await writeFixed(true)){toast("Zapisano: "+label+". Kopia zaktualizowana.",true);return}
+  if(cloud.on&&CLOUD_URL){toast("Zapisano: "+label+". ☁ Kopia leci do chmury…",true);return}
   toast("Zapisano: "+label+".",true);
   const last=ls.get("gora_lastbk")||0;const newer=sessions.filter(x=>(x.created||0)>last).length;
   $("ssTxt").textContent=newer+" "+(newer===1?"trening nie ma":newer<5?"treningi nie mają":"treningów nie ma")+" kopii zapasowej. Zapisz ją teraz – to jedno kliknięcie. Kopia zapamięta stan całej aplikacji.";
@@ -869,6 +880,7 @@ const TIPS={
  data:["Dane sesji","Data podstawia się sama. Zmień ją tylko, jeśli dopisujesz trening z innego dnia. Masa ciała i notatki są opcjonalne – np. „źle spałem”, „bolał bark”."],
  hist:["Historia","Lista zapisanych treningów. Kliknij, żeby zobaczyć szczegóły.<br><br><b>✎ Popraw</b> – zmień ciężar, powtórzenia, datę albo notatki w zapisanym treningu.<br><b>Usuń wpis</b> – trzeba kliknąć dwa razy."],
  prog:["Postępy","Dla każdego ćwiczenia: najlepsza seria z pierwszego treningu i z ostatniego oraz wykres. Zielona liczba (np. +5 kg) to Twój postęp."],
+ cloud:["Kopia w chmurze","Gdy pole jest <b>zaznaczone</b>, po każdym zapisanym treningu (i po poprawkach) aplikacja sama wysyła kopię na Dysk Google Damiana. Nie musisz nic klikać. Bez internetu kopia poczeka i wyśle się sama później.<br><br>Gdy pole jest <b>odznaczone</b>, nic nie jest wysyłane.<br><br>Na nowym telefonie: zaznacz pole, wpisz PIN, a aplikacja zaproponuje przywrócenie treningów z chmury. Możesz też wybrać kopię z dowolnego dnia: <b>Przywróć z chmury</b>."],
  backup:["Kopia zapasowa","Treningi zapisują się tylko w tym telefonie, w przeglądarce. Jeśli wyczyścisz dane przeglądarki albo zmienisz telefon, znikną.<br><br>Dlatego po treningu kliknij <b>„Zapisz kopię”</b> – plik trafi do Pobranych. Najlepiej wyślij go sobie na Dysk albo mailem.<br><br><b>Przywróć z kopii</b> → wybierz plik: aplikacja wróci dokładnie do stanu z chwili zrobienia kopii (historia, plan, trening w toku). Zaraz po przywróceniu możesz to cofnąć."]};
 function openTip(k){const t=TIPS[k];if(!t)return;$("tipT").textContent=t[0];$("tipB").innerHTML=t[1];$("tipSheet").hidden=false}
 document.addEventListener("click",e=>{const b=e.target.closest&&e.target.closest(".tip[data-tip]");if(b){e.preventDefault();e.stopPropagation();openTip(b.dataset.tip)}},true);
@@ -880,7 +892,7 @@ $("howBtn").onclick=()=>{$("welcome").hidden=false;$("welcome").scrollIntoView({
 let ed=null,edDay=null;
 function applyPlan(np,save){for(const k of Object.keys(PLAN))delete PLAN[k];Object.assign(PLAN,JSON.parse(JSON.stringify(np)));DAYS.length=0;DAYS.push(...Object.keys(PLAN));rebuildNext();
   for(const d of DAYS)for(const e of PLAN[d].ex)if(!CATALOG[e.k])CATALOG[e.k]={k:e.k,n:e.n,g:"Własne",s:e.s,r:e.r,m:e.m};
-  if(save){ls.set("gora_plan",PLAN);ls.set("gora_changed",Date.now())}if(!PLAN[day])day=DAYS[0];viewT=null;render(true);renderHist()}
+  if(save){ls.set("gora_plan",PLAN);ls.set("gora_changed",Date.now());try{cloudDirty()}catch(e){}}if(!PLAN[day])day=DAYS[0];viewT=null;render(true);renderHist()}
 for(const d of DAYS)for(const e of PLAN[d].ex)if(!CATALOG[e.k])CATALOG[e.k]={k:e.k,n:e.n,g:"Własne",s:e.s,r:e.r,m:e.m};
 function edRender(){
   $("edTabs").innerHTML=Object.keys(ed).map(d=>'<button data-ed="'+d+'" aria-pressed="'+(d===edDay)+'">Trening '+d+'</button>').join("");
@@ -906,6 +918,61 @@ $("edDelDay").onclick=()=>{const b=$("edDelDay");if(b.dataset.armed!=="1"){b.dat
 $("edReset").onclick=()=>{const b=$("edReset");if(b.dataset.armed!=="1"){b.dataset.armed="1";b.textContent="Na pewno? Kliknij ponownie";return}b.dataset.armed="";b.textContent="Przywróć plan startowy";ed=JSON.parse(JSON.stringify(PLAN_DEFAULT));edDay=Object.keys(ed)[0];edRender()};
 $("edSave").onclick=()=>{edPull();for(const d of Object.keys(ed)){ed[d].ex=ed[d].ex.filter(e=>e.n);if(!ed[d].ex.length){toast("Trening "+d+" nie ma ćwiczeń. Dodaj ćwiczenie albo usuń trening.");edDay=d;edRender();return}}
   const sorted={};for(const d of Object.keys(ed).sort())sorted[d]=ed[d];$("edSheet").hidden=true;ed=null;applyPlan(sorted,true);toast("Plan zapisany.",true)};
+/* --- kopia w chmurze (Google Apps Script) --- */
+const CLOUD_URL=""; // adres wdrożonego skryptu Google (…/exec)
+SNAP_SKIP.add("gora_cloud");SNAP_SKIP.add("gora_cloudst");
+let cloud=Object.assign({on:false,pin:""},ls.get("gora_cloud")||{});
+let cst=Object.assign({last:0,pending:false,err:""},ls.get("gora_cloudst")||{});
+let cloudBusy=false,cloudAgain=false;
+function saveCloud(){ls.set("gora_cloud",cloud);ls.set("gora_cloudst",cst)}
+function fmtShort(ts){const d=new Date(ts);return String(d.getDate()).padStart(2,"0")+"."+String(d.getMonth()+1).padStart(2,"0")+", "+String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0")}
+async function cloudPost(body,ms){const ctl=new AbortController();const t=setTimeout(()=>ctl.abort(),ms||25000);
+  try{const r=await fetch(CLOUD_URL,{method:"POST",body:JSON.stringify(body),redirect:"follow",signal:ctl.signal});const j=await r.json();return j}finally{clearTimeout(t)}}
+function renderCloud(){const box=$("cloudBox");box.hidden=!CLOUD_URL;if(!CLOUD_URL)return;
+  $("cloudOn").checked=cloud.on||!$("cloudPinBox").hidden;
+  const st=$("cloudSt");let t="",cls="";
+  if(!cloud.on)t=!$("cloudPinBox").hidden?"Wpisz PIN i kliknij „Połącz”.":"Wyłączona – nic nie jest wysyłane.";
+  else if(cloudBusy){t="⏳ Wysyłam kopię…"}
+  else if(cst.err==="pin"){t="⚠ PIN nie pasuje. Wpisz go ponownie.";cls="bad";$("cloudPinBox").hidden=false}
+  else if(cst.pending){t=navigator.onLine===false?"⏳ Brak internetu – kopia wyśle się sama, gdy wróci sieć.":"⏳ Kopia czeka na wysłanie"+(cst.err?" (ostatnia próba nieudana)":"")+".";cls="wait"}
+  else if(cst.last){t="✓ Kopia w chmurze aktualna ("+fmtShort(cst.last)+").";cls="good"}
+  else t="✓ Połączono z chmurą.";
+  st.textContent=t;st.className="cloudst "+cls;$("cloudNow").hidden=!(cloud.on&&cst.pending&&!cloudBusy)}
+function cloudDirty(){if(!cloud.on||!CLOUD_URL)return;cst.pending=true;saveCloud();cloudSync()}
+async function cloudSync(quiet){if(!cloud.on||!CLOUD_URL||!cst.pending)return renderCloud();if(cloudBusy){cloudAgain=true;return}
+  if(!sessions.length){cst.pending=false;saveCloud();return renderCloud()}
+  cloudBusy=true;renderCloud();
+  try{const j=await cloudPost({pin:cloud.pin,action:"save",snapshot:snapshot()},60000);
+    if(j&&j.ok){cst={last:Date.now(),pending:false,err:""};if(!quiet)toast("☁ Kopia w chmurze zaktualizowana.",true)}
+    else{cst.err=j&&j.error==="pin"?"pin":"server";if(cst.err==="pin")toast("☁ PIN do chmury nie pasuje – sprawdź go w sekcji Kopia zapasowa.")}}
+  catch(e){cst.err="net"}
+  cloudBusy=false;saveCloud();renderCloud();bkCheck();
+  if(cloudAgain){cloudAgain=false;if(cst.pending)cloudSync(true)}}
+$("cloudOn").onchange=()=>{const on=$("cloudOn").checked;
+  if(on){if(cloud.pin){cloud.on=true;cst.err="";saveCloud();renderCloud();cloudCheckRemote()}else{$("cloudPinBox").hidden=false;$("cloudPin").focus();renderCloud()}}
+  else{cloud.on=false;cst.pending=false;cst.err="";$("cloudPinBox").hidden=true;saveCloud();renderCloud();bkCheck();toast("☁ Kopia w chmurze wyłączona. Nic nie będzie wysyłane.")}};
+$("cloudConnect").onclick=async()=>{const pin=$("cloudPin").value.trim();if(!pin){toast("Wpisz PIN.");return}
+  const b=$("cloudConnect");b.disabled=true;b.textContent="Sprawdzam…";
+  try{const j=await cloudPost({pin,action:"ping"});if(j&&j.ok){cloud={on:true,pin};cst.err="";$("cloudPinBox").hidden=true;$("cloudPin").value="";saveCloud();toast("☁ Połączono z chmurą.",true);await cloudCheckRemote()}else toast("Ten PIN nie pasuje. Sprawdź go u Damiana.")}
+  catch(e){toast("Brak połączenia z chmurą. Sprawdź internet i spróbuj ponownie.")}
+  b.disabled=false;b.textContent="Połącz";renderCloud()};
+async function cloudCheckRemote(){
+  if(sessions.length){cst.pending=true;saveCloud();return cloudSync()}
+  try{const j=await cloudPost({pin:cloud.pin,action:"list"});if(j&&j.ok&&j.items&&j.items.length){showCloudList(j.items,"W chmurze są kopie Twoich treningów. Ten telefon jest pusty – wybierz kopię, żeby je przywrócić:")}}catch(e){}renderCloud()}
+function showCloudList(items,head){const el=$("cloudList");el.hidden=false;
+  el.innerHTML='<div class="hint">'+esc(head)+'</div>'+items.slice(0,30).map((it,i)=>{const m=/-(\d+)tr\.json$/.exec(it.name||"");return'<button class="mini" data-cid="'+esc(it.id)+'">'+(i===0?'<b>Najnowsza</b> · ':'')+esc(fmtTs(it.date))+(m?' · '+m[1]+' '+plTr(+m[1]):'')+'</button>'}).join("")+'<button class="mini" id="cloudListX">Zamknij</button>';
+  el.querySelectorAll("[data-cid]").forEach(b=>b.onclick=async()=>{b.disabled=true;b.textContent="Pobieram…";
+    try{const j=await cloudPost({pin:cloud.pin,action:"get",id:b.dataset.cid},60000);if(j&&j.ok&&j.content){el.hidden=true;importBackup(j.content)}else toast("Nie udało się pobrać tej kopii.")}catch(e){toast("Brak połączenia z chmurą.")}
+    b.disabled=false});
+  $("cloudListX").onclick=()=>{el.hidden=true}}
+$("cloudRestore").onclick=async()=>{if(!cloud.pin){$("cloudPinBox").hidden=false;$("cloudPin").focus();toast("Najpierw wpisz PIN do chmury i kliknij „Połącz”.");return}
+  const b=$("cloudRestore");b.disabled=true;b.textContent="Pobieram listę…";
+  try{const j=await cloudPost({pin:cloud.pin,action:"list"});if(j&&j.ok){if(j.items&&j.items.length)showCloudList(j.items,"Wybierz kopię do przywrócenia (najnowsze na górze):");else toast("W chmurze nie ma jeszcze żadnej kopii.")}else toast(j&&j.error==="pin"?"PIN nie pasuje.":"Chmura nie odpowiada. Spróbuj za chwilę.")}
+  catch(e){toast("Brak połączenia z chmurą. Sprawdź internet.")}
+  b.disabled=false;b.textContent="Przywróć z chmury"};
+$("cloudNow").onclick=()=>cloudSync();
+window.addEventListener("online",()=>cloudSync(true));
+document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible")cloudSync(true)});
 $("restX").onclick=()=>{clearInterval(restIv);$("rest").hidden=true};
 $("restPlus").onclick=()=>{restEnd=Math.max(restEnd,Date.now())+30000;clearInterval(restIv);tick();restIv=setInterval(tick,250)};
 $("rirClose").onclick=()=>{$("rirSheet").hidden=true};
@@ -925,6 +992,7 @@ function pickStart(){
 }
 $("date").value=today();pullStage=ls.get("gora_pull")||0;
 sessions=(ls.get("gora_sessions")||[]).map(s=>Object.assign(s,{local:true}));sortS();pickStart();render(true);renderHist();
+try{renderCloud();cloudSync(true)}catch(e){}
 
 $("storeInfo").textContent="2 treningi w tygodniu · A / B · zapis w tej przeglądarce";
 </script>
