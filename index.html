@@ -919,7 +919,7 @@ $("edReset").onclick=()=>{const b=$("edReset");if(b.dataset.armed!=="1"){b.datas
 $("edSave").onclick=()=>{edPull();for(const d of Object.keys(ed)){ed[d].ex=ed[d].ex.filter(e=>e.n);if(!ed[d].ex.length){toast("Trening "+d+" nie ma ćwiczeń. Dodaj ćwiczenie albo usuń trening.");edDay=d;edRender();return}}
   const sorted={};for(const d of Object.keys(ed).sort())sorted[d]=ed[d];$("edSheet").hidden=true;ed=null;applyPlan(sorted,true);toast("Plan zapisany.",true)};
 /* --- kopia w chmurze (Google Apps Script) --- */
-const CLOUD_URL=""; // adres wdrożonego skryptu Google (…/exec)
+const CLOUD_URL="https://script.google.com/macros/s/AKfycbzzzjP1Do6FjKgOA32tp6YX6x52G4By6UHoqB8Yyvd2jz6Jgi95mdhGZM4YsY7cg8MGVA/exec"; // adres wdrożonego skryptu Google
 SNAP_SKIP.add("gora_cloud");SNAP_SKIP.add("gora_cloudst");
 let cloud=Object.assign({on:false,pin:""},ls.get("gora_cloud")||{});
 let cst=Object.assign({last:0,pending:false,err:""},ls.get("gora_cloudst")||{});
