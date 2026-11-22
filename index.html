@@ -148,7 +148,7 @@ summary span{font-family:var(--f-mono);font-weight:500;font-size:12px;color:var(
 .ex.lite.dyn{border-left-color:var(--accent)}
 .lsets{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.lsets .ok{width:44px;font-family:var(--f-mono);font-size:14px}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
-html,body{margin:0}img{max-width:100%}[hidden]{display:none!important}:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html,body{margin:0}.bkwarn{background:var(--accent);color:var(--accent-fg);border-radius:10px;padding:10px 12px;font-size:14px;font-weight:500}img{max-width:100%}[hidden]{display:none!important}:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 </style>
 </head><body>
 
@@ -201,6 +201,7 @@ html,body{margin:0}img{max-width:100%}[hidden]{display:none!important}:root{padd
 
   <section class="ex plain">
     <div class="exh"><span class="exn">Kopia zapasowa</span></div>
+    <div class="bkwarn" id="bkWarn" hidden></div>
     <div class="hint">Treningi zapisują się tylko w tej przeglądarce. Wyczyszczenie danych przeglądarki albo zmiana telefonu je kasuje, więc co jakiś czas zrób kopię.</div>
     <div class="tools"><button class="mini plus" id="bkFile">Pobierz plik</button><button class="mini" id="bkCopy">Skopiuj do schowka</button><button class="mini" id="bkShow">Wczytaj kopię</button></div>
     <div class="field" id="bkBox" hidden><label class="lbl" for="bkIn">Wklej kopię albo wybierz plik</label><textarea id="bkIn" rows="3"></textarea><input type="file" id="bkFileIn" accept=".json,application/json,text/plain"><button class="mini plus" id="bkLoad">Wczytaj</button></div>
@@ -586,7 +587,7 @@ $("save").onclick=async()=>{
   $("save").disabled=false;$("save").textContent="Zapisz sesję";
 };
 
-function renderHist(){
+function renderHist(){setTimeout(()=>{try{bkCheck()}catch(e){}},0);
   const h=$("hist");h.innerHTML="";
   if(!sessions.length){h.innerHTML='<div class="hint">Tu pojawią się zapisane sesje.</div>';return}
   for(const s of sessions.slice(0,40)){
@@ -650,14 +651,19 @@ async function ask(id,btn){
 }
 
 function backupJSON(){return JSON.stringify({app:"gora-ciala",v:1,exported:new Date().toISOString(),sessions:sessions.map(x=>{const c=Object.assign({},x);delete c.local;return c})})}
-$("bkFile").onclick=()=>{try{const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([backupJSON()],{type:"application/json"}));a.download="trening-kopia-"+today()+".json";document.body.append(a);a.click();a.remove();toast("Pobrano plik z kopią.",true)}catch(e){toast("Nie udało się pobrać. Użyj „Skopiuj do schowka”.")}};
-$("bkCopy").onclick=()=>{const t=backupJSON();navigator.clipboard&&navigator.clipboard.writeText(t).then(()=>toast("Skopiowano. Wklej np. do notatek albo maila do siebie.",true)).catch(()=>{$("bkBox").hidden=false;$("bkIn").value=t;$("bkIn").select();toast("Zaznaczyłem kopię – skopiuj ją ręcznie.")})||($("bkBox").hidden=false,$("bkIn").value=t,$("bkIn").select())};
+$("bkFile").onclick=()=>{try{const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([backupJSON()],{type:"application/json"}));a.download="trening-kopia-"+today()+".json";document.body.append(a);a.click();a.remove();toast("Pobrano plik z kopią.",true);bkDone()}catch(e){toast("Nie udało się pobrać. Użyj „Skopiuj do schowka”.")}};
+$("bkCopy").onclick=()=>{const t=backupJSON();navigator.clipboard&&navigator.clipboard.writeText(t).then(()=>(toast("Skopiowano. Wklej np. do notatek albo maila do siebie.",true),bkDone())).catch(()=>{$("bkBox").hidden=false;$("bkIn").value=t;$("bkIn").select();toast("Zaznaczyłem kopię – skopiuj ją ręcznie.")})||($("bkBox").hidden=false,$("bkIn").value=t,$("bkIn").select())};
 if(window.claude)$("bkFile").hidden=true;
 $("bkShow").onclick=()=>{$("bkBox").hidden=!$("bkBox").hidden};
 $("bkFileIn").onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{$("bkIn").value=r.result};r.readAsText(f)};
 $("bkLoad").onclick=()=>{try{const d=JSON.parse($("bkIn").value);const list=Array.isArray(d)?d:d.sessions;if(!Array.isArray(list))throw 0;
   const have=new Set(sessions.map(x=>x.created));let n=0;for(const x of list){if(x&&x.created&&!have.has(x.created)&&Array.isArray(x.ex)){x.local=true;x.id=x.id||"loc"+x.created;sessions.push(x);n++}}
   ls.set("gora_sessions",sessions);sortS();render();renderHist();$("bkIn").value="";$("bkBox").hidden=true;toast("Wczytano "+n+" treningów.",true)}catch(e){toast("To nie wygląda na kopię z tej aplikacji.")}};
+function bkCheck(){const last=ls.get("gora_lastbk")||0;const newer=sessions.filter(x=>(x.created||0)>last).length;const days=last?Math.floor((Date.now()-last)/864e5):null;
+  const w=$("bkWarn");if(newer>=2||(newer>0&&days!==null&&days>=14)){w.hidden=false;w.textContent=newer+" "+(newer===1?"trening nie ma":"treningi nie mają")+" kopii zapasowej"+(days!==null?" (ostatnia "+days+" dni temu)":"")+". Pobierz plik poniżej.";}else w.hidden=true;
+  const sec=w.closest("section");if(!w.hidden&&!$("bkTop")){const t=document.createElement("button");t.id="bkTop";t.className="bkwarn";t.style.border="0";t.style.width="100%";t.style.cursor="pointer";t.textContent="Zrób kopię zapasową treningów →";t.onclick=()=>sec.scrollIntoView({block:"center"});document.querySelector(".wrap header").after(t)}else if(w.hidden&&$("bkTop"))$("bkTop").remove()}
+function bkDone(){ls.set("gora_lastbk",Date.now());bkCheck()}
+try{navigator.storage&&navigator.storage.persist&&navigator.storage.persist()}catch(e){}
 $("restX").onclick=()=>{clearInterval(restIv);$("rest").hidden=true};
 $("restPlus").onclick=()=>{restEnd=Math.max(restEnd,Date.now())+30000;clearInterval(restIv);tick();restIv=setInterval(tick,250)};
 $("rirClose").onclick=()=>{$("rirSheet").hidden=true};
