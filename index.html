@@ -1,6 +1,7 @@
 <!doctype html>
 <html lang="pl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Plan Michała – góra ciała</title>
+<link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="icon-180.png"><link rel="icon" href="icon-192.png"><meta name="theme-color" content="#c2410c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Trening">
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap">
 <style>
@@ -122,6 +123,7 @@ summary span{font-family:var(--f-mono);font-weight:500;font-size:12px;color:var(
 .rest.go .pill{border-color:#fff}
 .fab{flex:none}
 .sheet{position:fixed;left:0;right:0;bottom:0;max-width:560px;margin:0 auto;max-height:80%;overflow-y:auto;z-index:8;border-radius:14px 14px 0 0;border-bottom:0;box-shadow:0 -8px 30px rgba(0,0,0,.25);padding:14px max(16px,env(safe-area-inset-right,0px)) calc(14px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+#saveSheet{display:flex;flex-direction:column;gap:10px}
 .sheet.chat{display:flex;flex-direction:column;gap:8px}
 .toast{position:fixed;left:16px;right:16px;margin:0 auto;width:fit-content;bottom:calc(70px + env(safe-area-inset-bottom,0px));z-index:7;background:var(--fg);color:var(--bg);padding:10px 14px;border-radius:10px;font-size:14px;max-width:520px;text-align:center}
 .toast.ok{background:var(--ok);color:#fff}
@@ -203,12 +205,20 @@ html,body{margin:0}.bkwarn{background:var(--accent);color:var(--accent-fg);borde
     <div class="exh"><span class="exn">Kopia zapasowa</span></div>
     <div class="bkwarn" id="bkWarn" hidden></div>
     <div class="hint">Treningi zapisują się tylko w tej przeglądarce. Wyczyszczenie danych przeglądarki albo zmiana telefonu je kasuje, więc co jakiś czas zrób kopię.</div>
-    <div class="tools"><button class="mini plus" id="bkFile">Pobierz plik</button><button class="mini" id="bkShare" hidden>Wyślij na Dysk / mailem</button><button class="mini" id="bkCopy">Skopiuj do schowka</button><button class="mini" id="bkShow">Wczytaj kopię</button></div>
+    <div class="tools"><button class="mini plus" id="bkFile">Pobierz plik</button><button class="mini" id="bkShare" hidden>Wyślij na Dysk / mailem</button><button class="mini" id="bkCopy">Skopiuj do schowka</button><button class="mini" id="bkShow">Wczytaj kopię</button><button class="mini" id="bkPick" hidden>Ustaw stały plik kopii</button></div>
+    <div class="hint" id="bkPickInfo" hidden></div>
     <div class="field" id="bkBox" hidden><label class="lbl" for="bkIn">Wklej kopię albo wybierz plik</label><textarea id="bkIn" rows="3"></textarea><input type="file" id="bkFileIn" accept=".json,application/json,text/plain"><button class="mini plus" id="bkLoad">Wczytaj</button></div>
   </section>
 </div>
 
 <div class="toast" id="toast" hidden role="status"></div>
+<section class="sheet" id="saveSheet" hidden aria-labelledby="ssT">
+  <div class="exh"><b id="ssT">Sesja zapisana ✓</b><button class="mini" id="ssLater">Później</button></div>
+  <p id="ssTxt">Zapisz kopię zapasową, żeby nie stracić postępów, jeśli wyczyścisz dane przeglądarki albo zmienisz telefon.</p>
+  <button class="save" id="ssFile">⬇ Zapisz kopię w telefonie</button>
+  <button class="mini plus" id="ssShare" hidden>Wyślij kopię na Dysk / mailem</button>
+  <p class="hint">Plik trafi do folderu Pobrane. Do odtworzenia wystarczy najnowszy plik: Kopia zapasowa → Wczytaj kopię.</p>
+</section>
 <div class="bar">
   <div class="barin">
     <span id="sumTxt">0/0 serii</span>
@@ -434,9 +444,10 @@ const INFO={
  pushup:["hpush","Klatka, triceps","Ciało w linii","Klatka prawie do podłogi","Łokcie ok. 45°"]
 };
 const ERR={chinup:"Bujanie i skrócony zakres na dole",skull:"Ruch w barkach zamiast samych łokci",bbcurl:"Bujanie tułowiem i odchodzące łokcie",hangraise:"Bujanie się i praca samymi biodrami",dbrdl:"Zginanie kolan jak w przysiadzie zamiast cofania bioder",dbohp:"Odrywanie pleców od oparcia",goblet:"Pochylanie tułowia i opadanie łokci",plank:"Biodra za wysoko lub zapadnięte lędźwie",squat:"Pięty odrywają się od podłogi albo kolana uciekają do środka",bench:"Odbijanie sztangi od klatki i łokcie rozłożone na 90°",dbrow:"Szarpanie tułowiem zamiast pracy pleców",legcurl:"Biodra unoszą się z maszyny",latraise:"Bujanie tułowiem i unoszenie barków do uszu",calf:"Sprężynowanie bez pauzy i bez pełnego zakresu",rdl:"Zaokrąglone plecy i sztanga oddalająca się od nóg",pull:"Kipping i skrócony zakres",ohp:"Przeprost w lędźwiach zamiast napiętego brzucha",lunge:"Kolano przedniej nogi zapada się do środka",dips:"Barki unoszą się do uszu, za głębokie zejście",core:"Zapadanie się lędźwi",bss:"Za krótki rozstaw, kolano daleko przed palcami",incline:"Za stromy kąt ławki – praca przejdzie na barki",bbrow:"Prostowanie tułowia przy każdym powtórzeniu",thrust:"Przeprost lędźwi zamiast wyprostu bioder",facepull:"Zbyt duży ciężar i ciągnięcie samymi rękami",farmer:"Przechylanie się na bok",pallof:"Obrót tułowia w stronę wyciągu",dl:"Sztanga odjeżdża od nóg, biodra wstają szybciej niż barki",legpress:"Odrywanie lędźwi od oparcia na dole",latpd:"Odchylanie się do tyłu i ciągnięcie za kark",cablerow:"Bujanie tułowiem",stepdown:"Opadnięcie zamiast kontrolowanego zejścia",nordic:"Zgięcie w biodrach",tib:"Za mały zakres",curl:"Wymach z bioder",pushdown:"Łokcie odjeżdżają od tułowia",fly:"Proste łokcie i zbyt głęboki zakres",pushup:"Opadające biodra"};
-const WHY={incline:"Bez regulacji skosu? Rób wyciskanie hantli na płasko.",chestrow:"Plecy bez obciążania lędźwi",pull:"Za trudne? Zrób negatywy: wskakujesz na górę i opuszczasz się 3–5 s.",chinup:"Za trudne? Zrób negatywy: wskakujesz na górę i opuszczasz się 3–5 s.",mbchest:"Szybkość pchania – przenosi się na prosty cios",mbslam:"Moc całego ciała i brzuch",pogo:"Sprężyste ścięgna – lepsza ekonomia biegu",boxjump:"Moc odbicia pod podbiegi",mbrot:"Rotacja z bioder – podstawa mocnego ciosu",lmpunch:"Najbliżej mechaniki ciosu",kbswing:"Wybuchowy wyprost bioder",broadjump:"Moc nóg i odbicia",copen:"Stabilne biodro i kolano w terenie",woodchop:"Siła rotacji do boksu",slcalf:"Ochrona Achillesa przed sezonem biegowym",tib:"Ochrona piszczeli przy bieganiu",chestrow:"Plecy bez obciążania lędźwi",thrust:"Pośladki bez obciążania kręgosłupa",dbrdl:"Uczy zawiasu biodrowego – podstawa pod martwy ciąg i zbiegi",goblet:"Najprostszy wariant przysiadu – hantel sam pilnuje pozycji",latpd:"Przygotowanie do podciągania – ten sam ruch, dobierasz ciężar",dbohp:"Barki bez obciążania lędźwi",squat:"Najważniejsze ćwiczenie na siłę nóg i pod podbiegi",rdl:"Tylna taśma – dwugłowe i pośladki, ochrona przy zbiegach",thrust:"Siła wyprostu bioder, mocne pośladki w podbiegu",bss:"Siła jednonóż i stabilizacja kolana",lunge:"Praca jednonóż jak w biegu",farmer:"Chwyt i core – przydatne przy kijach",calf:"Łydki i ścięgno Achillesa pod biegi",pull:"Siła pleców; postęp mierzysz etapami"};
-function restOf(e){if(e.ss)return 75;return e.m?150:90;return e.m?150:(["farmer","plank","pallof","core","calf","tib","latraise","facepull"].includes(e.k)?45:75)}
+const WHY={mbchest:"Szybkość pchania – przenosi się na prosty cios",mbslam:"Moc całego ciała i brzuch",pogo:"Sprężyste ścięgna – lepsza ekonomia biegu",boxjump:"Moc odbicia pod podbiegi",mbrot:"Rotacja z bioder – podstawa mocnego ciosu",lmpunch:"Najbliżej mechaniki ciosu",kbswing:"Wybuchowy wyprost bioder",broadjump:"Moc nóg i odbicia",copen:"Stabilne biodro i kolano w terenie",woodchop:"Siła rotacji do boksu",slcalf:"Ochrona Achillesa przed sezonem biegowym",tib:"Ochrona piszczeli przy bieganiu",chestrow:"Plecy bez obciążania lędźwi",thrust:"Pośladki bez obciążania kręgosłupa",dbrdl:"Uczy zawiasu biodrowego – podstawa pod martwy ciąg i zbiegi",goblet:"Najprostszy wariant przysiadu – hantel sam pilnuje pozycji",latpd:"Przygotowanie do podciągania – ten sam ruch, dobierasz ciężar",dbohp:"Barki bez obciążania lędźwi",squat:"Najważniejsze ćwiczenie na siłę nóg i pod podbiegi",rdl:"Tylna taśma – dwugłowe i pośladki, ochrona przy zbiegach",thrust:"Siła wyprostu bioder, mocne pośladki w podbiegu",bss:"Siła jednonóż i stabilizacja kolana",lunge:"Praca jednonóż jak w biegu",farmer:"Chwyt i core – przydatne przy kijach",calf:"Łydki i ścięgno Achillesa pod biegi",pull:"Siła pleców; postęp mierzysz etapami"};
+function restOf(e){return e.m?150:90}
 for(const x of LIB)if(!INFO[x[0]])INFO[x[0]]=[x[3],x[7],x[8],x[9]];
+Object.assign(WHY,{incline:"Bez regulacji skosu? Rób wyciskanie hantli na płasko.",chestrow:"Plecy bez obciążania lędźwi",pull:"Za trudne? Zrób negatywy: wskakujesz na górę i opuszczasz się 3–5 s.",chinup:"Za trudne? Zrób negatywy: wskakujesz na górę i opuszczasz się 3–5 s."});
 const RIRT={2:"1–2",1:"1–2",1:"2–3",2:"1–2",3:"1–2",4:"1–2",5:"1–2",6:"1–2",7:"1–2",8:"4"};
 const BIG=new Set(["squat","rdl","dl","legpress","thrust","hacksquat","smithsquat","frontsquat"]);
 const DB=new Set(["skull","ohext","reversefly","dbrow","dbrdl","dbohp","lunge","incline","farmer","dbbench","arnold","chestrow","hammer","curl","stepup","revlunge","bss","latraise","suitcase","stepdown"]);
@@ -446,12 +457,14 @@ function num(v){return parseFloat(String(v==null?"":v).replace(",","."))||0}
 function unitOf(ex){return ex.unit||(/\ds?\s*s\b/.test(ex.r)?"s":/\dm?\s*m\b/.test(ex.r)?"m":"powt.")}
 function suggest(ex,prev){
   if(!prev||ex.pull)return"";const t=topRep(ex.r);if(!t)return"";
+  const need=WEEK[week].f(ex.s);const pl=v=>String(v).replace('.',',');
+  if(BW.has(ex.k)){const rs=prev.e.sets.filter(x=>x.r);if(!rs.length||rs.some(x=>num(x.kg)))0;else{return rs.length>=need&&rs.every(x=>(parseInt(x.r)||0)>=t)?'<div class="sug up">Wszystkie serie na górze zakresu → dodaj obciążenie (pas, hantel między nogami) albo wolniejsze opuszczanie</div>':'<div class="sug">Cel: '+t+' powtórzeń w każdej serii</div>'}}
   const ws=prev.e.sets.filter(x=>x.kg);if(!ws.length)return"";
   const kg=Math.max(...ws.map(x=>num(x.kg)));if(!kg)return"";
-  const all=ws.every(x=>(parseInt(x.r)||0)>=t);
-  if(week===NWEEK)return'<div class="sug">Deload: ok. '+r25(kg*0.9)+' kg, połowa serii</div>';
-  if(all)return'<div class="sug up">Wszystkie serie na górze zakresu → dziś '+(DB.has(ex.k)?'cięższe hantle (następne po '+kg+' kg)':(kg+(BIG.has(ex.k)?5:2.5))+' kg')+'</div>';
-  return'<div class="sug">Zostań przy '+kg+' kg i dołóż powtórzenia (cel: '+t+' w każdej serii)</div>';
+  const all=ws.length>=need&&ws.every(x=>(parseInt(x.r)||0)>=t);
+  if(week===NWEEK)return'<div class="sug">Deload: ok. '+pl(r25(kg*0.9))+' kg, połowa serii</div>';
+  if(all)return'<div class="sug up">Wszystkie serie na górze zakresu → dziś '+(DB.has(ex.k)?'cięższe hantle (następne po '+pl(kg)+' kg)':pl(kg+(BIG.has(ex.k)?5:2.5))+' kg')+'</div>';
+  return'<div class="sug">Zostań przy '+pl(kg)+' kg i dołóż powtórzenia (cel: '+t+' w każdej serii)</div>';
 }
 const PULL=["1 · ściąganie 3×8–12 + negatywy 3×3","2 · guma / maszyna 3×6–8","3 · podciąganie 3–5×1–3","4 · podciąganie 3×6–10"];
 const WEEK={1:{t:"",f:s=>s},2:{t:"",f:s=>s}};const NWEEK=99;
@@ -495,7 +508,7 @@ function renderSeg(){
 }
 function renderWeeks(){
   $("weeks").innerHTML="";
-  for(let w=1;w<=NWEEK;w++){const b=document.createElement("button");b.textContent="T"+w;b.setAttribute("aria-pressed",w===week);b.onclick=()=>{week=w;ls.set("gora_weekm",{w,ts:Date.now()});render()};$("weeks").append(b)}
+  for(let w=1;w<=0;w++){const b=document.createElement("button");b.textContent="T"+w;b.setAttribute("aria-pressed",w===week);b.onclick=()=>{week=w;ls.set("gora_weekm",{w,ts:Date.now()});render()};$("weeks").append(b)}
   $("weekHint").textContent=WEEK[week].t;
 }
 function renderEx(fromDraft){
@@ -504,7 +517,7 @@ function renderEx(fromDraft){
   const list=exList();const used=new Set(list.map(e=>e.k));
   const wl=(WARM[day]||[]).map(w=>w==="ROPE"?W.rope():w);const wd=wl.filter((w,i)=>st.done["wu_"+i]).length;
   const wu=document.createElement("details");wu.className="wup";if(st.wuOpen)wu.open=true;
-  wu.innerHTML='<summary><span><b>Rozgrzewka</b> · 8–10 min</span><span class="wcount">'+wd+'/'+wl.length+'</span></summary><ol class="wlist">'+wl.map((w,i)=>'<li><div class="wfig">'+(FIG[w.f]||"")+'</div><div class="wtxt"><div class="wn">'+w.n+' <span class="wd">'+w.d+'</span></div><div class="wc">'+w.c+'</div></div><button class="ok" data-wu="'+i+'" aria-pressed="'+(!!st.done["wu_"+i])+'" aria-label="Zrobione">✓</button></li>').join("")+'</ol>';
+  wu.innerHTML='<summary><span><b>Rozgrzewka</b> · 5–7 min</span><span class="wcount">'+wd+'/'+wl.length+'</span></summary><ol class="wlist">'+wl.map((w,i)=>'<li><div class="wfig">'+(FIG[w.f]||"")+'</div><div class="wtxt"><div class="wn">'+w.n+' <span class="wd">'+w.d+'</span></div><div class="wc">'+w.c+'</div></div><button class="ok" data-wu="'+i+'" aria-pressed="'+(!!st.done["wu_"+i])+'" aria-label="Zrobione">✓</button></li>').join("")+'</ol>';
   wu.addEventListener("toggle",()=>{st.wuOpen=wu.open;persist()});
   box.append(wu);
   const SECT={dyn:["Dynamika","na świeżo, każde powtórzenie na 100% szybkości, pełna przerwa 60–90 s"],str:["Ćwiczenia","złożone: przerwa 2–3 min · izolacje: 60–120 s · zostaw 1–2 powtórzenia w zapasie"],core:["Core","spokojnie, kontrola ruchu, przerwa 30–45 s"]};let lastKind=null;
@@ -583,7 +596,7 @@ $("save").onclick=async()=>{
   clearInterval(restIv);$("rest").hidden=true;
   day=NEXT[s.day]||"A";week=2;
   render(true);renderHist();window.scrollTo({top:0});
-  toast(cloud?"Zapisano: "+dl(s.day)+" "+PLAN[s.day].sub+", "+fmtDate(s.date)+".":"Zapisano na tym urządzeniu. Do chmury trafi przy następnym otwarciu.",true);
+  afterSave(s);
   $("save").disabled=false;$("save").textContent="Zapisz sesję";
 };
 
@@ -667,6 +680,26 @@ function bkCheck(){const last=ls.get("gora_lastbk")||0;const newer=sessions.filt
   const sec=w.closest("section");if(!w.hidden&&$("bkTop"))$("bkTop").textContent="⬇ Zapisz kopię zapasową ("+newer+" bez kopii)";if(!w.hidden&&!$("bkTop")){const t=document.createElement("button");t.id="bkTop";t.className="bkwarn";t.style.border="0";t.style.width="100%";t.style.cursor="pointer";t.textContent="⬇ Zapisz kopię zapasową ("+newer+" bez kopii)";t.onclick=()=>$("bkFile").click();document.querySelector(".wrap header").after(t)}else if(w.hidden&&$("bkTop"))$("bkTop").remove()}
 function bkDone(){ls.set("gora_lastbk",Date.now());bkCheck()}
 try{navigator.storage&&navigator.storage.persist&&navigator.storage.persist()}catch(e){}
+/* --- kopia po sesji + stały plik (Chrome/Edge na komputerze) --- */
+const fsOK=!!window.showSaveFilePicker;let fh=null;
+function idb(){return new Promise((res,rej)=>{const r=indexedDB.open("gora_fs",1);r.onupgradeneeded=()=>r.result.createObjectStore("h");r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)})}
+async function idbGet(){try{const d=await idb();return await new Promise(r=>{const q=d.transaction("h").objectStore("h").get("file");q.onsuccess=()=>r(q.result||null);q.onerror=()=>r(null)})}catch(e){return null}}
+async function idbSet(v){try{const d=await idb();d.transaction("h","readwrite").objectStore("h").put(v,"file")}catch(e){}}
+async function writeFixed(ask){if(!fh)return false;try{let p=await fh.queryPermission({mode:"readwrite"});if(p!=="granted"&&ask)p=await fh.requestPermission({mode:"readwrite"});if(p!=="granted")return false;const w=await fh.createWritable();await w.write(backupJSON());await w.close();bkDone();return true}catch(e){return false}}
+function showPick(){$("bkPickInfo").hidden=!fh;if(fh)$("bkPickInfo").textContent="Stały plik kopii: "+fh.name+" – aktualizuje się po każdym zapisie sesji.";$("bkPick").textContent=fh?"Zmień plik kopii":"Ustaw stały plik kopii"}
+if(fsOK){$("bkPick").hidden=false;idbGet().then(h=>{fh=h;showPick()});
+  $("bkPick").onclick=async()=>{try{fh=await window.showSaveFilePicker({suggestedName:"trening-kopia.json",types:[{description:"Kopia treningów",accept:{"application/json":[".json"]}}]});await idbSet(fh);showPick();if(await writeFixed(true))toast("Kopia zapisana. Od teraz plik aktualizuje się sam.",true)}catch(e){}}}
+async function afterSave(s){
+  const label="Trening "+s.day+", "+fmtDate(s.date);
+  if(fh&&await writeFixed(true)){toast("Zapisano: "+label+". Kopia zaktualizowana.",true);return}
+  toast("Zapisano: "+label+".",true);
+  const last=ls.get("gora_lastbk")||0;const newer=sessions.filter(x=>(x.created||0)>last).length;
+  $("ssTxt").textContent=newer+" "+(newer===1?"trening nie ma":newer<5?"treningi nie mają":"treningów nie ma")+" kopii zapasowej. Zapisz ją teraz – to jedno kliknięcie.";
+  $("ssShare").hidden=$("bkShare").hidden;$("saveSheet").hidden=false}
+$("ssLater").onclick=()=>{$("saveSheet").hidden=true};
+$("ssFile").onclick=()=>{$("bkFile").click();$("saveSheet").hidden=true};
+$("ssShare").onclick=()=>{$("bkShare").click();$("saveSheet").hidden=true};
+if("serviceWorker" in navigator&&location.protocol==="https:")navigator.serviceWorker.register("sw.js").catch(()=>{});
 $("restX").onclick=()=>{clearInterval(restIv);$("rest").hidden=true};
 $("restPlus").onclick=()=>{restEnd=Math.max(restEnd,Date.now())+30000;clearInterval(restIv);tick();restIv=setInterval(tick,250)};
 $("rirClose").onclick=()=>{$("rirSheet").hidden=true};
@@ -677,7 +710,7 @@ document.querySelectorAll("[data-q]").forEach(b=>b.onclick=()=>{$("qIn").value=b
 document.addEventListener("input",e=>{const t=e.target;if(!t||!t.id)return;
   if(t.closest("#exList")){const m=t.id.match(/^(.+)_kg_(\d+)$/);if(m)spread(m[1],+m[2]);updSum();persist()}
   else if(COMMON.includes(t.id))persist()});
-document.addEventListener("keydown",e=>{if(e.key==="Escape"){$("rirSheet").hidden=true;$("chatP").hidden=true}});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"){$("saveSheet").hidden=true;$("rirSheet").hidden=true;$("chatP").hidden=true}});
 
 function pickStart(){
   const wm=ls.get("gora_weekm");const lastTs=sessions[0]?sessions[0].created||0:0;
