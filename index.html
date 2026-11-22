@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="pl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Plan Michała – góra ciała</title>
-<link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="icon-180.png"><link rel="icon" href="icon-192.png"><meta name="theme-color" content="#c2410c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Trening">
+<title>Tytanowa siła</title>
+<link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="icon-180.png"><link rel="icon" href="icon-192.png"><meta name="theme-color" content="#c2410c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Tytanowa siła">
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap">
 <style>
@@ -150,7 +150,12 @@ summary span{font-family:var(--f-mono);font-weight:500;font-size:12px;color:var(
 .ex.lite.dyn{border-left-color:var(--accent)}
 .lsets{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.lsets .ok{width:44px;font-family:var(--f-mono);font-size:14px}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
-html,body{margin:0}.tgrid{display:grid;grid-template-columns:repeat(9,1fr);gap:4px}
+html,body{margin:0}.tip{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:50%;border:1.5px solid var(--accent);color:var(--accent);background:none;font:700 12px/1 var(--f-body);cursor:pointer;padding:0;margin-left:4px;vertical-align:middle;text-transform:none;letter-spacing:0;position:relative}
+.tip::after{content:"";position:absolute;inset:-10px}.tip.static{cursor:default}
+.h1row{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.welcome{border:1.5px solid var(--accent);gap:10px}.wsteps{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px;font-size:14px}
+.tipb{font-size:15px;line-height:1.5}#tipSheet{z-index:9}
+.secth b{display:flex;align-items:center}.tgrid{display:grid;grid-template-columns:repeat(9,1fr);gap:4px}
 .tgrid button{padding:7px 0;border:1px solid var(--line);background:var(--surface);color:var(--fg);border-radius:7px;font-family:var(--f-mono);font-size:12px;cursor:pointer;min-width:0}
 .tgrid button.done{background:var(--field)}.tgrid button.cur{border-color:var(--accent);color:var(--accent);font-weight:600}
 .tgrid button.fut{opacity:.4;cursor:default}.tgrid button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-fg)}
@@ -166,12 +171,24 @@ html,body{margin:0}.tgrid{display:grid;grid-template-columns:repeat(9,1fr);gap:4
 
 <div class="wrap">
   <header>
-    <h1>Góra ciała</h1>
+    <div class="h1row"><h1>Tytanowa siła</h1><button class="mini" id="howBtn">Jak to działa?</button></div>
     <div class="sub" id="storeInfo">2 treningi w tygodniu · A / B</div>
   </header>
 
+  <section class="ex plain welcome" id="welcome" hidden>
+    <div class="exh"><span class="exn">Witaj w Tytanowej sile 💪</span></div>
+    <ol class="wsteps">
+      <li><b>Wybierz trening</b> A albo B. Robisz je na zmianę, aplikacja sama podpowie następny.</li>
+      <li><b>Zrób rozgrzewkę</b> – rozwiń listę i odhaczaj kolejne punkty.</li>
+      <li><b>Wpisuj ciężar i powtórzenia</b> każdej serii i klikaj ✓. Ruszy minutnik przerwy.</li>
+      <li><b>Kliknij „Zapisz sesję”</b> na dole, a potem zapisz kopię zapasową.</li>
+    </ol>
+    <div class="hint">Nie wiesz, co coś znaczy? Kliknij <span class="tip static">?</span> obok.</div>
+    <button class="save" id="welcomeOk">Rozumiem, zaczynamy</button>
+  </section>
+
   <section class="sec">
-    <div class="lbl">Trening</div>
+    <div class="lbl">Trening <button class="tip" data-tip="day" aria-label="Wyjaśnienie">?</button></div>
     <div class="seg" id="seg"></div>
     <div class="hint" id="nextHint"></div>
   </section>
@@ -196,7 +213,7 @@ html,body{margin:0}.tgrid{display:grid;grid-template-columns:repeat(9,1fr);gap:4
   </section>
 
   <section class="ex plain">
-    <div class="exh"><span class="exn">Dane sesji</span></div>
+    <div class="exh"><span class="exn">Dane sesji <button class="tip" data-tip="data" aria-label="Wyjaśnienie">?</button></span></div>
     <div class="row2">
       <div class="field"><label class="lbl" for="date">Data</label><input type="date" id="date"></div>
       <div class="field"><label class="lbl" for="bw">Masa ciała (kg)</label><input id="bw" inputmode="decimal" placeholder="opcjonalnie"></div>
@@ -208,17 +225,17 @@ html,body{margin:0}.tgrid{display:grid;grid-template-columns:repeat(9,1fr);gap:4
   <button class="save" id="save">Zapisz sesję</button>
 
   <section class="sec">
-    <div class="lbl">Historia</div>
+    <div class="lbl">Historia <button class="tip" data-tip="hist" aria-label="Wyjaśnienie">?</button></div>
     <div class="hist" id="hist"><div class="hint">Wczytuję…</div></div>
   </section>
 
   <section class="sec">
-    <div class="lbl">Postępy</div>
+    <div class="lbl">Postępy <button class="tip" data-tip="prog" aria-label="Wyjaśnienie">?</button></div>
     <div class="prog" id="prog"></div>
   </section>
 
   <section class="ex plain">
-    <div class="exh"><span class="exn">Kopia zapasowa</span></div>
+    <div class="exh"><span class="exn">Kopia zapasowa <button class="tip" data-tip="backup" aria-label="Wyjaśnienie">?</button></span></div>
     <div class="bkwarn" id="bkWarn" hidden></div>
     <div class="hint">Treningi zapisują się tylko w tej przeglądarce. Wyczyszczenie danych przeglądarki albo zmiana telefonu je kasuje, więc co jakiś czas zrób kopię.</div>
     <div class="tools"><button class="mini plus" id="bkFile">Pobierz plik</button><button class="mini" id="bkShare" hidden>Wyślij na Dysk / mailem</button><button class="mini" id="bkCopy">Skopiuj do schowka</button><button class="mini" id="bkShow">Wczytaj kopię</button><button class="mini" id="bkPick" hidden>Ustaw stały plik kopii</button></div>
@@ -228,6 +245,10 @@ html,body{margin:0}.tgrid{display:grid;grid-template-columns:repeat(9,1fr);gap:4
 </div>
 
 <div class="toast" id="toast" hidden role="status"></div>
+<section class="sheet" id="tipSheet" hidden role="dialog" aria-labelledby="tipT">
+  <div class="exh"><b id="tipT"></b><button class="mini" id="tipX">Zamknij</button></div>
+  <div id="tipB" class="tipb"></div>
+</section>
 <section class="sheet" id="saveSheet" hidden aria-labelledby="ssT">
   <div class="exh"><b id="ssT">Sesja zapisana ✓</b><button class="mini" id="ssLater">Później</button></div>
   <p id="ssTxt">Zapisz kopię zapasową, żeby nie stracić postępów, jeśli wyczyścisz dane przeglądarki albo zmienisz telefon.</p>
@@ -526,7 +547,7 @@ let viewT=null;
 function sessOf(d){return sessions.filter(x=>x.day===d).sort((a,b)=>String(a.date).localeCompare(String(b.date))||(a.created||0)-(b.created||0))}
 function renderWeeks(){
   const list=sessOf(day),cur=list.length+1,max=Math.max(9,cur);week=cur;
-  $("tLbl").textContent="Trening "+day+" – numer";
+  $("tLbl").innerHTML="Trening "+day+" – numer <button class=\"tip\" data-tip=\"tnum\" aria-label=\"Wyjaśnienie\">?</button>";
   $("tgrid").innerHTML=Array.from({length:max},(_,i)=>{const t=i+1,done=t<cur,isCur=t===cur,sel=viewT===i||(viewT===null&&isCur);
     return'<button data-t="'+i+'" class="'+(done?"done":isCur?"cur":"fut")+'" aria-pressed="'+sel+'"'+(t>cur?" disabled":"")+'>T'+t+'</button>'}).join("");
   $("tgrid").querySelectorAll("button:not([disabled])").forEach(b=>b.onclick=()=>{const i=+b.dataset.t;viewT=i<list.length?i:null;render()});
@@ -545,13 +566,13 @@ function renderEx(fromDraft){
   const list=exList();const used=new Set(list.map(e=>e.k));
   const wl=(WARM[day]||[]).map(w=>w==="ROPE"?W.rope():w);const wd=wl.filter((w,i)=>st.done["wu_"+i]).length;
   const wu=document.createElement("details");wu.className="wup";if(st.wuOpen)wu.open=true;
-  wu.innerHTML='<summary><span><b>Rozgrzewka</b> · 5–7 min</span><span class="wcount">'+wd+'/'+wl.length+'</span></summary><ol class="wlist">'+wl.map((w,i)=>'<li><div class="wfig">'+(FIG[w.f]||"")+'</div><div class="wtxt"><div class="wn">'+w.n+' <span class="wd">'+w.d+'</span></div><div class="wc">'+w.c+'</div></div><button class="ok" data-wu="'+i+'" aria-pressed="'+(!!st.done["wu_"+i])+'" aria-label="Zrobione">✓</button></li>').join("")+'</ol>';
+  wu.innerHTML='<summary><span><b>Rozgrzewka</b> · 5–7 min <button class="tip" data-tip="warm" aria-label="Wyjaśnienie">?</button></span><span class="wcount">'+wd+'/'+wl.length+'</span></summary><ol class="wlist">'+wl.map((w,i)=>'<li><div class="wfig">'+(FIG[w.f]||"")+'</div><div class="wtxt"><div class="wn">'+w.n+' <span class="wd">'+w.d+'</span></div><div class="wc">'+w.c+'</div></div><button class="ok" data-wu="'+i+'" aria-pressed="'+(!!st.done["wu_"+i])+'" aria-label="Zrobione">✓</button></li>').join("")+'</ol>';
   wu.addEventListener("toggle",()=>{st.wuOpen=wu.open;persist()});
   box.append(wu);
   const SECT={dyn:["Dynamika","na świeżo, każde powtórzenie na 100% szybkości, pełna przerwa 60–90 s"],str:["Ćwiczenia","złożone: przerwa 2–3 min · izolacje: 60–120 s · zostaw 1–2 powtórzenia w zapasie"],core:["Core","spokojnie, kontrola ruchu, przerwa 30–45 s"]};let lastKind=null;
   list.forEach((ex,ix)=>{
     const kind=ex.kind||"str";
-    if(kind!==lastKind){lastKind=kind;const hd=document.createElement("div");hd.className="secth";hd.innerHTML='<b>'+SECT[kind][0]+'</b>'+(SECT[kind][1]?'<span>'+SECT[kind][1]+'</span>':'');box.append(hd)}
+    if(kind!==lastKind){lastKind=kind;const hd=document.createElement("div");hd.className="secth";hd.innerHTML='<b>'+SECT[kind][0]+' <button class="tip" data-tip="ex" aria-label="Wyjaśnienie">?</button></b>'+(SECT[kind][1]?'<span>'+SECT[kind][1]+'</span>':'');box.append(hd)}
     const n=nSets(ex),prev=lastFor(ex.k),rest=restOf(ex),unit=unitOf(ex);
     const c=document.createElement("div");c.className="ex"+(ex.kind?" lite "+ex.kind:"");
     if(ex.kind){const inf=INFO[ex.k];let h='<div class="exhead"><span class="no">'+(ix+1)+'<small>/'+list.length+'</small></span><div class="exttl"><span class="exn">'+ex.n+'</span><span class="target">'+n+' × '+ex.r+'</span></div><button class="x" data-drop="'+ex.k+'" aria-label="Usuń z tej sesji">✕</button></div>';
@@ -569,7 +590,7 @@ function renderEx(fromDraft){
     if(ex.pull)h+='<select id="pull_stage" aria-label="Etap podciągania">'+PULL.map((p,i)=>'<option value="'+i+'"'+(i===pullStage?' selected':'')+'>Etap '+p+'</option>').join("")+'</select>';
     h+=suggest(ex,prev);
     if(prev)h+='<div class="prev">Ostatnio '+fmtDate(prev.s.date)+': '+prev.e.sets.filter(t=>t.kg||t.r).map(t=>esc((t.kg?t.kg+"×":"")+(t.r||"–"))).join(" · ")+(prev.e.rir?" · RIR "+esc(prev.e.rir):"")+'</div>';
-    h+='<div class="sets"><div class="set cols"><span></span><span>'+(DB.has(ex.k)?'kg / hantel':BW.has(ex.k)?'kg (opc.)':'kg')+'</span><span>'+unit+'</span><span>✓</span></div>';
+    h+='<div class="sets"><div class="set cols"><span><button class="tip" data-tip="sets" aria-label="Wyjaśnienie">?</button></span><span>'+(DB.has(ex.k)?'kg / hantel':BW.has(ex.k)?'kg (opc.)':'kg')+'</span><span>'+unit+'</span><span>✓</span></div>';
     if(ex.m){const top=prev?Math.max(...prev.e.sets.map(t=>num(t.kg))):0;
       h+='<div class="wul">Rozgrzewka</div>';[[.5,"10"],[.75,"5"]].forEach(([f,r],i)=>{h+='<div class="set wu"><span class="n">R'+(i+1)+'</span><input id="'+ex.k+'_wkg_'+i+'" inputmode="decimal" placeholder="'+(top?r25(top*f):Math.round(f*100)+"%")+'" aria-label="Rozgrzewka '+(i+1)+' kg"><input id="'+ex.k+'_wr_'+i+'" inputmode="numeric" placeholder="'+r+'" aria-label="Rozgrzewka '+(i+1)+' powtórzenia"><span></span></div>'});h+='<div class="wul">Serie robocze</div>'}
     for(let i=0;i<n;i++){const p=prev&&prev.e.sets[i];h+='<div class="set"><span class="n">'+(i+1)+'</span><input id="'+ex.k+'_kg_'+i+'" inputmode="decimal" placeholder="'+(p&&p.kg?esc(p.kg):"kg")+'" aria-label="Seria '+(i+1)+' kg"><input id="'+ex.k+'_r_'+i+'" inputmode="numeric" placeholder="'+(p&&p.r?esc(p.r):unit)+'" aria-label="Seria '+(i+1)+' '+unit+'"><button class="ok" data-k="'+ex.k+'" data-i="'+i+'" data-rest="'+rest+'" aria-pressed="'+(!!st.done[ex.k+'_'+i])+'" aria-label="Seria zrobiona">✓</button></div>'}
@@ -596,6 +617,7 @@ function renderEx(fromDraft){
   $("addEx").onclick=()=>{const k=$("catalog").value;if(k){st.added.push(k);renderEx();const cards=box.querySelectorAll(".ex");cards[cards.length-1].scrollIntoView({block:"center"})}};
   const ps=$("pull_stage");if(ps)ps.onchange=()=>{pullStage=+ps.value;ls.set("gora_pull",pullStage)};
   const cd=CARDIO[day];$("cdTitle").textContent="Cardio · "+cd.t;$("smTarget").textContent=cd.eq;$("cdHint").textContent="Tętno: "+cd.z+(week===NWEEK?" · w deloadzie lżej i krócej":"");$("ivl").hidden=true;
+  box.querySelectorAll(".set.cols .tip").forEach((t,i)=>{if(i)t.remove()});
   updSum();persist();
 }
 function spread(k,i){const v=($(k+"_kg_"+i)||{}).value;if(!v)return;for(let j=i+1;j<12;j++){const el=$(k+"_kg_"+j);if(!el)break;if(!el.value)el.placeholder=v}}
@@ -741,6 +763,22 @@ $("ssLater").onclick=()=>{$("saveSheet").hidden=true};
 $("ssFile").onclick=()=>{$("bkFile").click();$("saveSheet").hidden=true};
 $("ssShare").onclick=()=>{$("bkShare").click();$("saveSheet").hidden=true};
 if("serviceWorker" in navigator&&location.protocol==="https:")navigator.serviceWorker.register("sw.js").catch(()=>{});
+const TIPS={
+ day:["Trening A i B","Masz dwa różne treningi. Robisz je na zmianę: A, B, A, B… – najlepiej 2 razy w tygodniu z co najmniej dniem przerwy. Aplikacja sama zaznacza ten, który jest dziś na kolejce."],
+ tnum:["Numer treningu (T1, T2…)","Każdy trening A i B ma swój numer: pierwszy raz to T1, drugi T2 itd. Podświetlony numer to dzisiejszy trening.<br><br>Kliknij wcześniejszy numer, żeby zobaczyć, jakie ciężary i powtórzenia miałeś wtedy. Wracasz przyciskiem „Wróć”."],
+ warm:["Rozgrzewka","Rozwiń listę i zrób punkty po kolei. Przy każdym jest rysunek, ile powtórzeń i krótka instrukcja. Odhaczasz ✓.<br><br>Ostatni punkt to <b>serie dochodzące</b>: 1–2 lekkie serie pierwszego ćwiczenia, zanim weźmiesz ciężar roboczy."],
+ ex:["Ćwiczenia","Robisz je w tej kolejności. Pod nazwą widzisz ile serii, ile powtórzeń i jak długa przerwa.<br><br><b>Technika</b> – jak wykonać ćwiczenie i częsty błąd.<br><b>Sprzęt zajęty? Zamień</b> – podobne ćwiczenie na tym samym sprzęcie.<br><b>✕</b> – pomiń ćwiczenie dziś.<br><b>+ seria</b> – dodatkowa seria.<br><br><b>Zielona podpowiedź</b> mówi, czy dziś dołożyć ciężaru, czy powtórzeń."],
+ sets:["Jak wpisywać serie","<b>R1, R2</b> – serie rozgrzewkowe na lżejszym ciężarze (nie liczą się do postępów).<br><b>1, 2, 3</b> – serie robocze.<br><br>Wpisz <b>ciężar</b> (przy hantlach – jednego hantla) i <b>liczbę powtórzeń</b>. Szare liczby w polach to wynik z ostatniego razu.<br><br>Kliknij <b>✓</b> po serii – jeśli pola są puste, wpisze się ostatni wynik, i ruszy minutnik przerwy na dole.<br><br><b>RIR</b> – ile powtórzeń zostało Ci w zapasie w ostatniej serii. Kliknij „co to?” przy RIR."],
+ data:["Dane sesji","Data podstawia się sama. Zmień ją tylko, jeśli dopisujesz trening z innego dnia. Masa ciała i notatki są opcjonalne – np. „źle spałem”, „bolał bark”."],
+ hist:["Historia","Lista zapisanych treningów. Kliknij, żeby zobaczyć szczegóły. Wpis możesz usunąć (trzeba kliknąć dwa razy)."],
+ prog:["Postępy","Dla każdego ćwiczenia: najlepsza seria z pierwszego treningu i z ostatniego oraz wykres. Zielona liczba (np. +5 kg) to Twój postęp."],
+ backup:["Kopia zapasowa","Treningi zapisują się tylko w tym telefonie, w przeglądarce. Jeśli wyczyścisz dane przeglądarki albo zmienisz telefon, znikną.<br><br>Dlatego po treningu kliknij <b>„Zapisz kopię”</b> – plik trafi do Pobranych. Najlepiej wyślij go sobie na Dysk albo mailem.<br><br>Odzyskiwanie: <b>Wczytaj kopię</b> → wybierz plik."]};
+function openTip(k){const t=TIPS[k];if(!t)return;$("tipT").textContent=t[0];$("tipB").innerHTML=t[1];$("tipSheet").hidden=false}
+document.addEventListener("click",e=>{const b=e.target.closest&&e.target.closest(".tip[data-tip]");if(b){e.preventDefault();e.stopPropagation();openTip(b.dataset.tip)}},true);
+$("tipX").onclick=()=>{$("tipSheet").hidden=true};
+if(!ls.get("gora_welcome"))$("welcome").hidden=false;
+$("welcomeOk").onclick=()=>{ls.set("gora_welcome",1);$("welcome").hidden=true};
+$("howBtn").onclick=()=>{$("welcome").hidden=false;$("welcome").scrollIntoView({block:"start"})};
 $("restX").onclick=()=>{clearInterval(restIv);$("rest").hidden=true};
 $("restPlus").onclick=()=>{restEnd=Math.max(restEnd,Date.now())+30000;clearInterval(restIv);tick();restIv=setInterval(tick,250)};
 $("rirClose").onclick=()=>{$("rirSheet").hidden=true};
@@ -751,7 +789,7 @@ document.querySelectorAll("[data-q]").forEach(b=>b.onclick=()=>{$("qIn").value=b
 document.addEventListener("input",e=>{const t=e.target;if(!t||!t.id)return;
   if(t.closest("#exList")){const m=t.id.match(/^(.+)_kg_(\d+)$/);if(m)spread(m[1],+m[2]);updSum();persist()}
   else if(COMMON.includes(t.id))persist()});
-document.addEventListener("keydown",e=>{if(e.key==="Escape"){$("saveSheet").hidden=true;$("rirSheet").hidden=true;$("chatP").hidden=true}});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"){$("tipSheet").hidden=true;$("saveSheet").hidden=true;$("rirSheet").hidden=true;$("chatP").hidden=true}});
 
 function pickStart(){
   const wm=ls.get("gora_weekm");const lastTs=sessions[0]?sessions[0].created||0:0;
