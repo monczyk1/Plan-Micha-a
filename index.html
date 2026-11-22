@@ -398,6 +398,8 @@ const OLD={A:{n:"FBW A"},B:{n:"FBW B"},C:{n:"FBW C"}};
 const PLAN_DEFAULT=JSON.parse(JSON.stringify(PLAN));
 const LETTERS="ABCDEF";
 try{const sp=JSON.parse(localStorage.getItem("gora_plan")||"null");if(sp&&typeof sp==="object"&&Object.keys(sp).length){for(const k of Object.keys(PLAN))delete PLAN[k];Object.assign(PLAN,sp)}}catch(e){}
+// Plan zapisuje się w telefonie przy pierwszym uruchomieniu – późniejsze zmiany planu startowego w kodzie nie zmienią planu osobom, które już korzystają
+try{if(!localStorage.getItem("gora_plan"))localStorage.setItem("gora_plan",JSON.stringify(PLAN))}catch(e){}
 DAYS.length=0;DAYS.push(...Object.keys(PLAN));
 const EXTRA=[
   {k:"squat",n:"Przysiad ze sztangą",s:3,r:"6–8",m:1},
