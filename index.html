@@ -363,8 +363,12 @@ html,body{margin:0}
 
 
 <script>
-// Profil: ta sama aplikacja pod adresem …/damian/ ma własny plan i osobne miejsce na dane w telefonie
-const PROF=/\/damian(\/|\/index\.html)?$/.test(location.pathname)?"damian":"";
+// Uczestnicy: ta sama aplikacja pod adresem …/<id>/ (np. …/damian/) ma osobne miejsce na dane w telefonie.
+// Nowa osoba: wpis tutaj + folder z manifest.webmanifest (patrz README) + wiersz z PIN-em w karcie „Uczestnicy” w arkuszu.
+// plan: "damian" = plan 5 dni (PN–PT); bez „plan” – plan startowy A/B. owner – właściciel arkusza (inne teksty o chmurze).
+const PROFILES={damian:{name:"Damian",plan:"damian",owner:true}};
+const PROF=(()=>{const seg=location.pathname.split("/").filter(Boolean);let s=seg.pop()||"";if(s==="index.html")s=seg.pop()||"";return Object.prototype.hasOwnProperty.call(PROFILES,s)?s:""})();
+const PRO=PROFILES[PROF]||{};
 const P=PROF?"gora"+PROF+"_":"gora_";
 const DAYS=["A","B"];
 const DAYLBL={A:"A",B:"B"};
@@ -398,7 +402,7 @@ const WARM={
  A:[{n:"Pajacyki lub marsz w miejscu",d:"2 min",c:"Spokojnie, do lekkiego rozgrzania i przyspieszonego oddechu.",f:"jj"},{n:"Krążenia ramion",d:"10 w przód + 10 w tył",c:"Duże, powolne koła prostymi rękami.",f:"circles"},W.book,{n:"Ślizgi rąk po ścianie",d:"8",c:"Plecy i ręce przy ścianie. Przesuwasz ręce w górę i w dół bez odrywania lędźwi.",f:"wall"},{n:"Pompki łopatkowe",d:"10",c:"Podpór na prostych rękach. Ruch tylko łopatkami: zbliżasz i rozsuwasz.",f:"scap"},{n:"Zwis na drążku",d:"20 s",c:"Luźny zwis, barki lekko aktywne – przygotowanie do podciągania.",f:"hang"},{n:"Serie dochodzące – wyciskanie na skosie",d:"2 serie",c:"Około 50% × 8 → 75% × 4, potem serie robocze.",f:"incline"}],
  B:[{n:"Pajacyki lub marsz w miejscu",d:"2 min",c:"Spokojnie, do lekkiego rozgrzania i przyspieszonego oddechu.",f:"jj"},{n:"Krążenia ramion",d:"10 w przód + 10 w tył",c:"Duże, powolne koła prostymi rękami.",f:"circles"},W.cat,W.book,{n:"Ślizgi rąk po ścianie",d:"8",c:"Plecy i ręce przy ścianie. Przesuwasz ręce w górę i w dół bez odrywania lędźwi.",f:"wall"},{n:"Wiosłowanie hantlem lekko",d:"10/str.",c:"Lekki hantel, spokojnie, łopatka do tyłu.",f:"dbrow"},{n:"Serie dochodzące – wyciskanie siedząc",d:"2 serie",c:"Około 50% × 8 → 75% × 4, potem serie robocze.",f:"dbohp"}]};
 // ===== Plan Damiana (adres …/damian/) – 5 dni: push / pull / nogi / góra lżej / dół + brzuch =====
-if(PROF==="damian"){
+if(PRO.plan==="damian"){
  const CARD=()=>({k:"stair",kind:"cardio",n:"StairMaster (schody)",s:1,r:"15–20 min · Z2 147–154"});
  const PD={
  PN:{sub:"Push",ex:[
@@ -472,7 +476,7 @@ if(PROF==="damian"){
  for(const k of Object.keys(WARM))delete WARM[k];Object.assign(WARM,WD);
  for(const k of Object.keys(DAYLBL))delete DAYLBL[k];Object.assign(DAYLBL,{PN:"PN",WT:"WT",SR:"ŚR",CZ:"CZW",PT:"PT"});
 }
-const INFO_TXT=PROF==="damian"?"5 treningów w tygodniu · PN–PT":"2 treningi w tygodniu · A / B";
+const INFO_TXT=PRO.plan==="damian"?"5 treningów w tygodniu · PN–PT":"2 treningi w tygodniu · A / B";
 const OLD={A:{n:"FBW A"},B:{n:"FBW B"},C:{n:"FBW C"}};
 const PLAN_DEFAULT=JSON.parse(JSON.stringify(PLAN));
 const LETTERS="ABCDEF";
@@ -1133,7 +1137,7 @@ $("edReset").onclick=()=>{const b=$("edReset");if(b.dataset.armed!=="1"){b.datas
 $("edSave").onclick=()=>{edPull();for(const d of Object.keys(ed)){ed[d].ex=ed[d].ex.filter(e=>e.n);if(!ed[d].ex.length){toast("Trening "+dl(d)+" nie ma ćwiczeń. Dodaj ćwiczenie albo usuń trening.");edDay=d;edRender();return}}
   const sorted={};for(const d of Object.keys(ed).sort())sorted[d]=ed[d];$("edSheet").hidden=true;ed=null;applyPlan(sorted,true);toast("Plan zapisany.",true)};
 /* --- kopia w chmurze (Google Apps Script) --- */
-const CLOUD_URL=PROF?"":"https://script.google.com/macros/s/AKfycbzzzjP1Do6FjKgOA32tp6YX6x52G4By6UHoqB8Yyvd2jz6Jgi95mdhGZM4YsY7cg8MGVA/exec"; // adres wdrożonego skryptu Google
+const CLOUD_URL="https://script.google.com/macros/s/AKfycbzzzjP1Do6FjKgOA32tp6YX6x52G4By6UHoqB8Yyvd2jz6Jgi95mdhGZM4YsY7cg8MGVA/exec"; // adres wdrożonego skryptu Google
 SNAP_SKIP.add(P+"cloud");SNAP_SKIP.add(P+"cloudst");
 let cloud=Object.assign({on:false,pin:""},ls.get(P+"cloud")||{});
 let cst=Object.assign({last:0,pending:false,err:""},ls.get(P+"cloudst")||{});
@@ -1167,7 +1171,7 @@ $("cloudOn").onchange=()=>{const on=$("cloudOn").checked;
   else{cloud.on=false;cst.pending=false;cst.err="";$("cloudPinBox").hidden=true;saveCloud();renderCloud();bkCheck();toast("☁ Kopia w chmurze wyłączona. Nic nie będzie wysyłane.")}};
 $("cloudConnect").onclick=async()=>{const pin=$("cloudPin").value.trim();if(!pin){toast("Wpisz PIN.");return}
   const b=$("cloudConnect");b.disabled=true;b.textContent="Sprawdzam…";
-  try{const j=await cloudPost({pin,action:"ping"});if(j&&j.ok){cloud={on:true,pin};cst.err="";$("cloudPinBox").hidden=true;$("cloudPin").value="";saveCloud();toast("☁ Połączono z chmurą.",true);await cloudCheckRemote()}else toast("Ten PIN nie pasuje. Sprawdź go u Damiana.")}
+  try{const j=await cloudPost({pin,action:"ping"});if(j&&j.ok&&PROF&&!j.name){toast("Skrypt w arkuszu to jeszcze wersja dla jednej osoby. Najpierw zaktualizuj go do wersji 2 (chmura/Code.gs).");return}if(j&&j.ok){cloud={on:true,pin};cst.err="";$("cloudPinBox").hidden=true;$("cloudPin").value="";saveCloud();toast("☁ Połączono z chmurą"+(j.name?" jako "+j.name:"")+".",true);await cloudCheckRemote()}else toast(j&&j.error==="pin_dup"?"Ten PIN ma też inna osoba. Ustawcie różne PIN-y w arkuszu.":PRO.owner?"Ten PIN nie pasuje. Sprawdź go w karcie „Uczestnicy”.":"Ten PIN nie pasuje. Sprawdź go u Damiana.")}
   catch(e){toast("Brak połączenia z chmurą. Sprawdź internet i spróbuj ponownie.")}
   b.disabled=false;b.textContent="Połącz";renderCloud()};
 async function cloudCheckRemote(){
@@ -1213,7 +1217,9 @@ sessions=(ls.get(P+"sessions")||[]).map(s=>Object.assign(s,{local:true}));sortS(
 try{renderCloud();cloudSync(true)}catch(e){}
 
 $("storeInfo").textContent=INFO_TXT+" · zapis w tej przeglądarce";
-if(PROF==="damian"){document.title="Tytanowa siła · Damian";const mt=document.querySelector('meta[name="apple-mobile-web-app-title"]');if(mt)mt.content="Siła Damiana";const w1=document.querySelector("#welcome .wsteps li");if(w1)w1.innerHTML="<b>Wybierz dzień</b> PN–PT. Aplikacja sama podpowie następny.";TIPS.day=["Dni PN–PT","Pięć treningów: push, pull, nogi, góra lżej, dół + brzuch. Robisz je po kolei – aplikacja sama zaznacza następny. Przyciskiem <b>✎ Edytuj plan</b> zmienisz ćwiczenia, serie i powtórzenia."];TIPS.tnum[1]=TIPS.tnum[1].replace("trening A i B","dzień")}
+if(PRO.name){document.title="Tytanowa siła · "+PRO.name;const mt=document.querySelector('meta[name="apple-mobile-web-app-title"]');if(mt)mt.content="Siła · "+PRO.name}
+if(PRO.owner){const lb=document.querySelector('label[for="cloudPin"]');if(lb)lb.textContent="PIN do chmury (Twój PIN z karty „Uczestnicy” w arkuszu)";if(TIPS.cloud)TIPS.cloud[1]=TIPS.cloud[1].replace("na Dysk Google Damiana","na Twój Dysk Google")}
+if(PRO.plan==="damian"){const w1=document.querySelector("#welcome .wsteps li");if(w1)w1.innerHTML="<b>Wybierz dzień</b> PN–PT. Aplikacja sama podpowie następny.";TIPS.day=["Dni PN–PT","Pięć treningów: push, pull, nogi, góra lżej, dół + brzuch. Robisz je po kolei – aplikacja sama zaznacza następny. Przyciskiem <b>✎ Edytuj plan</b> zmienisz ćwiczenia, serie i powtórzenia."];TIPS.tnum[1]=TIPS.tnum[1].replace("trening A i B","dzień")}
 </script>
 
 </body></html>

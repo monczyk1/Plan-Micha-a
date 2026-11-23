@@ -1,10 +1,31 @@
 # Tytanowa siła
 
-Dziennik treningowy (trening A/B). Działa w przeglądarce, dane zapisują się lokalnie na urządzeniu.
+Dziennik treningowy. Działa w przeglądarce, dane zapisują się lokalnie na urządzeniu.
 Pamiętaj o kopii zapasowej (sekcja „Kopia zapasowa” w aplikacji).
 
-## Wersja Damiana – `/damian/`
+## Uczestnicy
 
-Ta sama aplikacja pod adresem `…/Plan-Micha-a/damian/` ma plan Damiana (5 dni: PN–PT) i **osobne miejsce na dane** w telefonie (klucze `goradamian_*`), więc nie miesza się z danymi Michała, nawet na tym samym telefonie. Chmura jest tu wyłączona.
+Każda osoba ma własny adres aplikacji i własne miejsce na dane w telefonie:
 
-Po każdej zmianie `index.html` lub `sw.js` uruchom `./sync-damian.sh`, żeby skopiować je do folderu `damian/`.
+| Osoba  | Adres                                   | Plan            | Dane w telefonie |
+|--------|-----------------------------------------|-----------------|------------------|
+| Michał | `…/Plan-Micha-a/`                       | A/B             | `gora_*`         |
+| Damian | `…/Plan-Micha-a/damian/`                | 5 dni (PN–PT)   | `goradamian_*`   |
+
+Dwie osoby na tym samym telefonie nie mieszają danych.
+
+### Dodanie nowej osoby
+
+1. `./nowy-uczestnik.sh tomek "Tomek"` – tworzy folder `tomek/` (adres `…/Plan-Micha-a/tomek/`).
+2. W `index.html` dopisz osobę w `PROFILES`, np. `tomek:{name:"Tomek"}` (plan startowy A/B).
+3. `./sync.sh`, commit, push.
+4. W arkuszu z kopiami, karta **Uczestnicy**: nowy wiersz – imię i PIN (min. 6 znaków, inny niż pozostałe).
+   Kod skryptu i wdrożenie zostają bez zmian.
+
+Po każdej zmianie `index.html` lub `sw.js` uruchom `./sync.sh` (kopiuje je do folderów uczestników).
+
+## Kopia w chmurze (`chmura/Code.gs`)
+
+Jeden skrypt Google Apps Script w jednym arkuszu obsługuje wszystkich. Osobę rozpoznaje po PIN-ie
+z karty **Uczestnicy**; każda osoba ma własne karty („Treningi – Imię”, ukryte „Kopie – Imię”)
+i nie widzi kopii innych. „NIE” w kolumnie *Aktywny* blokuje dostęp. Instrukcja przejścia z wersji 1 jest na początku pliku.
