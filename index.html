@@ -221,7 +221,9 @@ html,body{margin:0}
 .prow{display:grid;grid-template-columns:1fr 1fr 96px;gap:8px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px}
 .pn{font-size:13px;font-weight:600;display:flex;flex-direction:column;gap:2px;min-width:0}.pd{font-family:var(--f-mono);font-size:12px;color:var(--muted);font-weight:500}.pd.up{color:var(--ok)}
 .pv{font-family:var(--f-mono);font-size:12px;color:var(--muted)}.pv b{color:var(--fg)}
-.spk{width:96px;height:28px}.spk polyline{fill:none;stroke:var(--accent);stroke-width:2;stroke-linejoin:round}.spk circle{fill:var(--accent)}.bkwarn{background:var(--accent);color:var(--accent-fg);border-radius:10px;padding:10px 12px;font-size:14px;font-weight:500}img{max-width:100%}[hidden]{display:none!important}:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+.spk{width:96px;height:28px}.spk polyline{fill:none;stroke:var(--accent);stroke-width:2;stroke-linejoin:round}.spk circle{fill:var(--accent)}.updbar{display:flex;align-items:center;gap:10px;background:var(--fg);color:var(--bg);border-radius:12px;padding:10px 12px;font-size:14px;margin-bottom:10px}.updbar span{flex:1;min-width:0}.updbar small{display:block;opacity:.75;font-size:12px;margin-top:2px}.updbar button{background:var(--accent);color:var(--accent-fg);border:0;border-radius:99px;padding:8px 14px;font:600 14px var(--f-body);cursor:pointer;white-space:nowrap}
+.verrow{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:12px;font-size:13px;color:var(--muted);flex-wrap:wrap}.news{margin-top:10px}.news summary{cursor:pointer;font-weight:600;font-size:14px}.news h4{margin:12px 0 4px;font-size:13px;font-family:var(--f-mono);color:var(--muted);font-weight:500}.news ul{margin:0;padding-left:18px;font-size:14px;line-height:1.45;color:var(--fg)}
+.bkwarn{background:var(--accent);color:var(--accent-fg);border-radius:10px;padding:10px 12px;font-size:14px;font-weight:500}img{max-width:100%}[hidden]{display:none!important}:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 </style>
 </head><body>
 
@@ -315,6 +317,8 @@ html,body{margin:0}
   <section class="ex plain">
     <div class="exh"><span class="exn">Pomoc</span></div>
     <div class="tools"><button class="mini" id="howBtn">Jak to działa?</button></div>
+    <div class="verrow"><span id="verTxt"></span><button class="mini" id="verChk">↻ Sprawdź aktualizację</button></div>
+    <details class="news" id="verNews"><summary>Co nowego w aplikacji</summary><div id="verList" class="hint">Połącz się z internetem, żeby zobaczyć listę zmian.</div></details>
   </section>
   </div>
 </main>
@@ -1047,7 +1051,7 @@ function beep(){try{if(!actx)return;const o=actx.createOscillator(),g=actx.creat
 function wake(){try{if(lock||!navigator.wakeLock)return;navigator.wakeLock.request("screen").then(l=>{lock=l;l.addEventListener("release",()=>{lock=null})}).catch(()=>{})}catch(e){}}
 document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible"&&Object.values(S().done).some(Boolean))wake()});
 
-const SNAP_SKIP=new Set([P+"undo",P+"restored",P+"lastbk",P+"welcome"]);
+const SNAP_SKIP=new Set([P+"undo",P+"restored",P+"lastbk",P+"welcome",P+"verc",P+"seenBuild",P+"updTry"]);
 function snapKeys(){const o={};try{for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k&&k.startsWith(P+"")&&!SNAP_SKIP.has(k))o[k]=localStorage.getItem(k)}}catch(e){}return o}
 function snapshot(){persist();return {app:"tytanowa-sila",v:2,exported:new Date().toISOString(),count:sessions.length,storage:snapKeys(),sessions:sessions.map(x=>{const c=Object.assign({},x);delete c.local;return c})}}
 function backupJSON(){return JSON.stringify(snapshot())}
@@ -1111,7 +1115,7 @@ if(fsOK){$("bkPick").hidden=false;idbGet().then(h=>{fh=h;showPick()});
 async function afterSave(s){
   const label="Trening "+dl(s.day)+", "+fmtDate(s.date);
   if(fh&&await writeFixed(true)){toast("Zapisano: "+label+". Kopia zaktualizowana.",true);return}
-  if(cloud.on&&CLOUD_URL){toast("Zapisano: "+label+". ☁ Kopia leci do chmury…",true);return}
+  if(cloud.on&&CLOUD_URL){toast(navigator.onLine===false?"Zapisano: "+label+". Brak internetu – kopia trafi do chmury sama, gdy złapiesz zasięg.":"Zapisano: "+label+". ☁ Kopia leci do chmury…",true);return}
   toast("Zapisano: "+label+".",true);
   const last=ls.get(P+"lastbk")||0;const newer=sessions.filter(x=>(x.created||0)>last).length;
   $("ssTxt").textContent=newer+" "+(newer===1?"trening nie ma":newer<5?"treningi nie mają":"treningów nie ma")+" kopii zapasowej. Zapisz ją teraz – to jedno kliknięcie. Kopia zapamięta stan całej aplikacji.";
@@ -1192,7 +1196,7 @@ async function cloudSync(quiet){if(!cloud.on||!CLOUD_URL||!cst.pending)return re
   if(!sessions.length){cst.pending=false;saveCloud();return renderCloud()}
   cloudBusy=true;renderCloud();
   try{const j=await cloudPost({pin:cloud.pin,action:"save",rank:rankOn(),snapshot:snapshot()},60000);
-    if(j&&j.ok){cst={last:Date.now(),pending:false,err:""};if(!quiet)toast("☁ Kopia w chmurze zaktualizowana.",true)}
+    if(j&&j.ok){const late=!!cst.err;cst={last:Date.now(),pending:false,err:""};if(!quiet||late)toast(late?"☁ Zaległa kopia wysłana do chmury.":"☁ Kopia w chmurze zaktualizowana.",true)}
     else{cst.err=j&&j.error==="pin"?"pin":"server";if(cst.err==="pin")toast("☁ PIN do chmury nie pasuje – sprawdź go w sekcji Kopia zapasowa.")}}
   catch(e){cst.err="net"}
   cloudBusy=false;saveCloud();renderCloud();bkCheck();
@@ -1221,6 +1225,33 @@ $("cloudRestore").onclick=async()=>{if(!cloud.pin){$("cloudPinBox").hidden=false
   b.disabled=false;b.textContent="Przywróć z chmury"};
 $("cloudNow").onclick=()=>cloudSync();
 window.addEventListener("online",()=>cloudSync(true));
+// ===== Aktualizacje: numer wersji w aplikacji vs version.json na serwerze =====
+const APP_BUILD=4;
+function verItems(j,from){return (j&&j.zmiany||[]).filter(x=>x.build>from)}
+function verHtml(list){return list.map(x=>'<h4>'+esc(x.data)+' · wersja '+x.build+'</h4><ul>'+x.lista.map(t=>'<li>'+esc(t)+'</li>').join("")+'</ul>').join("")}
+function renderVer(){const j=ls.get(P+"verc");const cur=(j&&j.zmiany||[]).find(x=>x.build===APP_BUILD);
+  $("verTxt").textContent="Twoja wersja: "+APP_BUILD+(cur?" ("+cur.data+")":"");
+  if(j&&j.zmiany&&j.zmiany.length)$("verList").innerHTML=verHtml(j.zmiany.slice(0,6))}
+function showUpd(j){let b=$("updBar");if(!b){b=document.createElement("div");b.id="updBar";b.className="updbar";b.setAttribute("role","status");document.querySelector(".wrap header").after(b)}
+  const n=verItems(j,APP_BUILD);const first=n.length?n[0].lista[0]:"";const tr=ls.get(P+"updTry");const stuck=tr&&tr.b===j.build&&Date.now()-tr.ts<120000;
+  b.innerHTML='<span><b>'+(stuck?"Aktualizacja jeszcze dociera":"Jest nowa wersja aplikacji")+'</b><small>'+(stuck?"Spróbuj za kilka minut.":esc(first)+(n.reduce((a,x)=>a+x.lista.length,0)>1?" i więcej":""))+'</small></span><button id="updGo">Odśwież</button>';
+  $("updGo").onclick=()=>{try{persist()}catch(e){}ls.set(P+"updTry",{b:j.build,ts:Date.now()});location.reload()}}
+let updBusy=false;
+async function checkUpd(manual){if(updBusy)return;updBusy=true;
+  try{const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"});if(!r.ok)throw 0;const j=await r.json();ls.set(P+"verc",j);renderVer();
+    if(j.build>APP_BUILD)showUpd(j);else{const b=$("updBar");if(b)b.remove();if(manual)toast("✓ Masz najnowszą wersję ("+APP_BUILD+").",true)}}
+  catch(e){if(manual)toast("Brak internetu – nie mogę sprawdzić aktualizacji.")}
+  finally{updBusy=false}}
+$("verChk").onclick=()=>checkUpd(true);
+// Po aktualizacji: raz pokaż, co się zmieniło
+(()=>{let seen=ls.get(P+"seenBuild");if(seen==null&&(ls.get(P+"sessions")||[]).length)seen=APP_BUILD-1;ls.set(P+"seenBuild",APP_BUILD);renderVer();
+  if(seen&&seen<APP_BUILD){const show=j=>{const n=verItems(j,seen).filter(x=>x.build<=APP_BUILD);if(!n.length)return;$("tipT").textContent="Zaktualizowano ✓ Co nowego";$("tipB").innerHTML=verHtml(n);$("tipSheet").hidden=false};
+    const c=ls.get(P+"verc");if(c&&verItems(c,seen).some(x=>x.build===APP_BUILD))show(c);else fetch("version.json?t="+Date.now(),{cache:"no-store"}).then(r=>r.json()).then(j=>{ls.set(P+"verc",j);renderVer();show(j)}).catch(()=>{})}})();
+checkUpd(false);document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible")checkUpd(false)});
+
+// iPhone z ikony na pulpicie nie zawsze zgłasza powrót internetu – ponawiamy wysyłkę co 30 s, dopóki kopia czeka
+setInterval(()=>{if(document.visibilityState==="visible"&&cloud.on&&cst.pending&&!cloudBusy)cloudSync(true)},30000);
+window.addEventListener("pageshow",()=>cloudSync(true));window.addEventListener("focus",()=>cloudSync(true));
 document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible")cloudSync(true)});
 let view="train";const VIEWNAME={train:"Trening",hist:"Historia",prog:"Postępy",rank:"Ranking",set:"Ustawienia"};
 

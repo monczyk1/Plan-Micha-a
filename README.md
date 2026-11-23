@@ -24,6 +24,12 @@ Dwie osoby na tym samym telefonie nie mieszają danych.
 
 Po każdej zmianie `index.html` lub `sw.js` uruchom `./sync.sh` (kopiuje je do folderów uczestników).
 
+## Wydanie nowej wersji
+
+1. W `index.html` zwiększ `APP_BUILD`.
+2. W `version.json` ustaw ten sam `build` i dopisz na górze listy zmian (po polsku, prostym językiem – to widzą uczestnicy).
+3. `./sync.sh`, commit, push. Aplikacja sama pokaże pasek „Jest nowa wersja”, a po odświeżeniu okno „Co nowego”.
+
 ## Kopia w chmurze (`chmura/Code.gs`)
 
 Jeden skrypt Google Apps Script w jednym arkuszu obsługuje wszystkich. Osobę rozpoznaje po PIN-ie
