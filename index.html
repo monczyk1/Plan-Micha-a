@@ -363,6 +363,9 @@ html,body{margin:0}
 
 
 <script>
+// Profil: ta sama aplikacja pod adresem …/damian/ ma własny plan i osobne miejsce na dane w telefonie
+const PROF=/\/damian(\/|\/index\.html)?$/.test(location.pathname)?"damian":"";
+const P=PROF?"gora"+PROF+"_":"gora_";
 const DAYS=["A","B"];
 const DAYLBL={A:"A",B:"B"};
 const PLAN={
@@ -394,12 +397,88 @@ const W={cardio:(n,c)=>({n,d:"3 min",c:c||"Spokojnie, tętno 120–135, da się 
 const WARM={
  A:[{n:"Pajacyki lub marsz w miejscu",d:"2 min",c:"Spokojnie, do lekkiego rozgrzania i przyspieszonego oddechu.",f:"jj"},{n:"Krążenia ramion",d:"10 w przód + 10 w tył",c:"Duże, powolne koła prostymi rękami.",f:"circles"},W.book,{n:"Ślizgi rąk po ścianie",d:"8",c:"Plecy i ręce przy ścianie. Przesuwasz ręce w górę i w dół bez odrywania lędźwi.",f:"wall"},{n:"Pompki łopatkowe",d:"10",c:"Podpór na prostych rękach. Ruch tylko łopatkami: zbliżasz i rozsuwasz.",f:"scap"},{n:"Zwis na drążku",d:"20 s",c:"Luźny zwis, barki lekko aktywne – przygotowanie do podciągania.",f:"hang"},{n:"Serie dochodzące – wyciskanie na skosie",d:"2 serie",c:"Około 50% × 8 → 75% × 4, potem serie robocze.",f:"incline"}],
  B:[{n:"Pajacyki lub marsz w miejscu",d:"2 min",c:"Spokojnie, do lekkiego rozgrzania i przyspieszonego oddechu.",f:"jj"},{n:"Krążenia ramion",d:"10 w przód + 10 w tył",c:"Duże, powolne koła prostymi rękami.",f:"circles"},W.cat,W.book,{n:"Ślizgi rąk po ścianie",d:"8",c:"Plecy i ręce przy ścianie. Przesuwasz ręce w górę i w dół bez odrywania lędźwi.",f:"wall"},{n:"Wiosłowanie hantlem lekko",d:"10/str.",c:"Lekki hantel, spokojnie, łopatka do tyłu.",f:"dbrow"},{n:"Serie dochodzące – wyciskanie siedząc",d:"2 serie",c:"Około 50% × 8 → 75% × 4, potem serie robocze.",f:"dbohp"}]};
+// ===== Plan Damiana (adres …/damian/) – 5 dni: push / pull / nogi / góra lżej / dół + brzuch =====
+if(PROF==="damian"){
+ const CARD=()=>({k:"stair",kind:"cardio",n:"StairMaster (schody)",s:1,r:"15–20 min · Z2 147–154"});
+ const PD={
+ PN:{sub:"Push",ex:[
+  {k:"mbchest",kind:"dyn",n:"Wyrzut piłki lekarskiej sprzed klatki",s:3,r:"5"},
+  {k:"plyopush",kind:"dyn",n:"Pompki eksplozywne na podwyższeniu",s:2,r:"5"},
+  {k:"bench",m:1,n:"Wyciskanie sztangi na ławce płaskiej",s:4,r:"6–8"},
+  {k:"ohp",m:1,n:"Wyciskanie nad głowę (OHP)",s:3,r:"8–10"},
+  {k:"incline",m:1,n:"Wyciskanie hantli na skosie",s:3,r:"10",ss:"A"},
+  {k:"latraise",n:"Unoszenie hantli bokiem",s:3,r:"12–15",ss:"A"},
+  {k:"pushdown",n:"Prostowanie ramion na wyciągu",s:3,r:"12"},
+  {k:"pallof",kind:"core",n:"Pallof press",s:3,r:"10/str."},
+  {k:"hollow",kind:"core",n:"Hollow hold",s:2,r:"20 s"},CARD()]},
+ WT:{sub:"Pull",ex:[
+  {k:"mbslam",kind:"dyn",n:"Slam piłką lekarską",s:3,r:"5"},
+  {k:"latpd",m:1,n:"Ściąganie drążka (lub podciąganie)",s:4,r:"6–10"},
+  {k:"chestrow",m:1,n:"Wiosłowanie z podparciem klatki",s:3,r:"8–10"},
+  {k:"cablerow",n:"Wiosłowanie na wyciągu siedząc",s:3,r:"10–12",ss:"A"},
+  {k:"facepull",n:"Face pulls",s:3,r:"15",ss:"A"},
+  {k:"bbcurl",n:"Uginanie ramion ze sztangą",s:3,r:"10–12"},
+  {k:"deadbug",kind:"core",n:"Dead bug",s:3,r:"8/str."},
+  {k:"hang",kind:"core",n:"Zwis na drążku",s:2,r:"20 s"},CARD()]},
+ SR:{sub:"Nogi",ex:[
+  {k:"pogo",kind:"dyn",n:"Pogo – sprężyste podskoki",s:3,r:"15 s"},
+  {k:"boxjump",kind:"dyn",n:"Wskok na skrzynię",s:3,r:"3"},
+  {k:"squat",m:1,n:"Przysiad ze sztangą (lub hack)",s:4,r:"6–8"},
+  {k:"rdl",m:1,n:"Martwy ciąg rumuński",s:3,r:"8–10"},
+  {k:"lunge",n:"Wykroki w marszu",s:3,r:"10/nogę"},
+  {k:"legcurl",n:"Uginanie nóg leżąc",s:3,r:"12"},
+  {k:"calf",n:"Wspięcia na łydki",s:3,r:"15"},
+  {k:"copen",kind:"core",n:"Deska kopenhaska",s:2,r:"15 s/str."},
+  {k:"sideplank",kind:"core",n:"Deska boczna",s:2,r:"30 s/str."},CARD()]},
+ CZ:{sub:"Góra lżej",ex:[
+  {k:"mbrot",kind:"dyn",n:"Rzut piłką z rotacją o ścianę",s:3,r:"5/str."},
+  {k:"lmpunch",kind:"dyn",n:"Landmine punch",s:2,r:"5/str."},
+  {k:"dbbench",m:1,n:"Wyciskanie hantli na ławce",s:3,r:"12"},
+  {k:"closepd",n:"Ściąganie drążka wąskim chwytem",s:3,r:"12"},
+  {k:"dbrow",m:1,n:"Wiosłowanie hantlem",s:3,r:"12"},
+  {k:"latraise",n:"Unoszenie bokiem",s:3,r:"15",ss:"A"},
+  {k:"reversefly",n:"Tył barku (odwrotne rozpiętki)",s:3,r:"15",ss:"A"},
+  {k:"curl",n:"Biceps – uginanie hantlami",s:3,r:"12–15",ss:"B"},
+  {k:"pushdown",n:"Triceps – prostowanie na wyciągu",s:3,r:"12–15",ss:"B"},
+  {k:"woodchop",kind:"core",n:"Woodchop na wyciągu",s:3,r:"10/str."},
+  {k:"core",kind:"core",n:"Ab wheel",s:2,r:"8"},CARD()]},
+ PT:{sub:"Dół + brzuch",ex:[
+  {k:"kbswing",kind:"dyn",n:"Swing kettlebell",s:3,r:"10"},
+  {k:"broadjump",kind:"dyn",n:"Skok w dal z miejsca",s:3,r:"3"},
+  {k:"thrust",m:1,n:"Hip thrust",s:3,r:"8–10"},
+  {k:"legpress",m:1,n:"Suwnica",s:3,r:"12"},
+  {k:"stepup",n:"Step-upy (lub wykroki w marszu)",s:3,r:"10/nogę"},
+  {k:"legcurl",n:"Uginanie nóg leżąc",s:3,r:"12"},
+  {k:"slcalf",n:"Wspięcia na łydki jednonóż",s:3,r:"12/nogę"},
+  {k:"tib",n:"Unoszenie stopy (tibialis)",s:2,r:"15"},
+  {k:"plank",kind:"core",n:"Deska",s:3,r:"45 s"},
+  {k:"hangraise",kind:"core",n:"Unoszenie nóg w zwisie",s:3,r:"12"},
+  {k:"suitcase",kind:"core",n:"Spacer walizkowy",s:2,r:"30 m/str."},CARD()]}};
+ const cardio=(n,c)=>({n,d:"3 min",c:c||"Spokojnie, tętno 120–135, da się swobodnie mówić",f:"cardio"});
+ const rope={n:"Skakanka",d:"3 × 45 s",c:"2–3 cm nad podłogą, na przodostopiu, pięty nie dotykają ziemi. Kręcisz nadgarstkami, łokcie przy tułowiu, miękko w kolanach.",f:"rope"};
+ const book={n:"Otwieranie książki",d:"5/str.",c:"Leżysz na boku, kolana ugięte. Górną rękę prowadzisz łukiem na drugą stronę, wzrok za dłonią.",f:"open"};
+ const cat={n:"Koci grzbiet",d:"8",c:"Na czworakach powoli zaokrąglasz i wyginasz plecy, z oddechem.",f:"quad"};
+ const hip90={n:"Biodro 90/90",d:"5/str.",c:"Siedzisz, obie nogi zgięte pod kątem 90°. Przekładasz kolana z jednej strony na drugą, tułów prosto.",f:"kneel"};
+ const flex={n:"Rozciąganie zginacza biodra w klęku",d:"30 s/str.",c:"Klęk jednonóż. Napnij pośladek nogi z tyłu i przesuń biodro lekko w przód.",f:"kneel"};
+ const bridge={n:"Mostek biodrowy",d:"10",c:"Leżysz, stopy blisko pośladków. Unieś biodra, ściśnij pośladki, 1 s na górze.",f:"bridge"};
+ const band={n:"Rozciąganie gumy przed sobą",d:"15",c:"Proste ręce na wysokości barków, rozciągasz gumę ściągając łopatki.",f:"band"};
+ const WD={
+ PN:[cardio("Wioślarz"),rope,book,{n:"Ślizgi rąk po ścianie",d:"8",c:"Plecy i ręce przy ścianie. Przesuwasz ręce w górę i w dół bez odrywania lędźwi.",f:"vpush"},band,{n:"Przekładanie gumy nad głową",d:"10",c:"Szeroki chwyt, proste ręce, przenosisz gumę za plecy i z powrotem.",f:"vpush"},{n:"Pompki łopatkowe",d:"10",c:"Podpór na prostych rękach. Ruch tylko łopatkami: zbliżasz i rozsuwasz.",f:"core"},{n:"Serie dochodzące – wyciskanie",d:"4 serie",c:"Pusta sztanga × 10 → 50% × 6 → 70% × 3 → 85% × 1–2",f:"hpush"}],
+ WT:[cardio("Wioślarz"),rope,cat,book,{n:"Zwis na drążku",d:"20 s",c:"Luźny zwis nachwytem, barki lekko aktywne.",f:"vpull"},{n:"Ściąganie łopatek na drążku",d:"10",c:"Proste ręce na drążku lub wyciągu. Ruch tylko łopatkami w dół, bez zginania łokci.",f:"vpull"},{n:"Face pull lekko",d:"15",c:"Lina do twarzy, łokcie wysoko.",f:"hpull"},{n:"Serie dochodzące – ściąganie",d:"2 serie",c:"50% × 10 → 75% × 5",f:"vpull"}],
+ SR:[cardio("Rower","Spokojnie, tętno 120–135 – najłagodniejszy start dla kolan"),rope,hip90,{n:"Kostka przy ścianie",d:"10/str.",c:"Stopa ok. 10 cm od ściany. Kolano do ściany, pięta zostaje na podłodze.",f:"kneel"},flex,{n:"Przysiad z pauzą na dole",d:"2 × 5",c:"Bez ciężaru, 3 s na dole. Łokcie rozpychają kolana na zewnątrz.",f:"squat"},bridge,{n:"Wykrok w tył bez ciężaru",d:"5/str.",c:"Krok w tył, kolano prawie do podłogi, tułów prosto.",f:"lunge"},{n:"Serie dochodzące – przysiad",d:"5 serii",c:"Pusta × 10 → pusta × 8 → 50% × 5 → 70% × 3 → 85% × 1–2",f:"squat"}],
+ CZ:[cardio("Orbitrek","Spokojnie, z pracą rąk, tętno 120–135"),rope,book,{n:"Rotacja zewnętrzna z gumą",d:"12/str.",c:"Łokieć przy boku zgięty 90°. Odciągasz przedramię na zewnątrz, łokieć zostaje przy tułowiu.",f:"band"},band,{n:"Rotacje tułowia w staniu",d:"10/str.",c:"Luźne ręce, obrót z bioder i tułowia, pięta tylnej nogi się odrywa – jak przy ciosie.",f:"rot"},{n:"Serie dochodzące – hantle",d:"1 seria",c:"Około 50% ciężaru roboczego × 10",f:"hpush"}],
+ PT:[cardio("Bieżnia – marsz pod górę","Marsz, nachylenie 8–10%, rozgrzewa biodra i pośladki"),rope,flex,hip90,cat,{n:"Bird dog",d:"5/str.",c:"Na czworakach wyprostuj rękę i przeciwną nogę, plecy płasko, 2 s pauzy.",f:"quad"},bridge,{n:"Serie dochodzące – hip thrust",d:"3 serie",c:"Pusta sztanga × 10 → 50% × 8 → 75% × 4",f:"bridge"}]};
+ for(const k of Object.keys(PLAN))delete PLAN[k];Object.assign(PLAN,PD);
+ for(const k of Object.keys(WARM))delete WARM[k];Object.assign(WARM,WD);
+ for(const k of Object.keys(DAYLBL))delete DAYLBL[k];Object.assign(DAYLBL,{PN:"PN",WT:"WT",SR:"ŚR",CZ:"CZW",PT:"PT"});
+}
+const INFO_TXT=PROF==="damian"?"5 treningów w tygodniu · PN–PT":"2 treningi w tygodniu · A / B";
 const OLD={A:{n:"FBW A"},B:{n:"FBW B"},C:{n:"FBW C"}};
 const PLAN_DEFAULT=JSON.parse(JSON.stringify(PLAN));
 const LETTERS="ABCDEF";
-try{const sp=JSON.parse(localStorage.getItem("gora_plan")||"null");if(sp&&typeof sp==="object"&&Object.keys(sp).length){for(const k of Object.keys(PLAN))delete PLAN[k];Object.assign(PLAN,sp)}}catch(e){}
+try{const sp=JSON.parse(localStorage.getItem(P+"plan")||"null");if(sp&&typeof sp==="object"&&Object.keys(sp).length){for(const k of Object.keys(PLAN))delete PLAN[k];Object.assign(PLAN,sp)}}catch(e){}
 // Plan zapisuje się w telefonie przy pierwszym uruchomieniu – późniejsze zmiany planu startowego w kodzie nie zmienią planu osobom, które już korzystają
-try{if(!localStorage.getItem("gora_plan"))localStorage.setItem("gora_plan",JSON.stringify(PLAN))}catch(e){}
+try{if(!localStorage.getItem(P+"plan"))localStorage.setItem(P+"plan",JSON.stringify(PLAN))}catch(e){}
 DAYS.length=0;DAYS.push(...Object.keys(PLAN));
 const EXTRA=[
   {k:"squat",n:"Przysiad ze sztangą",s:3,r:"6–8",m:1},
@@ -720,11 +799,11 @@ const PULL=["1 · ściąganie 3×8–12 + negatywy 3×3","2 · guma / maszyna 3�
 const WEEK=new Proxy({},{get:()=>({t:"",f:s=>s})});const NWEEK=999;
 const NEXT={};function rebuildNext(){for(const k in NEXT)delete NEXT[k];DAYS.forEach((d,i)=>NEXT[d]=DAYS[(i+1)%DAYS.length])}rebuildNext();
 
-let day="A",week=1,sessions=[],pullStage=0;
+let day=DAYS[0],week=1,sessions=[],pullStage=0;
 const $=id=>document.getElementById(id);
 let lsFailShown=false;const ls={get(k){try{return JSON.parse(localStorage.getItem(k))}catch(e){return null}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v));return true}catch(e){if(!lsFailShown){lsFailShown=true;setTimeout(()=>toast("Uwaga: przeglądarka nie pozwala zapisać danych (tryb prywatny albo brak miejsca). Zrób kopię zapasową!"),0)}return false}}};
 const blank=()=>({vals:{},done:{},swaps:{},added:[],removed:[],extra:{},open:{},wus:{},start:0});
-let draft=ls.get("gora_draft")||{};
+let draft=ls.get(P+"draft")||{};
 for(const d of DAYS)draft[d]=Object.assign(blank(),draft[d]||{});
 draft.common=draft.common||{};
 const S=()=>{const b=blank();if(!draft[day])draft[day]=b;else for(const k in b)if(draft[day][k]==null)draft[day][k]=b[k];return draft[day]};
@@ -746,7 +825,7 @@ function exList(){const s=S();return PLAN[day].ex.filter(e=>!s.removed.includes(
 function nSets(ex){return WEEK[week].f(ex.s)+(S().extra[ex.k]||0)}
 function snap(){const o={};document.querySelectorAll("#exList input").forEach(i=>{if(i.value)o[i.id]=i.value});return o}
 let restoring=false;
-function persist(){if(restoring)return;S().vals=snap();if(!S().start&&(Object.keys(S().vals).length||Object.values(S().done).some(Boolean)))S().start=Date.now();draft.day=day;draft.common={};COMMON.forEach(i=>{if($(i).value)draft.common[i]=$(i).value});ls.set("gora_draft",draft)}
+function persist(){if(restoring)return;S().vals=snap();if(!S().start&&(Object.keys(S().vals).length||Object.values(S().done).some(Boolean)))S().start=Date.now();draft.day=day;draft.common={};COMMON.forEach(i=>{if($(i).value)draft.common[i]=$(i).value});ls.set(P+"draft",draft)}
 
 function renderSeg(){
   $("seg").innerHTML="";$("seg").style.gridTemplateColumns="repeat("+Math.min(DAYS.length,3)+",1fr)";
@@ -755,12 +834,12 @@ function renderSeg(){
   $("nextHint").textContent=last?"Ostatnio: "+(PLAN[last.day]?dl(last.day)+" "+PLAN[last.day].sub:(OLD[last.day]||{n:last.day}).n)+" ("+fmtDate(last.date)+")"+(PLAN[last.day]?" → następny "+dl(NEXT[last.day]):""):"Jeszcze nie ma zapisanych treningów.";
 }
 let viewT=null,pvDirty=false;
-function saveSessions(){const ok=ls.set("gora_sessions",sessions);ls.set("gora_changed",Date.now());try{cloudDirty()}catch(e){}return ok}
-function reloadSessions(){sessions=(ls.get("gora_sessions")||[]).map(x=>Object.assign(x,{local:true}));sortS()}
+function saveSessions(){const ok=ls.set(P+"sessions",sessions);ls.set(P+"changed",Date.now());try{cloudDirty()}catch(e){}return ok}
+function reloadSessions(){sessions=(ls.get(P+"sessions")||[]).map(x=>Object.assign(x,{local:true}));sortS()}
 function sessOf(d){return sessions.filter(x=>x.day===d).sort((a,b)=>String(a.date).localeCompare(String(b.date))||(a.created||0)-(b.created||0))}
 function renderWeeks(){
   const list=sessOf(day),cur=list.length+1,max=Math.max(9,cur);week=cur;
-  $("tLbl").innerHTML="Trening "+day+" – numer <button class=\"tip\" data-tip=\"tnum\" aria-label=\"Wyjaśnienie\">?</button>";
+  $("tLbl").innerHTML="Trening "+dl(day)+" – numer <button class=\"tip\" data-tip=\"tnum\" aria-label=\"Wyjaśnienie\">?</button>";
   $("tgrid").innerHTML=Array.from({length:max},(_,i)=>{const t=i+1,done=t<cur,isCur=t===cur,sel=viewT===i||(viewT===null&&isCur);
     return'<button data-t="'+i+'" class="'+(done?"done":isCur?"cur":"fut")+'" aria-pressed="'+sel+'"'+(t>cur?" disabled":"")+'>T'+t+'</button>'}).join("");
   {const g=$("tgrid"),cb=g.querySelector('[aria-pressed="true"]');if(cb)g.scrollLeft=cb.offsetLeft-g.clientWidth/2+cb.offsetWidth/2}
@@ -769,7 +848,7 @@ function renderWeeks(){
   const past=viewT!==null?list[viewT]:null,pv=$("pastView");
   pv.hidden=!past;["exList","finish"].forEach(id=>{$(id).hidden=!!past});
   if(past){const exs=past.ex||[];
-    let h='<div class="ex plain pvedit"><div class="exh"><span class="exn">Trening '+esc(past.day)+' · T'+(viewT+1)+'</span><span class="target">'+fmtDate(past.date)+'</span></div><div class="hint">Możesz poprawić wpisy i zapisać zmiany.</div>';
+    let h='<div class="ex plain pvedit"><div class="exh"><span class="exn">Trening '+esc(dl(past.day))+' · T'+(viewT+1)+'</span><span class="target">'+fmtDate(past.date)+'</span></div><div class="hint">Możesz poprawić wpisy i zapisać zmiany.</div>';
     exs.forEach((e,ei)=>{if(e.kind)return;let wi=0,ri=0;
       h+='<div class="pvx"><div class="pvn">'+esc(e.n)+'</div><div class="pvsets">'+(e.sets||[]).map((t,si)=>'<div class="pvrow'+(t.w?' w':'')+'"><span class="n">'+(t.w?'R'+(++wi):(++ri))+'</span><input id="pv_'+ei+'_'+si+'_kg" inputmode="decimal" value="'+esc(t.kg||"")+'" placeholder="kg" aria-label="kg"><input id="pv_'+ei+'_'+si+'_r" inputmode="numeric" value="'+esc(t.r||"")+'" placeholder="powt." aria-label="powtórzenia"><button class="x" data-pvdel="'+ei+'_'+si+'" aria-label="Usuń serię">✕</button></div>').join("")+'</div><div class="pvtools"><button class="mini" data-pvadd="'+ei+'">+ seria</button><label>RIR <input id="pv_'+ei+'_rir" inputmode="numeric" value="'+esc(e.rir||"")+'"></label></div></div>'});
     h+='<div class="row2"><div class="field"><label class="lbl" for="pv_date">Data</label><input type="date" id="pv_date" value="'+esc(past.date)+'"></div><div class="field"><label class="lbl" for="pv_bw">Masa (kg)</label><input id="pv_bw" inputmode="decimal" value="'+esc(past.bw||"")+'"></div></div>';
@@ -793,7 +872,7 @@ function renderEx(fromDraft){
   wu.innerHTML='<summary><span><b>Rozgrzewka</b> · 5–7 min</span><span class="wcount">'+wd+'/'+wl.length+'</span></summary><div class="whint">Zrób po kolei i odhaczaj ✓ <button class="tip" data-tip="warm" aria-label="Wyjaśnienie">?</button></div><ol class="wlist">'+wl.map((w,i)=>'<li><div class="wfig">'+(FX.F[w.f]||FIG[w.f]||"")+'</div><div class="wtxt"><div class="wn">'+w.n+' <span class="wd">'+w.d+'</span></div><div class="wc">'+w.c+'</div></div><button class="ok" data-wu="'+i+'" aria-pressed="'+(!!st.done["wu_"+i])+'" aria-label="Zrobione">✓</button></li>').join("")+'</ol>';
   wu.addEventListener("toggle",()=>{st.wuOpen=wu.open;persist()});
   box.append(wu);
-  const SECT={dyn:["Dynamika","na świeżo, każde powtórzenie na 100% szybkości, pełna przerwa 60–90 s"],str:["Ćwiczenia","złożone: przerwa 2–3 min · izolacje: 60–120 s · zostaw 1–2 powtórzenia w zapasie"],core:["Core","spokojnie, kontrola ruchu, przerwa 30–45 s"]};let lastKind=null;
+  const SECT={dyn:["Dynamika","na świeżo, każde powtórzenie na 100% szybkości, pełna przerwa 60–90 s"],str:["Ćwiczenia","złożone: przerwa 2–3 min · izolacje: 60–120 s · zostaw 1–2 powtórzenia w zapasie"],core:["Core","spokojnie, kontrola ruchu, przerwa 30–45 s"],cardio:["Cardio na koniec","spokojnie, tętno w Z2"]};let lastKind=null;
   list.forEach((ex,ix)=>{
     const kind=ex.kind||"str";
     if(kind!==lastKind){lastKind=kind;const hd=document.createElement("div");hd.className="secth";hd.innerHTML='<b>'+SECT[kind][0]+' <button class="tip" data-tip="ex" aria-label="Wyjaśnienie">?</button></b>'+(SECT[kind][1]?'<span>'+SECT[kind][1]+'</span>':'');box.append(hd)}
@@ -802,7 +881,7 @@ function renderEx(fromDraft){
     if(ex.kind){const inf=INFO[ex.k];let h='<div class="exhead"><span class="no">'+(ix+1)+'<small>/'+list.length+'</small></span><div class="exttl"><span class="exn">'+esc(ex.n)+'</span><span class="target">'+n+' × '+ex.r+'</span></div><button class="x" data-drop="'+ex.k+'" aria-label="Usuń z tej sesji">✕</button></div>';
       if(WHY[ex.k])h+='<div class="why">'+WHY[ex.k]+'</div>';
       if(inf)h+='<div class="meta"><details><summary>Jak wykonać</summary><div class="infob">'+(FIG[inf[0]]||"")+'<div><div class="mus">'+inf[1]+'</div><ul>'+inf.slice(2).map(x=>'<li>'+x+'</li>').join("")+'</ul></div></div></details></div>';
-      h+='<div class="lsets"><span class="lbl">Serie</span>'+Array.from({length:n},(_,i)=>'<button class="ok" data-k="'+ex.k+'" data-i="'+i+'" data-rest="'+(ex.kind==="dyn"?75:40)+'" aria-pressed="'+(!!st.done[ex.k+'_'+i])+'">'+(i+1)+'</button>').join("")+'</div>';
+      h+='<div class="lsets"><span class="lbl">Serie</span>'+Array.from({length:n},(_,i)=>'<button class="ok" data-k="'+ex.k+'" data-i="'+i+'" data-rest="'+(ex.kind==="dyn"?75:ex.kind==="cardio"?0:40)+'" aria-pressed="'+(!!st.done[ex.k+'_'+i])+'">'+(i+1)+'</button>').join("")+'</div>';
       c.innerHTML=h;box.append(c);return}
     let h='<div class="exhead"><span class="no">'+(ix+1)+'<small>/'+list.length+'</small></span><div class="exttl"><span class="exn">'+esc(ex.n)+(ex.ss&&!ex.swapOf?'<span class="ss">superseria '+ex.ss+'</span>':'')+(ex.added?' <span class="badge">dodane</span>':'')+(ex.swapOf?' <span class="badge">zamiast: '+esc(CATALOG[ex.swapOf].n)+'</span>':'')+'</span><span class="target">'+WEEK[week].f(ex.s)+' serie × '+ex.r+' · przerwa '+(ex.ss&&!ex.swapOf?'po obu ćwiczeniach':rest>=120?'2–3 min':'60–120 s')+'</span></div><button class="x" data-drop="'+(ex.swapOf||ex.k)+'" aria-label="Usuń ćwiczenie z tej sesji">✕</button></div>';
     h+='<button class="csum" data-open="'+ex.k+'" aria-label="Rozwiń ćwiczenie"></button><div class="cbody">';
@@ -838,11 +917,11 @@ function renderEx(fromDraft){
   box.querySelectorAll("[data-wus]").forEach(b=>b.onclick=()=>{const k=b.dataset.wus;const bx=b.nextElementSibling;const o=bx.hidden;bx.hidden=!o;st.wus[k]=o;b.setAttribute("aria-expanded",o);b.textContent=(o?"− ":"+ ")+"serie rozgrzewkowe (R1, R2)";persist()});
   box.querySelectorAll("[data-open]").forEach(b=>b.onclick=()=>{const k=b.dataset.open;st.open[k]=!st.open[k];const c=b.closest(".ex");cardState(k,c,c.querySelectorAll(".ok[data-k]").length);persist()});
   box.querySelectorAll(".ok[data-k]").forEach(b=>b.onclick=()=>{const k=b.dataset.k,i=b.dataset.i,key=k+"_"+i;st.done[key]=!st.done[key];b.setAttribute("aria-pressed",st.done[key]);
-    if(st.done[key]){[$(k+"_kg_"+i),$(k+"_r_"+i)].forEach(el=>{if(el&&!el.value&&/^\d+([.,]\d+)?$/.test(el.placeholder))el.value=el.placeholder});spread(k,+i);startRest(+b.dataset.rest);wake()}
+    if(st.done[key]){[$(k+"_kg_"+i),$(k+"_r_"+i)].forEach(el=>{if(el&&!el.value&&/^\d+([.,]\d+)?$/.test(el.placeholder))el.value=el.placeholder});spread(k,+i);if(+b.dataset.rest)startRest(+b.dataset.rest);wake()}
     if(!st.done[key])st.open[k]=false;updSum();persist();const c=b.closest(".ex");if(c&&c.dataset.card)cardState(k,c,c.querySelectorAll(".ok[data-k]").length)});
   if($("restoreEx"))$("restoreEx").onclick=()=>{st.removed=[];renderEx()};
   $("addEx").onclick=()=>{const k=$("catalog").value;if(k){st.added.push(k);renderEx();const cards=box.querySelectorAll(".ex");cards[cards.length-1].scrollIntoView({block:"center"})}};
-  const ps=$("pull_stage");if(ps)ps.onchange=()=>{pullStage=+ps.value;ls.set("gora_pull",pullStage)};
+  const ps=$("pull_stage");if(ps)ps.onchange=()=>{pullStage=+ps.value;ls.set(P+"pull",pullStage)};
   box.querySelectorAll(".set.cols .tip").forEach((t,i)=>{if(i)t.remove()});
   updSum();persist();
 }
@@ -884,7 +963,7 @@ $("save").onclick=async()=>{
   sessions.unshift(s);sortS();saveSessions();
   draft[s.day]=blank();draft.common={};$("date").value=today();dateAuto=true;
   clearInterval(restIv);$("rest").hidden=true;
-  day=NEXT[s.day]||"A";viewT=null;
+  day=NEXT[s.day]||DAYS[0];viewT=null;
   render(true);renderHist();window.scrollTo({top:0});
   afterSave(s);
   $("save").disabled=false;$("save").textContent="Zapisz trening";
@@ -933,11 +1012,11 @@ function beep(){try{if(!actx)return;const o=actx.createOscillator(),g=actx.creat
 function wake(){try{if(lock||!navigator.wakeLock)return;navigator.wakeLock.request("screen").then(l=>{lock=l;l.addEventListener("release",()=>{lock=null})}).catch(()=>{})}catch(e){}}
 document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible"&&Object.values(S().done).some(Boolean))wake()});
 
-const SNAP_SKIP=new Set(["gora_undo","gora_restored","gora_lastbk","gora_welcome"]);
-function snapKeys(){const o={};try{for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k&&k.startsWith("gora_")&&!SNAP_SKIP.has(k))o[k]=localStorage.getItem(k)}}catch(e){}return o}
+const SNAP_SKIP=new Set([P+"undo",P+"restored",P+"lastbk",P+"welcome"]);
+function snapKeys(){const o={};try{for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k&&k.startsWith(P+"")&&!SNAP_SKIP.has(k))o[k]=localStorage.getItem(k)}}catch(e){}return o}
 function snapshot(){persist();return {app:"tytanowa-sila",v:2,exported:new Date().toISOString(),count:sessions.length,storage:snapKeys(),sessions:sessions.map(x=>{const c=Object.assign({},x);delete c.local;return c})}}
 function backupJSON(){return JSON.stringify(snapshot())}
-function bkName(){const d=new Date();return "trening-kopia-"+today()+"-"+String(d.getHours()).padStart(2,"0")+String(d.getMinutes()).padStart(2,"0")+".json"}
+function bkName(){const d=new Date();return "trening-kopia-"+(PROF?PROF+"-":"")+today()+"-"+String(d.getHours()).padStart(2,"0")+String(d.getMinutes()).padStart(2,"0")+".json"}
 $("bkFile").onclick=()=>{try{const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([backupJSON()],{type:"application/json"}));a.download=bkName();document.body.append(a);a.click();a.remove();toast("Pobrano plik z kopią.",true);bkDone()}catch(e){toast("Nie udało się pobrać. Użyj „Skopiuj do schowka”.")}};
 $("bkCopy").onclick=()=>{const t=backupJSON();navigator.clipboard&&navigator.clipboard.writeText(t).then(()=>(toast("Skopiowano. Wklej np. do notatek albo maila do siebie.",true),bkDone())).catch(()=>{$("bkBox").hidden=false;$("bkIn").value=t;$("bkIn").select();toast("Zaznaczyłem kopię – skopiuj ją ręcznie.")})||($("bkBox").hidden=false,$("bkIn").value=t,$("bkIn").select())};
 if(window.claude)$("bkFile").hidden=true;
@@ -952,41 +1031,42 @@ let pendingRestore=null;
 function fmtTs(iso){const d=new Date(iso);if(isNaN(d))return"nieznanej daty";return String(d.getDate()).padStart(2,"0")+"."+String(d.getMonth()+1).padStart(2,"0")+"."+d.getFullYear()+", "+String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0")}
 function importBackup(txt){let d;try{d=JSON.parse(String(txt).replace(/^﻿/,"").trim())}catch(e){toast("To nie jest plik kopii z tej aplikacji. Wybierz plik trening-kopia-….json.");return}
   let store=null;
-  if(d&&d.storage&&typeof d.storage==="object"){store=d.storage}
+  if(d&&d.storage&&typeof d.storage==="object"){store=reKey(d.storage)}
   else{const list=Array.isArray(d)?d:d&&d.sessions;if(!Array.isArray(list)){toast("W tym pliku nie ma treningów z tej aplikacji.");return}
-    store={gora_sessions:JSON.stringify(list.filter(x=>x&&Array.isArray(x.ex)))};if(d.plan&&typeof d.plan==="object")store.gora_plan=JSON.stringify(d.plan)}
-  let ses=[];try{ses=JSON.parse(store.gora_sessions||"[]")||[]}catch(e){}
+    store={[P+"sessions"]:JSON.stringify(list.filter(x=>x&&Array.isArray(x.ex)))};if(d.plan&&typeof d.plan==="object")store[P+"plan"]=JSON.stringify(d.plan)}
+  let ses=[];try{ses=JSON.parse(store[P+"sessions"]||"[]")||[]}catch(e){}
   const now=sessions.length,inBk=ses.length;const bkCreated=new Set(ses.map(x=>x.created));const lost=sessions.filter(x=>!bkCreated.has(x.created)).length;
   pendingRestore={store,label:d.exported?fmtTs(d.exported):"kopii"};
   $("rsTxt").innerHTML='Kopia z <b>'+esc(pendingRestore.label)+'</b> – '+inBk+' '+plTr(inBk)+'.<br>Teraz w aplikacji: '+now+' '+plTr(now)+'.<br><br>Aplikacja wróci <b>dokładnie</b> do stanu z kopii: historia, plan i niezapisany trening w toku.'+(lost?'<br><br><b class="warn">'+lost+' '+plTr(lost)+' zapisanych po tej kopii zniknie.</b>':'')+'<br><br>Jeśli się pomylisz, zaraz po przywróceniu możesz kliknąć „Cofnij”.';
   $("bkBox").hidden=true;$("rsSheet").hidden=false}
+function reKey(store){const o={};for(const k in store){const m=/^gora[a-z]*_(.+)$/.exec(k);if(m)o[P+m[1]]=store[k]}return o}
 function applySnapshot(store,label,isUndo){
-  const cur=snapshot();restoring=true;
-  try{const del=[];for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k&&k.startsWith("gora_")&&!SNAP_SKIP.has(k))del.push(k)}del.forEach(k=>localStorage.removeItem(k));
-    for(const k in store)if(k.startsWith("gora_")&&!SNAP_SKIP.has(k))localStorage.setItem(k,store[k]);
-    localStorage.setItem("gora_undo",JSON.stringify({store:cur.storage,label:fmtTs(cur.exported)}));
-    localStorage.setItem("gora_restored",JSON.stringify({label,undo:!!isUndo,ts:Date.now()}));
-    localStorage.setItem("gora_lastbk",JSON.stringify(Date.now()));try{const c=JSON.parse(localStorage.getItem("gora_cloudst")||"{}");c.pending=true;localStorage.setItem("gora_cloudst",JSON.stringify(c))}catch(e){}
+  store=reKey(store);const cur=snapshot();restoring=true;
+  try{const del=[];for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k&&k.startsWith(P+"")&&!SNAP_SKIP.has(k))del.push(k)}del.forEach(k=>localStorage.removeItem(k));
+    for(const k in store)if(k.startsWith(P+"")&&!SNAP_SKIP.has(k))localStorage.setItem(k,store[k]);
+    localStorage.setItem(P+"undo",JSON.stringify({store:cur.storage,label:fmtTs(cur.exported)}));
+    localStorage.setItem(P+"restored",JSON.stringify({label,undo:!!isUndo,ts:Date.now()}));
+    localStorage.setItem(P+"lastbk",JSON.stringify(Date.now()));try{const c=JSON.parse(localStorage.getItem(P+"cloudst")||"{}");c.pending=true;localStorage.setItem(P+"cloudst",JSON.stringify(c))}catch(e){}
   }catch(e){restoring=false;toast("Nie udało się przywrócić – przeglądarka nie pozwala zapisać danych.");return}
   location.reload()}
 $("rsOk").onclick=()=>{if(pendingRestore)applySnapshot(pendingRestore.store,pendingRestore.label,false)};
 $("rsCancel").onclick=()=>{pendingRestore=null;$("rsSheet").hidden=true};
-(function restoredInfo(){const r=ls.get("gora_restored");if(!r)return;try{localStorage.removeItem("gora_restored")}catch(e){}
-  const u=ls.get("gora_undo");const bar=$("rsDone");bar.hidden=false;
+(function restoredInfo(){const r=ls.get(P+"restored");if(!r)return;try{localStorage.removeItem(P+"restored")}catch(e){}
+  const u=ls.get(P+"undo");const bar=$("rsDone");bar.hidden=false;
   $("rsDoneTxt").textContent=r.undo?"Cofnięto przywracanie – aplikacja jest w stanie sprzed wczytania kopii.":"Przywrócono kopię z "+r.label+". Wszystko jest jak w chwili jej zrobienia.";
   $("rsUndo").hidden=!u||r.undo;$("rsUndo").onclick=()=>{if(u)applySnapshot(u.store,u.label,true)};$("rsDoneX").onclick=()=>{bar.hidden=true}})();
 $("bkLoad").onclick=()=>{const t=$("bkIn").value.trim();if(!t){toast("Wklej tekst kopii albo kliknij „Wybierz plik kopii”.");return}importBackup(t)};
-function bkCheck(){let cl=0;try{cl=(cloud.on&&!cst.pending&&cst.last)||0}catch(e){}const last=Math.max(ls.get("gora_lastbk")||0,cl);const newer=sessions.filter(x=>(x.created||0)>last).length;const changed=(ls.get("gora_changed")||0)>last&&sessions.length>0;const days=last?Math.floor((Date.now()-last)/864e5):null;
+function bkCheck(){let cl=0;try{cl=(cloud.on&&!cst.pending&&cst.last)||0}catch(e){}const last=Math.max(ls.get(P+"lastbk")||0,cl);const newer=sessions.filter(x=>(x.created||0)>last).length;const changed=(ls.get(P+"changed")||0)>last&&sessions.length>0;const days=last?Math.floor((Date.now()-last)/864e5):null;
   const w=$("bkWarn");const need=newer>=2||(newer>0&&days!==null&&days>=14)||(changed&&newer===0&&days!==null&&days>=1);
   const txt=newer?newer+" "+(newer===1?"trening bez kopii":newer<5?"treningi bez kopii":"treningów bez kopii"):"zmiany bez kopii";
   if(need){w.hidden=false;w.textContent="Masz "+txt+(days!==null?" (ostatnia kopia "+days+" dni temu)":"")+". Zapisz kopię poniżej."}else w.hidden=true;
   if(need&&$("bkTop"))$("bkTop").textContent="⬇ Zapisz kopię zapasową ("+txt+")";
   if(need&&!$("bkTop")){const t=document.createElement("button");t.id="bkTop";t.className="bkwarn";t.style.border="0";t.style.width="100%";t.style.cursor="pointer";t.textContent="⬇ Zapisz kopię zapasową ("+txt+")";t.onclick=()=>$("bkFile").click();document.querySelector(".wrap header").after(t)}else if(!need&&$("bkTop"))$("bkTop").remove()}
-function bkDone(){ls.set("gora_lastbk",Date.now());bkCheck()}
+function bkDone(){ls.set(P+"lastbk",Date.now());bkCheck()}
 try{navigator.storage&&navigator.storage.persist&&navigator.storage.persist()}catch(e){}
 /* --- kopia po sesji + stały plik (Chrome/Edge na komputerze) --- */
 const fsOK=!!window.showSaveFilePicker;let fh=null;
-function idb(){return new Promise((res,rej)=>{const r=indexedDB.open("gora_fs",1);r.onupgradeneeded=()=>r.result.createObjectStore("h");r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)})}
+function idb(){return new Promise((res,rej)=>{const r=indexedDB.open(P+"fs",1);r.onupgradeneeded=()=>r.result.createObjectStore("h");r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)})}
 async function idbGet(){try{const d=await idb();return await new Promise(r=>{const q=d.transaction("h").objectStore("h").get("file");q.onsuccess=()=>r(q.result||null);q.onerror=()=>r(null)})}catch(e){return null}}
 async function idbSet(v){try{const d=await idb();d.transaction("h","readwrite").objectStore("h").put(v,"file")}catch(e){}}
 async function writeFixed(ask){if(!fh)return false;try{let p=await fh.queryPermission({mode:"readwrite"});if(p!=="granted"&&ask)p=await fh.requestPermission({mode:"readwrite"});if(p!=="granted")return false;const w=await fh.createWritable();await w.write(backupJSON());await w.close();bkDone();return true}catch(e){return false}}
@@ -994,11 +1074,11 @@ function showPick(){$("bkPickInfo").hidden=!fh;if(fh)$("bkPickInfo").textContent
 if(fsOK){$("bkPick").hidden=false;idbGet().then(h=>{fh=h;showPick()});
   $("bkPick").onclick=async()=>{try{fh=await window.showSaveFilePicker({suggestedName:"trening-kopia.json",types:[{description:"Kopia treningów",accept:{"application/json":[".json"]}}]});await idbSet(fh);showPick();if(await writeFixed(true))toast("Kopia zapisana. Od teraz plik aktualizuje się sam.",true)}catch(e){}}}
 async function afterSave(s){
-  const label="Trening "+s.day+", "+fmtDate(s.date);
+  const label="Trening "+dl(s.day)+", "+fmtDate(s.date);
   if(fh&&await writeFixed(true)){toast("Zapisano: "+label+". Kopia zaktualizowana.",true);return}
   if(cloud.on&&CLOUD_URL){toast("Zapisano: "+label+". ☁ Kopia leci do chmury…",true);return}
   toast("Zapisano: "+label+".",true);
-  const last=ls.get("gora_lastbk")||0;const newer=sessions.filter(x=>(x.created||0)>last).length;
+  const last=ls.get(P+"lastbk")||0;const newer=sessions.filter(x=>(x.created||0)>last).length;
   $("ssTxt").textContent=newer+" "+(newer===1?"trening nie ma":newer<5?"treningi nie mają":"treningów nie ma")+" kopii zapasowej. Zapisz ją teraz – to jedno kliknięcie. Kopia zapamięta stan całej aplikacji.";
   $("ssShare").hidden=$("bkShare").hidden;$("saveSheet").hidden=false}
 $("ssLater").onclick=()=>{$("saveSheet").hidden=true};
@@ -1019,17 +1099,17 @@ const TIPS={
 function openTip(k){const t=TIPS[k];if(!t)return;$("tipT").textContent=t[0];$("tipB").innerHTML=t[1];$("tipSheet").hidden=false}
 document.addEventListener("click",e=>{const b=e.target.closest&&e.target.closest(".tip[data-tip]");if(b){e.preventDefault();e.stopPropagation();openTip(b.dataset.tip)}},true);
 $("tipX").onclick=()=>{$("tipSheet").hidden=true};
-if(!ls.get("gora_welcome"))$("welcome").hidden=false;
-$("welcomeOk").onclick=()=>{ls.set("gora_welcome",1);$("welcome").hidden=true};
+if(!ls.get(P+"welcome"))$("welcome").hidden=false;
+$("welcomeOk").onclick=()=>{ls.set(P+"welcome",1);$("welcome").hidden=true};
 $("howBtn").onclick=()=>{setView("train");$("welcome").hidden=false;$("welcome").scrollIntoView({block:"start"})};
 /* --- edytor planu --- */
 let ed=null,edDay=null;
 function applyPlan(np,save){for(const k of Object.keys(PLAN))delete PLAN[k];Object.assign(PLAN,JSON.parse(JSON.stringify(np)));DAYS.length=0;DAYS.push(...Object.keys(PLAN));rebuildNext();
   for(const d of DAYS)for(const e of PLAN[d].ex)if(!CATALOG[e.k])CATALOG[e.k]={k:e.k,n:e.n,g:"Własne",s:e.s,r:e.r,m:e.m};
-  if(save){ls.set("gora_plan",PLAN);ls.set("gora_changed",Date.now());try{cloudDirty()}catch(e){}}if(!PLAN[day])day=DAYS[0];viewT=null;render(true);renderHist()}
+  if(save){ls.set(P+"plan",PLAN);ls.set(P+"changed",Date.now());try{cloudDirty()}catch(e){}}if(!PLAN[day])day=DAYS[0];viewT=null;render(true);renderHist()}
 for(const d of DAYS)for(const e of PLAN[d].ex)if(!CATALOG[e.k])CATALOG[e.k]={k:e.k,n:e.n,g:"Własne",s:e.s,r:e.r,m:e.m};
 function edRender(){
-  $("edTabs").innerHTML=Object.keys(ed).map(d=>'<button data-ed="'+d+'" aria-pressed="'+(d===edDay)+'">Trening '+d+'</button>').join("");
+  $("edTabs").innerHTML=Object.keys(ed).map(d=>'<button data-ed="'+d+'" aria-pressed="'+(d===edDay)+'">Trening '+dl(d)+'</button>').join("");
   $("edTabs").querySelectorAll("[data-ed]").forEach(b=>b.onclick=()=>{edPull();edDay=b.dataset.ed;edRender()});
   const P=ed[edDay];$("edSub").value=P.sub||"";
   $("edList").innerHTML=P.ex.map((e,i)=>'<div class="edrow"><div class="edmv"><button class="mini" data-up="'+i+'" aria-label="W górę"'+(i?'':' disabled')+'>▲</button><button class="mini" data-dn="'+i+'" aria-label="W dół"'+(i<P.ex.length-1?'':' disabled')+'>▼</button></div><div class="edf"><input data-f="n" data-i="'+i+'" value="'+esc(e.n)+'" aria-label="Nazwa"><div class="edsr"><label>Serie <input data-f="s" data-i="'+i+'" type="number" min="1" max="10" inputmode="numeric" value="'+e.s+'"></label><label>Powt. <input data-f="r" data-i="'+i+'" value="'+esc(e.r)+'"></label><label class="edm"><input type="checkbox" data-f="m" data-i="'+i+'"'+(e.m?' checked':'')+'> z rozgrzewką</label></div></div><button class="x" data-del="'+i+'" aria-label="Usuń ćwiczenie">✕</button></div>').join("")||'<div class="hint">Brak ćwiczeń. Dodaj je poniżej.</div>';
@@ -1050,15 +1130,15 @@ $("edAddCustom").onclick=()=>{const n=$("edCustom").value.trim();if(!n)return;ed
 $("edNewDay").onclick=()=>{edPull();const L=[...LETTERS].find(x=>!ed[x]);if(!L){toast("Maksymalnie 6 treningów.");return}ed[L]={sub:"",ex:[]};edDay=L;edRender()};
 $("edDelDay").onclick=()=>{const b=$("edDelDay");if(b.dataset.armed!=="1"){b.dataset.armed="1";b.textContent="Na pewno usunąć "+edDay+"?";return}delete ed[edDay];edDay=Object.keys(ed)[0];edRender()};
 $("edReset").onclick=()=>{const b=$("edReset");if(b.dataset.armed!=="1"){b.dataset.armed="1";b.textContent="Na pewno? Kliknij ponownie";return}b.dataset.armed="";b.textContent="Przywróć plan startowy";ed=JSON.parse(JSON.stringify(PLAN_DEFAULT));edDay=Object.keys(ed)[0];edRender()};
-$("edSave").onclick=()=>{edPull();for(const d of Object.keys(ed)){ed[d].ex=ed[d].ex.filter(e=>e.n);if(!ed[d].ex.length){toast("Trening "+d+" nie ma ćwiczeń. Dodaj ćwiczenie albo usuń trening.");edDay=d;edRender();return}}
+$("edSave").onclick=()=>{edPull();for(const d of Object.keys(ed)){ed[d].ex=ed[d].ex.filter(e=>e.n);if(!ed[d].ex.length){toast("Trening "+dl(d)+" nie ma ćwiczeń. Dodaj ćwiczenie albo usuń trening.");edDay=d;edRender();return}}
   const sorted={};for(const d of Object.keys(ed).sort())sorted[d]=ed[d];$("edSheet").hidden=true;ed=null;applyPlan(sorted,true);toast("Plan zapisany.",true)};
 /* --- kopia w chmurze (Google Apps Script) --- */
-const CLOUD_URL="https://script.google.com/macros/s/AKfycbzzzjP1Do6FjKgOA32tp6YX6x52G4By6UHoqB8Yyvd2jz6Jgi95mdhGZM4YsY7cg8MGVA/exec"; // adres wdrożonego skryptu Google
-SNAP_SKIP.add("gora_cloud");SNAP_SKIP.add("gora_cloudst");
-let cloud=Object.assign({on:false,pin:""},ls.get("gora_cloud")||{});
-let cst=Object.assign({last:0,pending:false,err:""},ls.get("gora_cloudst")||{});
+const CLOUD_URL=PROF?"":"https://script.google.com/macros/s/AKfycbzzzjP1Do6FjKgOA32tp6YX6x52G4By6UHoqB8Yyvd2jz6Jgi95mdhGZM4YsY7cg8MGVA/exec"; // adres wdrożonego skryptu Google
+SNAP_SKIP.add(P+"cloud");SNAP_SKIP.add(P+"cloudst");
+let cloud=Object.assign({on:false,pin:""},ls.get(P+"cloud")||{});
+let cst=Object.assign({last:0,pending:false,err:""},ls.get(P+"cloudst")||{});
 let cloudBusy=false,cloudAgain=false;
-function saveCloud(){ls.set("gora_cloud",cloud);ls.set("gora_cloudst",cst)}
+function saveCloud(){ls.set(P+"cloud",cloud);ls.set(P+"cloudst",cst)}
 function fmtShort(ts){const d=new Date(ts);return String(d.getDate()).padStart(2,"0")+"."+String(d.getMonth()+1).padStart(2,"0")+", "+String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0")}
 async function cloudPost(body,ms){const ctl=new AbortController();const t=setTimeout(()=>ctl.abort(),ms||25000);
   try{const r=await fetch(CLOUD_URL,{method:"POST",body:JSON.stringify(body),redirect:"follow",signal:ctl.signal});const j=await r.json();return j}finally{clearTimeout(t)}}
@@ -1111,8 +1191,8 @@ let view="train";const VIEWNAME={train:"Trening",hist:"Historia",prog:"Postępy"
 function setView(v){view=v;for(const k in VIEWNAME)$("v-"+k).hidden=k!==v;document.querySelectorAll(".tabs [data-view]").forEach(b=>b.setAttribute("aria-pressed",b.dataset.view===v));
   $("viewName").textContent=VIEWNAME[v];$("statusRow").hidden=v!=="train";if(v==="hist")renderHist();if(v==="prog")renderProg();window.scrollTo({top:0})}
 document.querySelectorAll(".tabs [data-view]").forEach(b=>b.onclick=()=>setView(b.dataset.view));
-optCollapse=ls.get("gora_collapse")!==false;$("optCollapse").checked=optCollapse;
-$("optCollapse").onchange=()=>{optCollapse=$("optCollapse").checked;ls.set("gora_collapse",optCollapse);renderEx()};
+optCollapse=ls.get(P+"collapse")!==false;$("optCollapse").checked=optCollapse;
+$("optCollapse").onchange=()=>{optCollapse=$("optCollapse").checked;ls.set(P+"collapse",optCollapse);renderEx()};
 $("restX").onclick=()=>{clearInterval(restIv);$("rest").hidden=true};
 $("restPlus").onclick=()=>{restEnd=Math.max(restEnd,Date.now())+30000;clearInterval(restIv);tick();restIv=setInterval(tick,250)};
 $("rirClose").onclick=()=>{$("rirSheet").hidden=true};
@@ -1122,17 +1202,18 @@ document.addEventListener("input",e=>{const t=e.target;if(!t||!t.id)return;
 document.addEventListener("keydown",e=>{if(e.key==="Escape"){$("finSheet").hidden=true;$("edSheet").hidden=true;$("tipSheet").hidden=true;$("saveSheet").hidden=true;$("rirSheet").hidden=true}});
 
 function pickStart(){
-  const wm=ls.get("gora_weekm");const lastTs=sessions[0]?sessions[0].created||0:0;
+  const wm=ls.get(P+"weekm");const lastTs=sessions[0]?sessions[0].created||0:0;
   
-  if(draft.day&&PLAN[draft.day]&&hasDraft(draft.day))day=draft.day;else{const l=sessions.find(x=>PLAN[x.day]);day=l?NEXT[l.day]:"A"}
+  if(draft.day&&PLAN[draft.day]&&hasDraft(draft.day))day=draft.day;else{const l=sessions.find(x=>PLAN[x.day]);day=l?NEXT[l.day]:DAYS[0]}
 }
 let dateAuto=true;$("date").addEventListener("input",()=>{dateAuto=$("date").value===today()});
 document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible"&&dateAuto&&$("date").value!==today())$("date").value=today()});
-$("date").value=today();pullStage=ls.get("gora_pull")||0;
-sessions=(ls.get("gora_sessions")||[]).map(s=>Object.assign(s,{local:true}));sortS();pickStart();render(true);renderHist();
+$("date").value=today();pullStage=ls.get(P+"pull")||0;
+sessions=(ls.get(P+"sessions")||[]).map(s=>Object.assign(s,{local:true}));sortS();pickStart();render(true);renderHist();
 try{renderCloud();cloudSync(true)}catch(e){}
 
-$("storeInfo").textContent="2 treningi w tygodniu · A / B · zapis w tej przeglądarce";
+$("storeInfo").textContent=INFO_TXT+" · zapis w tej przeglądarce";
+if(PROF==="damian"){document.title="Tytanowa siła · Damian";const mt=document.querySelector('meta[name="apple-mobile-web-app-title"]');if(mt)mt.content="Siła Damiana";const w1=document.querySelector("#welcome .wsteps li");if(w1)w1.innerHTML="<b>Wybierz dzień</b> PN–PT. Aplikacja sama podpowie następny.";TIPS.day=["Dni PN–PT","Pięć treningów: push, pull, nogi, góra lżej, dół + brzuch. Robisz je po kolei – aplikacja sama zaznacza następny. Przyciskiem <b>✎ Edytuj plan</b> zmienisz ćwiczenia, serie i powtórzenia."];TIPS.tnum[1]=TIPS.tnum[1].replace("trening A i B","dzień")}
 </script>
 
 </body></html>
