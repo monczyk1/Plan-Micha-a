@@ -97,6 +97,23 @@ summary span{font-family:var(--f-mono);font-weight:500;font-size:12px;color:var(
 .bar{position:fixed;left:0;right:0;bottom:0;background:var(--surface);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0px);padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));z-index:5}
 .barin{max-width:560px;margin:0 auto;display:flex;align-items:center;gap:10px;padding-block:10px;font-size:13px;flex-wrap:wrap}
 #sumTxt{font-family:var(--f-mono);color:var(--muted);flex:1;min-width:0}
+#statusRow{position:relative}
+.rk{display:flex;flex-direction:column;gap:14px;padding:4px 0 20px}
+.rc{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px}
+.rc h3{font-family:var(--f-display);font-size:22px;text-transform:uppercase;letter-spacing:.02em;margin:0 0 2px}
+.rc .sm{font-size:13px;color:var(--muted)}
+.rc .wk{display:flex;justify-content:space-between;align-items:flex-end;gap:10px}.rc .big{font-family:var(--f-display);font-size:28px;text-transform:uppercase;line-height:1}
+.rc .cd{font-family:var(--f-mono);font-size:12px;color:var(--accent);border:1px solid var(--accent);border-radius:99px;padding:3px 9px;white-space:nowrap}
+.rrow{display:grid;grid-template-columns:30px 1fr auto;align-items:center;gap:10px;padding:10px 0;border-top:1px solid var(--line)}.rrow:first-child{border-top:0}
+.rrow .pos{font-family:var(--f-display);font-size:22px;text-align:center;color:var(--muted)}
+.rrow .nm{font-weight:600;font-size:16px}.rme{font-size:11px;font-family:var(--f-mono);color:var(--accent);margin-left:6px;border:1px solid var(--accent);border-radius:99px;padding:0 6px;font-weight:500}
+.rbar{height:8px;border-radius:99px;background:var(--field);margin-top:6px;overflow:hidden}.rbar i{display:block;height:100%;background:var(--accent);border-radius:99px}
+.rrow .val{font-family:var(--f-display);font-size:26px;text-align:right;line-height:1}.rrow .val small{display:block;font-family:var(--f-body);font-size:11px;color:var(--muted)}
+.rrow.lead{background:linear-gradient(135deg,color-mix(in srgb,var(--accent) 20%,transparent),transparent 70%);border-radius:12px;margin:0 -8px;padding:10px 8px;border-top:0}
+.cups{display:flex;gap:10px;margin-top:10px;flex-wrap:wrap}.cup{flex:1;min-width:90px;background:var(--field);border-radius:12px;padding:10px;text-align:center}.cup b{display:block;font-family:var(--f-display);font-size:24px}.cup span{font-size:12px;color:var(--muted)}
+.exr{padding:12px 0;border-top:1px solid var(--line)}.exr:first-of-type{border-top:0}.exr .t{font-weight:600;font-size:15px;margin-bottom:6px}.exr .t small{font-weight:400;color:var(--muted);font-size:12px}
+.pod{display:grid;grid-template-columns:24px 1fr auto;gap:8px;font-size:14px;padding:3px 0;align-items:center}.pod .k{font-family:var(--f-mono);font-size:13px}.pod.me{color:var(--accent);font-weight:600}
+.rnote{font-size:12px;color:var(--muted);margin-top:8px;line-height:1.45}.rfoot{display:flex;justify-content:space-between;align-items:center;gap:10px}.ptrack{position:absolute;left:0;right:0;top:-1px;height:4px;background:var(--line);border-radius:2px;overflow:hidden}.ptrack i{display:block;height:100%;width:0;background:var(--accent);border-radius:2px;transition:width .35s}#sumTxt .pct{color:var(--fg);font-weight:600}
 .rest{display:flex;align-items:center;gap:8px;background:var(--field);border-radius:8px;padding:4px 8px}.rest b{font-family:var(--f-mono);font-size:18px}.rest.go{background:var(--ok);color:var(--accent-fg)}
 .fab{background:var(--accent);color:var(--accent-fg);border:0;border-radius:99px;padding:9px 14px;font-weight:600;cursor:pointer}
 .chatp{position:fixed;left:0;right:0;bottom:calc(58px + env(safe-area-inset-bottom,0px));max-width:560px;margin:0 auto;max-height:70vh;display:flex;flex-direction:column;gap:8px;background:var(--surface);border:1.5px solid var(--accent);border-radius:14px 14px 0 0;padding:12px max(16px,env(safe-area-inset-right,0px)) 12px max(16px,env(safe-area-inset-left,0px));z-index:6;box-shadow:0 -8px 30px rgba(0,0,0,.18)}
@@ -160,7 +177,7 @@ html,body{margin:0}
 .vid{display:inline-block;margin-top:8px;font-size:13px;font-weight:600;color:var(--accent);text-decoration:none}.vid:hover{text-decoration:underline}.infob1{padding-top:6px}
 .apphead .h1row{align-items:baseline}.viewname{font-family:var(--f-display);font-size:18px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
 .view{display:flex;flex-direction:column;gap:16px}
-.tabs{max-width:560px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr);gap:4px;padding-block:4px 6px}
+.tabs{max-width:560px;margin:0 auto;display:grid;grid-template-columns:repeat(5,1fr);gap:4px;padding-block:4px 6px}
 .tabs button{display:flex;flex-direction:column;align-items:center;gap:2px;background:none;border:0;color:var(--muted);font:600 11px/1.2 var(--f-body);padding:6px 0;border-radius:10px;cursor:pointer;min-height:48px}
 .tabs svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}.tabs svg circle{fill:var(--surface)}
 .tabs button[aria-pressed="true"]{color:var(--accent)}
@@ -264,6 +281,9 @@ html,body{margin:0}
   </section>
   </div>
 
+  <div class="view" id="v-rank" hidden>
+  <div class="rk" id="rank"></div>
+  </div>
   <div class="view" id="v-set" hidden>
   <section class="ex plain">
     <div class="exh"><span class="exn">Plan treningowy</span></div>
@@ -284,6 +304,7 @@ html,body{margin:0}
     <div class="hint" id="bkPickInfo" hidden></div>
     <div class="cloud" id="cloudBox" hidden>
       <label class="cloudrow" for="cloudOn"><input type="checkbox" id="cloudOn"><span><b>☁ Automatyczna kopia w chmurze</b> <button class="tip" data-tip="cloud" aria-label="Wyjaśnienie">?</button><br><span class="hint">Zaznaczone: po każdym zapisanym treningu kopia trafia sama na Dysk Google Damiana. Odznaczone: nic nie jest wysyłane.</span></span></label>
+      <label class="cloudrow" for="rankOn"><input type="checkbox" id="rankOn"><span><b>🏆 Pokazuj mnie w rankingu</b><br><span class="hint">Inni widzą tylko Twoje imię, liczbę serii w tygodniu i rekordy w ćwiczeniach. Odznacz, żeby się ukryć.</span></span></label>
       <div class="cloudpin" id="cloudPinBox" hidden><label class="lbl" for="cloudPin">PIN do chmury (dostaniesz od Damiana)</label><div class="edadd"><input id="cloudPin" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="PIN"><button class="mini plus" id="cloudConnect">Połącz</button></div></div>
       <div class="cloudst" id="cloudSt"></div>
       <div class="tools"><button class="mini" id="cloudRestore">Przywróć z chmury</button><button class="mini" id="cloudNow" hidden>Wyślij teraz</button></div>
@@ -340,7 +361,7 @@ html,body{margin:0}
   <p class="hint">Plik trafi do folderu Pobrane. Do odtworzenia wystarczy najnowszy plik: Kopia zapasowa → Wczytaj kopię.</p>
 </section>
 <footer class="bar">
-  <div class="barin" id="statusRow">
+  <div class="barin" id="statusRow"><div class="ptrack" role="progressbar" aria-label="Postęp treningu" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><i id="pbar"></i></div>
     <span id="sumTxt">0/0 serii</span>
     <div class="rest" id="rest" hidden><span>Przerwa</span><b id="restT">0:00</b><button class="pill" id="restPlus">+30 s</button><button class="pill" id="restX" aria-label="Zamknij przerwę">✕</button></div>
     
@@ -349,6 +370,7 @@ html,body{margin:0}
     <button data-view="train" aria-pressed="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 7v10M3 9.5v5M18 7v10M21 9.5v5M6 12h12"/></svg>Trening</button>
     <button data-view="hist" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/></svg>Historia</button>
     <button data-view="prog" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19h16M6 15l4-4 3 3 6-7"/><path d="M15 7h4v4"/></svg>Postępy</button>
+    <button data-view="rank" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 4h8v5a4 4 0 0 1-8 0z"/><path d="M8 6H5v1a3 3 0 0 0 3 3M16 6h3v1a3 3 0 0 1-3 3M12 13v4M8 20h8M10 17h4"/></svg>Ranking</button>
     <button data-view="set" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/><circle cx="9" cy="7" r="2.2"/><circle cx="15" cy="12" r="2.2"/><circle cx="10" cy="17" r="2.2"/></svg>Ustawienia</button>
   </nav>
 </footer>
@@ -946,7 +968,16 @@ function collect(){week=sessOf(day).length+1;
     const o={k:e.k,n:e.n,sets,rir:$(e.k+"_rir").value.trim()};if(e.pull)o.stage=pullStage+1;if(e.added)o.added=true;if(e.swapOf)o.swapOf=e.swapOf;return o});
   return {day,week,date:$("date").value||today(),bw:$("bw").value.trim(),notes:$("notes").value.trim(),ex,created:Date.now()};
 }
-function updSum(){let sets=0,doneN=0,vol=0;const st=S();for(const e of exList()){for(let i=0;i<nSets(e);i++){sets++;if(st.done[e.k+"_"+i])doneN++;vol+=num(($(e.k+"_kg_"+i)||{}).value)*(parseInt(($(e.k+"_r_"+i)||{}).value)||0)}}$("sumTxt").innerHTML=doneN+"/"+sets+" serii"+(vol?'<span class="vol"> · '+Math.round(vol).toLocaleString("pl")+" kg</span>":"")}
+// Pasek postępu: zrobione serie / zaplanowane + szacowany czas do końca (serie + zaplanowane przerwy)
+function secOf(e){const r=String(e.r||"");if(e.kind==="cardio"){const m=r.match(/(\d+)\s*[–-]\s*(\d+)\s*min/)||r.match(/(\d+)\s*min/);return m?60*(m[2]?(+m[1]+ +m[2])/2:+m[1]):900}
+  const sm=r.match(/(\d+)\s*s\b/);if(sm)return +sm[1]*(/str/.test(r)?2:1)+5;return e.kind==="dyn"?20:e.kind==="core"?40:45}
+function restAfter(e,next){if(e.kind==="cardio")return 0;if(e.kind==="dyn")return 75;if(e.kind==="core")return 40;if(e.ss&&next&&next.ss===e.ss)return 15;return restOf(e)}
+function updSum(){let sets=0,doneN=0,vol=0,left=0;const st=S();const L=exList();const todo=[];
+  L.forEach((e,j)=>{const n=nSets(e);for(let i=0;i<n;i++){sets++;if(st.done[e.k+"_"+i])doneN++;else todo.push([e,L[j+1]]);vol+=num(($(e.k+"_kg_"+i)||{}).value)*(parseInt(($(e.k+"_r_"+i)||{}).value)||0)}});
+  todo.forEach(([e,nx],i)=>{left+=secOf(e)+(i<todo.length-1?restAfter(e,nx):0)});
+  const pct=sets?Math.round(doneN/sets*100):0;const pb=$("pbar");if(pb){pb.style.width=pct+"%";pb.parentNode.setAttribute("aria-valuenow",pct)}
+  const eta=doneN>=sets?"gotowe 💪":"~"+Math.max(1,Math.round(left/60))+" min";
+  $("sumTxt").innerHTML='<b class="pct">'+pct+'%</b> · '+doneN+"/"+sets+" serii · "+eta+(vol?'<span class="vol"> · '+Math.round(vol).toLocaleString("pl")+" kg</span>":"")}
 
 function prBest(sets,bw){let best=null;for(const t of sets){if(t.w)continue;const kg=num(t.kg),r=parseInt(t.r)||0;if(!r)continue;const v=kg?kg*(1+r/30):r;if(!best||v>best.v)best={v,kg,r}}return best}
 function openFinish(){persist();const st=S();let done=0,filled=0,total=0,vol=0;const prs=[];
@@ -1138,7 +1169,7 @@ $("edSave").onclick=()=>{edPull();for(const d of Object.keys(ed)){ed[d].ex=ed[d]
   const sorted={};for(const d of Object.keys(ed).sort())sorted[d]=ed[d];$("edSheet").hidden=true;ed=null;applyPlan(sorted,true);toast("Plan zapisany.",true)};
 /* --- kopia w chmurze (Google Apps Script) --- */
 const CLOUD_URL="https://script.google.com/macros/s/AKfycbzzzjP1Do6FjKgOA32tp6YX6x52G4By6UHoqB8Yyvd2jz6Jgi95mdhGZM4YsY7cg8MGVA/exec"; // adres wdrożonego skryptu Google
-SNAP_SKIP.add(P+"cloud");SNAP_SKIP.add(P+"cloudst");
+SNAP_SKIP.add(P+"cloud");SNAP_SKIP.add(P+"cloudst");SNAP_SKIP.add(P+"rankc");
 let cloud=Object.assign({on:false,pin:""},ls.get(P+"cloud")||{});
 let cst=Object.assign({last:0,pending:false,err:""},ls.get(P+"cloudst")||{});
 let cloudBusy=false,cloudAgain=false;
@@ -1160,7 +1191,7 @@ function cloudDirty(){if(!cloud.on||!CLOUD_URL)return;cst.pending=true;saveCloud
 async function cloudSync(quiet){if(!cloud.on||!CLOUD_URL||!cst.pending)return renderCloud();if(cloudBusy){cloudAgain=true;return}
   if(!sessions.length){cst.pending=false;saveCloud();return renderCloud()}
   cloudBusy=true;renderCloud();
-  try{const j=await cloudPost({pin:cloud.pin,action:"save",snapshot:snapshot()},60000);
+  try{const j=await cloudPost({pin:cloud.pin,action:"save",rank:rankOn(),snapshot:snapshot()},60000);
     if(j&&j.ok){cst={last:Date.now(),pending:false,err:""};if(!quiet)toast("☁ Kopia w chmurze zaktualizowana.",true)}
     else{cst.err=j&&j.error==="pin"?"pin":"server";if(cst.err==="pin")toast("☁ PIN do chmury nie pasuje – sprawdź go w sekcji Kopia zapasowa.")}}
   catch(e){cst.err="net"}
@@ -1191,9 +1222,51 @@ $("cloudRestore").onclick=async()=>{if(!cloud.pin){$("cloudPinBox").hidden=false
 $("cloudNow").onclick=()=>cloudSync();
 window.addEventListener("online",()=>cloudSync(true));
 document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible")cloudSync(true)});
-let view="train";const VIEWNAME={train:"Trening",hist:"Historia",prog:"Postępy",set:"Ustawienia"};
+let view="train";const VIEWNAME={train:"Trening",hist:"Historia",prog:"Postępy",rank:"Ranking",set:"Ustawienia"};
+
+// ===== Ranking (tydzień PN–ND, puchary, rekordy) – liczy go skrypt w arkuszu z ostatnich kopii w chmurze =====
+function rankOn(){return ls.get(P+"rankOn")!==false}
+$("rankOn").checked=rankOn();
+$("rankOn").onchange=()=>{const on=$("rankOn").checked;ls.set(P+"rankOn",on);
+  if(cloud.on&&CLOUD_URL)cloudPost({pin:cloud.pin,action:"pref",rank:on}).then(j=>toast(j&&j.ok?(on?"🏆 Jesteś w rankingu.":"Jesteś ukryty w rankingu."):"Zapisane w telefonie – wyślę przy następnej kopii.")).catch(()=>toast("Zapisane w telefonie – wyślę przy następnej kopii."));else toast(on?"🏆 Będziesz w rankingu po włączeniu kopii w chmurze.":"Jesteś ukryty w rankingu.")};
+const MIES=["stycznia","lutego","marca","kwietnia","maja","czerwca","lipca","sierpnia","września","października","listopada","grudnia"];
+function plSerie(n){return n===1?"seria":(n%10>=2&&n%10<=4&&(n%100<10||n%100>=20))?"serie":"serii"}
+function wkLabel(w){const a=new Date(w+"T12:00:00"),b=new Date(a);b.setDate(a.getDate()+6);return a.getMonth()===b.getMonth()?a.getDate()+"–"+b.getDate()+" "+MIES[b.getMonth()]:a.getDate()+" "+MIES[a.getMonth()]+" – "+b.getDate()+" "+MIES[b.getMonth()]}
+function kgTxt(v){return String(v).replace(".",",")}
+let rankBusy=false;
+function rankCard(t,body){return '<div class="rc">'+(t?'<h3>'+t+'</h3>':'')+body+'</div>'}
+function drawRank(j,at,state){const box=$("rank");
+  const dl=7-((new Date().getDay()+6)%7);
+  let h=rankCard("",'<div class="wk"><div><div class="sm">Konkurs tygodnia</div><div class="big">'+wkLabel(j.week)+'</div></div><span class="cd">'+(dl>1?"jeszcze "+dl+" dni":"ostatni dzień!")+'</span></div>');
+  const ppl=j.people||[],top=ppl.length?ppl[0].sets:0;let rows="",pos=0,prev=null;
+  ppl.forEach((p,i)=>{if(p.sets!==prev){pos=i+1;prev=p.sets}
+    rows+='<div class="rrow'+(p.lead?' lead':'')+'"><div class="pos">'+(p.lead?'🏆':pos)+'</div><div><div class="nm">'+esc(p.name)+(p.me?'<span class="rme">TY</span>':'')+'</div><div class="rbar"><i style="width:'+(top?Math.round(p.sets/top*100):0)+'%"></i></div></div><div class="val">'+p.sets+'<small>'+plSerie(p.sets)+' · '+p.trainings+' tr.</small></div></div>'});
+  const me=ppl.find(p=>p.me),second=ppl.find(p=>p.sets<top);
+  let note=!top?"Nikt jeszcze nie zrobił serii w tym tygodniu. Pierwszy trening = prowadzenie!":me?(me.lead?(second?"Prowadzisz! Przewaga: "+(top-second.sets)+" "+plSerie(top-second.sets)+" nad kolejnym miejscem.":"Prowadzisz!"):"Do lidera brakuje Ci "+(top-me.sets)+" "+plSerie(top-me.sets)+"."):"";
+  if(j.me&&j.me.rank===false)note="Jesteś ukryty w rankingu – zmienisz to w Ustawieniach.";
+  h+=rankCard("Serie w tym tygodniu",'<div class="sm">PN–ND · serie robocze z wpisem lub ✓</div><div style="margin-top:8px">'+(rows||'<div class="rnote">Nikogo jeszcze nie ma w rankingu.</div>')+'</div>'+(note?'<div class="rnote">'+note+' Nowy konkurs startuje w poniedziałek o 00:00.</div>':''));
+  const cups=j.cups||[];
+  h+=rankCard("Puchary",'<div class="sm">Wygrane tygodnie'+(j.last?' · ostatnio: '+j.last.names.map(esc).join(" i ")+' ('+j.last.sets+' '+plSerie(j.last.sets)+')':'')+'</div>'+(cups.length?'<div class="cups">'+cups.map(c=>'<div class="cup"><b>🏆×'+c.n+'</b><span>'+esc(c.name)+'</span></div>').join("")+'</div>':'<div class="rnote">Pierwszy puchar dostanie zwycięzca tego tygodnia.</div>'));
+  const recs=j.records||[];const M=["🥇","🥈","🥉"];
+  h+=rankCard("Rekordy w ćwiczeniach",'<div class="sm">Największy ciężar w serii roboczej · ćwiczenia, które robią co najmniej 2 osoby</div>'+(recs.length?recs.map(r=>{const c=CATALOG[r.k];let l=r.list.slice(0,3);const mi=r.list.findIndex(x=>x.me);if(mi>2)l=l.concat([r.list[mi]]);
+    return '<div class="exr"><div class="t">'+esc(c?c.n:r.n)+(DB.has(r.k)?' <small>kg / hantel</small>':'')+'</div>'+l.map(x=>{const ix=r.list.indexOf(x);return '<div class="pod'+(x.me?' me':'')+'"><span>'+(M[ix]||(ix+1)+'.')+'</span><span>'+esc(x.name)+'</span><span class="k">'+kgTxt(x.kg)+' kg'+(x.r?' × '+x.r:'')+'</span></div>'}).join("")+'</div>'}).join(""):'<div class="rnote">Rekordy pojawią się, gdy co najmniej 2 osoby zrobią to samo ćwiczenie z ciężarem.</div>'));
+  const d=new Date(at);h+='<div class="rfoot"><span class="rnote" style="margin:0">'+(state||"Stan z "+String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0")+(d.toDateString()!==new Date().toDateString()?" ("+d.getDate()+"."+String(d.getMonth()+1).padStart(2,"0")+")":""))+'</span><button class="mini" id="rankRef">↻ Odśwież</button></div>';
+  box.innerHTML=h;$("rankRef").onclick=()=>renderRank(true)}
+function rankMsg(t,btn){$("rank").innerHTML=rankCard("Ranking",'<div class="rnote" style="font-size:14px">'+t+'</div>'+(btn?'<div style="margin-top:12px"><button class="mini" id="rankGo">'+btn+'</button></div>':''));const g=$("rankGo");if(g)g.onclick=()=>setView("set")}
+async function renderRank(fetchNow){
+  if(!CLOUD_URL)return rankMsg("Ranking nie jest dostępny w tej wersji aplikacji.");
+  if(!cloud.on)return rankMsg("Ranking porównuje uczestników z kopią w chmurze. Włącz „Automatyczną kopię w chmurze” w Ustawieniach i wpisz swój PIN – wtedy dołączysz do konkursu.","Przejdź do Ustawień");
+  const c=ls.get(P+"rankc");if(c&&c.d)drawRank(c.d,c.at,"Odświeżam…");else rankMsg("Wczytuję ranking…");
+  if(!fetchNow||rankBusy)return;rankBusy=true;
+  try{const j=await cloudPost({pin:cloud.pin,action:"rank",today:today(),rank:rankOn()});
+    if(j&&j.ok){ls.set(P+"rankc",{at:Date.now(),d:j});if(view==="rank")drawRank(j,Date.now())}
+    else if(j&&j.error==="action")rankMsg("Ranking zadziała po aktualizacji skryptu w arkuszu do wersji 3.");
+    else if(j&&j.error==="pin")rankMsg("PIN do chmury nie pasuje – sprawdź go w Ustawieniach.","Przejdź do Ustawień");
+    else if(c&&c.d)drawRank(c.d,c.at,"Chmura nie odpowiada – pokazuję ostatni stan");else rankMsg("Chmura nie odpowiada. Spróbuj za chwilę.")}
+  catch(e){if(c&&c.d){if(view==="rank")drawRank(c.d,c.at,"Brak internetu – pokazuję ostatni stan")}else rankMsg("Brak internetu. Ranking pobierze się, gdy połączysz się z siecią.")}
+  finally{rankBusy=false}}
 function setView(v){view=v;for(const k in VIEWNAME)$("v-"+k).hidden=k!==v;document.querySelectorAll(".tabs [data-view]").forEach(b=>b.setAttribute("aria-pressed",b.dataset.view===v));
-  $("viewName").textContent=VIEWNAME[v];$("statusRow").hidden=v!=="train";if(v==="hist")renderHist();if(v==="prog")renderProg();window.scrollTo({top:0})}
+  $("viewName").textContent=VIEWNAME[v];$("statusRow").hidden=v!=="train";if(v==="hist")renderHist();if(v==="prog")renderProg();if(v==="rank")renderRank(true);window.scrollTo({top:0})}
 document.querySelectorAll(".tabs [data-view]").forEach(b=>b.onclick=()=>setView(b.dataset.view));
 optCollapse=ls.get(P+"collapse")!==false;$("optCollapse").checked=optCollapse;
 $("optCollapse").onchange=()=>{optCollapse=$("optCollapse").checked;ls.set(P+"collapse",optCollapse);renderEx()};
@@ -1218,7 +1291,7 @@ try{renderCloud();cloudSync(true)}catch(e){}
 
 $("storeInfo").textContent=INFO_TXT+" · zapis w tej przeglądarce";
 if(PRO.name){document.title="Tytanowa siła · "+PRO.name;const mt=document.querySelector('meta[name="apple-mobile-web-app-title"]');if(mt)mt.content="Siła · "+PRO.name}
-if(PRO.owner){const lb=document.querySelector('label[for="cloudPin"]');if(lb)lb.textContent="PIN do chmury (Twój PIN z karty „Uczestnicy” w arkuszu)";if(TIPS.cloud)TIPS.cloud[1]=TIPS.cloud[1].replace("na Dysk Google Damiana","na Twój Dysk Google")}
+if(PRO.owner){const lb=document.querySelector('label[for="cloudPin"]');if(lb)lb.textContent="PIN do chmury (Twój PIN z karty „Uczestnicy” w arkuszu)";if(TIPS.cloud)TIPS.cloud[1]=TIPS.cloud[1].replace("na Dysk Google Damiana","na Twój Dysk Google");const ch=document.querySelector('label[for="cloudOn"] .hint');if(ch)ch.textContent=ch.textContent.replace("Dysk Google Damiana","Twój Dysk Google")}
 if(PRO.plan==="damian"){const w1=document.querySelector("#welcome .wsteps li");if(w1)w1.innerHTML="<b>Wybierz dzień</b> PN–PT. Aplikacja sama podpowie następny.";TIPS.day=["Dni PN–PT","Pięć treningów: push, pull, nogi, góra lżej, dół + brzuch. Robisz je po kolei – aplikacja sama zaznacza następny. Przyciskiem <b>✎ Edytuj plan</b> zmienisz ćwiczenia, serie i powtórzenia."];TIPS.tnum[1]=TIPS.tnum[1].replace("trening A i B","dzień")}
 </script>
 

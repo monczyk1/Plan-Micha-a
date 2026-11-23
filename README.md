@@ -28,4 +28,11 @@ Po każdej zmianie `index.html` lub `sw.js` uruchom `./sync.sh` (kopiuje je do f
 
 Jeden skrypt Google Apps Script w jednym arkuszu obsługuje wszystkich. Osobę rozpoznaje po PIN-ie
 z karty **Uczestnicy**; każda osoba ma własne karty („Treningi – Imię”, ukryte „Kopie – Imię”)
-i nie widzi kopii innych. „NIE” w kolumnie *Aktywny* blokuje dostęp. Instrukcja przejścia z wersji 1 jest na początku pliku.
+i nie widzi kopii innych. „NIE” w kolumnie *Aktywny* blokuje dostęp. Instrukcja aktualizacji jest na początku pliku.
+
+## Ranking
+
+Zakładka **Ranking** (wymaga kopii w chmurze i skryptu w wersji 3): konkurs tygodnia PN–ND na liczbę serii roboczych
+(z wpisem albo ✓; rozgrzewka się nie liczy), puchary za wygrane tygodnie (remis = puchar dla każdego) i rekordy –
+największy ciężar w serii roboczej w ćwiczeniach, które robią co najmniej 2 osoby (przy równym ciężarze wygrywa więcej powtórzeń).
+Ptaszek „Pokazuj mnie w rankingu” w Ustawieniach ukrywa osobę (kolumna *Ranking* w karcie Uczestnicy).
