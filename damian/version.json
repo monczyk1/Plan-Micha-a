@@ -1,19 +1,55 @@
-{"build":4,"data":"23.11.2026","zmiany":[
- {"build":4,"data":"23.11.2026","lista":[
-  "Nowa zakładka Ranking: konkurs tygodnia (PN–ND) na liczbę serii, puchar 🏆 dla lidera, puchary za wygrane tygodnie i rekordy w ćwiczeniach",
-  "W Ustawieniach ptaszek „Pokazuj mnie w rankingu” – możesz się ukryć",
-  "Pasek postępu na dole ekranu: ile procent treningu za Tobą i ile minut zostało",
-  "Pasek „Jest nowa wersja” i przycisk „Sprawdź aktualizację” z listą zmian",
-  "Trening zapisany bez internetu sam trafi do chmury, gdy złapiesz zasięg"]},
- {"build":3,"data":"23.11.2026","lista":[
-  "Kopia w chmurze dla kilku osób – każdy ma własny PIN i nie widzi danych innych",
-  "Poprawki: nazwy dni w edytorze planu i w historii"]},
- {"build":2,"data":"22.11.2026","lista":[
-  "Zakładki na dole: Trening, Historia, Postępy, Ustawienia",
-  "„Zakończ trening” z podsumowaniem i rekordami",
-  "Zrobione ćwiczenie zwija się do jednej linii",
-  "Nowe rysunki ćwiczeń i link do filmu z techniką",
-  "Polskie nazwy ćwiczeń, więcej zamienników w katalogu",
-  "Naprawione usuwanie dodanego ćwiczenia po wpisaniu ciężaru"]},
- {"build":1,"data":"22.11.2026","lista":["Pierwsza wersja: plan A/B, numery treningów T1–T9, historia, kopia zapasowa"]}
-]}
+{
+ "build": 5,
+ "data": "23.11.2026",
+ "zmiany": [
+  {
+   "build": 5,
+   "data": "23.11.2026",
+   "lista": [
+    "Kafelek „+ Nowy trening”: własny trening dodatkowy z wybranych ćwiczeń (zaznaczasz ptaszkiem, filtr po partiach: klatka, plecy, biceps, nogi…)",
+    "Trening dodatkowy zostaje jako kafelek z Twoją nazwą (np. „Nogi 1”) i nie zmienia kolejki planu",
+    "Rozgrzewka dobiera się sama do wybranych partii",
+    "Ćwiczenie dodane na dole treningu dodatkowego zostaje w nim na kolejne razy",
+    "Poprawka: zapis planu w edytorze nie zmienia już kolejności dni"
+   ]
+  },
+  {
+   "build": 4,
+   "data": "23.11.2026",
+   "lista": [
+    "Nowa zakładka Ranking: konkurs tygodnia (PN–ND) na liczbę serii, puchar 🏆 dla lidera, puchary za wygrane tygodnie i rekordy w ćwiczeniach",
+    "W Ustawieniach ptaszek „Pokazuj mnie w rankingu” – możesz się ukryć",
+    "Pasek postępu na dole ekranu: ile procent treningu za Tobą i ile minut zostało",
+    "Pasek „Jest nowa wersja” i przycisk „Sprawdź aktualizację” z listą zmian",
+    "Trening zapisany bez internetu sam trafi do chmury, gdy złapiesz zasięg"
+   ]
+  },
+  {
+   "build": 3,
+   "data": "23.11.2026",
+   "lista": [
+    "Kopia w chmurze dla kilku osób – każdy ma własny PIN i nie widzi danych innych",
+    "Poprawki: nazwy dni w edytorze planu i w historii"
+   ]
+  },
+  {
+   "build": 2,
+   "data": "22.11.2026",
+   "lista": [
+    "Zakładki na dole: Trening, Historia, Postępy, Ustawienia",
+    "„Zakończ trening” z podsumowaniem i rekordami",
+    "Zrobione ćwiczenie zwija się do jednej linii",
+    "Nowe rysunki ćwiczeń i link do filmu z techniką",
+    "Polskie nazwy ćwiczeń, więcej zamienników w katalogu",
+    "Naprawione usuwanie dodanego ćwiczenia po wpisaniu ciężaru"
+   ]
+  },
+  {
+   "build": 1,
+   "data": "22.11.2026",
+   "lista": [
+    "Pierwsza wersja: plan A/B, numery treningów T1–T9, historia, kopia zapasowa"
+   ]
+  }
+ ]
+}

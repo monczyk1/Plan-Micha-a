@@ -26,6 +26,13 @@ h1{font-family:var(--f-display);font-size:34px;line-height:1;margin:0;letter-spa
 .seg button small{display:block;font-family:var(--f-body);font-size:11px;font-weight:500;color:var(--muted);margin-top:4px;text-transform:none}
 .seg button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-fg)}
 .seg button[aria-pressed="true"] small{color:var(--accent-fg)}
+.seg button.xt{font-size:18px;line-height:1.05;padding:10px 6px 6px;overflow:hidden;overflow-wrap:anywhere}
+.seg button.addt{border:1.5px dashed var(--accent);background:transparent;color:var(--accent)}.seg button.addt small{color:var(--accent)}
+#ntGo{width:100%;font-size:18px}#ntGo:disabled{opacity:.5;cursor:default}#ntSheet{max-height:92%;display:flex;flex-direction:column;padding-bottom:0}#ntSheet .ntl{overflow-y:auto;flex:1;min-height:120px;margin:0 -4px;padding:0 4px}
+.ntc{display:flex;gap:6px;overflow-x:auto;padding:2px 0 10px;scrollbar-width:none}.ntc button{white-space:nowrap;font:500 13px var(--f-body);border:1px solid var(--line);border-radius:99px;padding:7px 12px;color:var(--muted);background:none;cursor:pointer}.ntc button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-fg);font-weight:600}
+.ntg{font-size:12px;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;margin:12px 0 2px}
+.nti{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--line);font-size:15px;cursor:pointer}.nti input{width:22px;height:22px;accent-color:var(--accent);flex:none;margin:0}.nti small{display:block;color:var(--muted);font-size:12px;font-family:var(--f-mono)}
+.ntf{position:sticky;bottom:0;background:var(--surface);padding:10px 0 calc(12px + env(safe-area-inset-bottom,0px));border-top:1px solid var(--line);margin-top:6px}.ntf .hint{text-align:center;margin-bottom:8px}
 .weeks{display:grid;grid-template-columns:repeat(8,1fr);gap:5px}
 .weeks button{padding:8px 0;border:1px solid var(--line);background:var(--surface);color:var(--fg);border-radius:8px;font-family:var(--f-mono);cursor:pointer}
 .weeks button[aria-pressed="true"]{border-color:var(--accent);color:var(--accent);font-weight:600;box-shadow:inset 0 0 0 1px var(--accent)}
@@ -334,6 +341,13 @@ html,body{margin:0}
   </div>
   <div class="field"><label class="lbl" for="notes">Notatki</label><textarea id="notes" rows="2" placeholder="sen, zakwasy, ból, samopoczucie"></textarea></div>
   <button class="save" id="save">Zapisz trening</button>
+</section>
+<section class="sheet" id="ntSheet" hidden role="dialog" aria-labelledby="ntT">
+  <div class="exh"><b id="ntT">+ Nowy trening</b><button class="mini" id="ntX">Anuluj</button></div>
+  <div class="field"><label class="lbl" for="ntName">Nazwa treningu</label><input id="ntName" maxlength="24" placeholder="np. Nogi 1, Ręce z Tomkiem"></div>
+  <div class="ntc" id="ntChips" role="group" aria-label="Partie mięśni"></div>
+  <div class="ntl" id="ntList"></div>
+  <div class="ntf"><div class="hint">Trening zostanie jako kafelek – możesz go powtarzać. Kolejne ćwiczenia dodasz na dole treningu.</div><button class="save" id="ntGo" disabled>Wybierz ćwiczenia</button></div>
 </section>
 <section class="sheet" id="edSheet" hidden role="dialog" aria-labelledby="edT">
   <div class="exh"><b id="edT">Edytuj plan</b><button class="mini" id="edX">Anuluj</button></div>
@@ -827,7 +841,7 @@ function suggest(ex,prev){
 }
 const PULL=["1 · ściąganie 3×8–12 + negatywy 3×3","2 · guma / maszyna 3×6–8","3 · podciąganie 3–5×1–3","4 · podciąganie 3×6–10"];
 const WEEK=new Proxy({},{get:()=>({t:"",f:s=>s})});const NWEEK=999;
-const NEXT={};function rebuildNext(){for(const k in NEXT)delete NEXT[k];DAYS.forEach((d,i)=>NEXT[d]=DAYS[(i+1)%DAYS.length])}rebuildNext();
+const NEXT={};function rebuildNext(){for(const k in NEXT)delete NEXT[k];const R=DAYS.filter(d=>!(PLAN[d]&&PLAN[d].extra));R.forEach((d,i)=>NEXT[d]=R[(i+1)%R.length])}rebuildNext();
 
 let day=DAYS[0],week=1,sessions=[],pullStage=0;
 const $=id=>document.getElementById(id);
@@ -845,7 +859,10 @@ function esc(t){return String(t==null?"":t).replace(/&/g,"&amp;").replace(/</g,"
 function fmtDate(d){if(!d)return"";const p=String(d).split("-");return p[2]+"."+p[1]}
 function r25(x){return Math.round(x/2.5)*2.5}
 function sortS(){sessions.sort((a,b)=>String(b.date).localeCompare(String(a.date))||(b.created||0)-(a.created||0))}
-function dl(d){return DAYLBL[d]||d}
+function dl(d){return PLAN[d]&&PLAN[d].extra?PLAN[d].name:(DAYLBL[d]||d)}
+function isX(d){return !!(PLAN[d]&&PLAN[d].extra)}
+function regDays(){return DAYS.filter(d=>!isX(d))}
+function nextReg(){const l=sessions.find(x=>PLAN[x.day]&&!isX(x.day));const R=regDays();return l?NEXT[l.day]:R[0]}
 function lastFor(k){for(const s of sessions){const e=(s.ex||[]).find(x=>x.k===k&&!x.kind);if(e&&e.sets&&e.sets.some(t=>!t.w&&(t.kg||t.r)))return {s,e:Object.assign({},e,{sets:e.sets.filter(t=>!t.w)})}}return null}
 
 let toastT=null;
@@ -858,10 +875,11 @@ let restoring=false;
 function persist(){if(restoring)return;S().vals=snap();if(!S().start&&(Object.keys(S().vals).length||Object.values(S().done).some(Boolean)))S().start=Date.now();draft.day=day;draft.common={};COMMON.forEach(i=>{if($(i).value)draft.common[i]=$(i).value});ls.set(P+"draft",draft)}
 
 function renderSeg(){
-  $("seg").innerHTML="";$("seg").style.gridTemplateColumns="repeat("+Math.min(DAYS.length,3)+",1fr)";
-  for(const d of DAYS){const b=document.createElement("button");b.setAttribute("aria-pressed",d===day);b.innerHTML=dl(d)+"<small>"+esc(PLAN[d].sub)+(d!==day&&hasDraft(d)?" · w toku":"")+"</small>";b.onclick=()=>{if(d===day)return;persist();if(viewT!==null)reloadSessions();day=d;viewT=null;render(true)};$("seg").append(b)}
-  const last=sessions[0];
-  $("nextHint").textContent=last?"Ostatnio: "+(PLAN[last.day]?dl(last.day)+" "+PLAN[last.day].sub:(OLD[last.day]||{n:last.day}).n)+" ("+fmtDate(last.date)+")"+(PLAN[last.day]?" → następny "+dl(NEXT[last.day]):""):"Jeszcze nie ma zapisanych treningów.";
+  $("seg").innerHTML="";$("seg").style.gridTemplateColumns="repeat("+Math.min(DAYS.length+1,3)+",1fr)";
+  for(const d of DAYS){const b=document.createElement("button");b.setAttribute("aria-pressed",d===day);if(isX(d))b.className="xt";b.innerHTML=esc(dl(d))+"<small>"+esc(isX(d)?"dodatkowy":PLAN[d].sub)+(d!==day&&hasDraft(d)?" · w toku":"")+"</small>";b.onclick=()=>{if(d===day)return;persist();if(viewT!==null)reloadSessions();day=d;viewT=null;render(true)};$("seg").append(b)}
+  {const a=document.createElement("button");a.className="addt";a.innerHTML="+<small>Nowy trening</small>";a.setAttribute("aria-label","Nowy trening dodatkowy");a.onclick=openNT;$("seg").append(a)}
+  const last=sessions[0];const nx=nextReg();
+  $("nextHint").textContent=last?"Ostatnio: "+(PLAN[last.day]?dl(last.day)+" "+(isX(last.day)?"(dodatkowy)":PLAN[last.day].sub):(OLD[last.day]||{n:last.dn||last.day}).n)+" ("+fmtDate(last.date)+")"+(nx?" → następny "+dl(nx):""):"Jeszcze nie ma zapisanych treningów.";
 }
 let viewT=null,pvDirty=false;
 function saveSessions(){const ok=ls.set(P+"sessions",sessions);ls.set(P+"changed",Date.now());try{cloudDirty()}catch(e){}return ok}
@@ -874,7 +892,7 @@ function renderWeeks(){
     return'<button data-t="'+i+'" class="'+(done?"done":isCur?"cur":"fut")+'" aria-pressed="'+sel+'"'+(t>cur?" disabled":"")+'>T'+t+'</button>'}).join("");
   {const g=$("tgrid"),cb=g.querySelector('[aria-pressed="true"]');if(cb)g.scrollLeft=cb.offsetLeft-g.clientWidth/2+cb.offsetWidth/2}
   $("tgrid").querySelectorAll("button:not([disabled])").forEach(b=>b.onclick=()=>{const i=+b.dataset.t;reloadSessions();const l2=sessOf(day);viewT=i<l2.length?i:null;pvDirty=false;render()});
-  $("weekHint").textContent=viewT!==null?"Podgląd T"+(viewT+1)+" · kliknij T"+cur+", żeby wrócić do dzisiejszego treningu":list.length?"Dziś: T"+cur+" · kliknij wcześniejszy numer, żeby zobaczyć, co wtedy robiłeś":"Pierwszy trening "+day+" – T1";
+  $("weekHint").textContent=viewT!==null?"Podgląd T"+(viewT+1)+" · kliknij T"+cur+", żeby wrócić do dzisiejszego treningu":list.length?"Dziś: T"+cur+" · kliknij wcześniejszy numer, żeby zobaczyć, co wtedy robiłeś":"Pierwszy trening "+dl(day)+" – T1";
   const past=viewT!==null?list[viewT]:null,pv=$("pastView");
   pv.hidden=!past;["exList","finish"].forEach(id=>{$(id).hidden=!!past});
   if(past){const exs=past.ex||[];
@@ -897,7 +915,7 @@ function renderEx(fromDraft){
   const st=S();const keep=fromDraft?st.vals:snap();
   const box=$("exList");box.innerHTML="";
   const list=exList();const used=new Set(list.map(e=>e.k));
-  const wl=(WARM[day]||WARM.A||[]);const wd=wl.filter((w,i)=>st.done["wu_"+i]).length;
+  const wl=((PLAN[day]&&PLAN[day].warm)||WARM[day]||WARM.A||[]);const wd=wl.filter((w,i)=>st.done["wu_"+i]).length;
   const wu=document.createElement("details");wu.className="wup";if(st.wuOpen)wu.open=true;
   wu.innerHTML='<summary><span><b>Rozgrzewka</b> · 5–7 min</span><span class="wcount">'+wd+'/'+wl.length+'</span></summary><div class="whint">Zrób po kolei i odhaczaj ✓ <button class="tip" data-tip="warm" aria-label="Wyjaśnienie">?</button></div><ol class="wlist">'+wl.map((w,i)=>'<li><div class="wfig">'+(FX.F[w.f]||FIG[w.f]||"")+'</div><div class="wtxt"><div class="wn">'+w.n+' <span class="wd">'+w.d+'</span></div><div class="wc">'+w.c+'</div></div><button class="ok" data-wu="'+i+'" aria-pressed="'+(!!st.done["wu_"+i])+'" aria-label="Zrobione">✓</button></li>').join("")+'</ol>';
   wu.addEventListener("toggle",()=>{st.wuOpen=wu.open;persist()});
@@ -950,7 +968,7 @@ function renderEx(fromDraft){
     if(st.done[key]){[$(k+"_kg_"+i),$(k+"_r_"+i)].forEach(el=>{if(el&&!el.value&&/^\d+([.,]\d+)?$/.test(el.placeholder))el.value=el.placeholder});spread(k,+i);if(+b.dataset.rest)startRest(+b.dataset.rest);wake()}
     if(!st.done[key])st.open[k]=false;updSum();persist();const c=b.closest(".ex");if(c&&c.dataset.card)cardState(k,c,c.querySelectorAll(".ok[data-k]").length)});
   if($("restoreEx"))$("restoreEx").onclick=()=>{st.removed=[];renderEx()};
-  $("addEx").onclick=()=>{const k=$("catalog").value;if(k){st.added.push(k);renderEx();const cards=box.querySelectorAll(".ex");cards[cards.length-1].scrollIntoView({block:"center"})}};
+  $("addEx").onclick=()=>{const k=$("catalog").value;if(k&&isX(day)){const c=CATALOG[k];PLAN[day].ex.push(Object.assign({k,n:c.n,s:c.s||3,r:c.r||"8–12",m:c.m?1:0},c.kind?{kind:c.kind}:{}));PLAN[day].warm=genWarm(PLAN[day].ex);ls.set(P+"plan",PLAN);ls.set(P+"changed",Date.now());try{cloudDirty()}catch(e){}toast("Dodano do treningu „"+PLAN[day].name+"” – zostanie na kolejne razy.",true);renderEx();const cards=box.querySelectorAll(".ex");cards[cards.length-1].scrollIntoView({block:"center"});return}if(k){st.added.push(k);renderEx();const cards=box.querySelectorAll(".ex");cards[cards.length-1].scrollIntoView({block:"center"})}};
   const ps=$("pull_stage");if(ps)ps.onchange=()=>{pullStage=+ps.value;ls.set(P+"pull",pullStage)};
   box.querySelectorAll(".set.cols .tip").forEach((t,i)=>{if(i)t.remove()});
   updSum();persist();
@@ -970,7 +988,7 @@ function collect(){week=sessOf(day).length+1;
     const sets=[];if(e.m)for(let i=0;i<2;i++){const kg=$(e.k+"_wkg_"+i).value.trim(),r=$(e.k+"_wr_"+i).value.trim();if(kg||r)sets.push({kg,r,w:true})}
     for(let i=0;i<nSets(e);i++)sets.push({kg:$(e.k+"_kg_"+i).value.trim(),r:$(e.k+"_r_"+i).value.trim()});
     const o={k:e.k,n:e.n,sets,rir:$(e.k+"_rir").value.trim()};if(e.pull)o.stage=pullStage+1;if(e.added)o.added=true;if(e.swapOf)o.swapOf=e.swapOf;return o});
-  return {day,week,date:$("date").value||today(),bw:$("bw").value.trim(),notes:$("notes").value.trim(),ex,created:Date.now()};
+  return {day,dn:isX(day)?PLAN[day].name:undefined,week,date:$("date").value||today(),bw:$("bw").value.trim(),notes:$("notes").value.trim(),ex,created:Date.now()};
 }
 // Pasek postępu: zrobione serie / zaplanowane + szacowany czas do końca (serie + zaplanowane przerwy)
 function secOf(e){const r=String(e.r||"");if(e.kind==="cardio"){const m=r.match(/(\d+)\s*[–-]\s*(\d+)\s*min/)||r.match(/(\d+)\s*min/);return m?60*(m[2]?(+m[1]+ +m[2])/2:+m[1]):900}
@@ -1002,7 +1020,7 @@ $("save").onclick=async()=>{
   sessions.unshift(s);sortS();saveSessions();
   draft[s.day]=blank();draft.common={};$("date").value=today();dateAuto=true;
   clearInterval(restIv);$("rest").hidden=true;
-  day=NEXT[s.day]||DAYS[0];viewT=null;
+  day=isX(s.day)?(nextReg()||DAYS[0]):(NEXT[s.day]||DAYS[0]);viewT=null;
   render(true);renderHist();window.scrollTo({top:0});
   afterSave(s);
   $("save").disabled=false;$("save").textContent="Zapisz trening";
@@ -1032,7 +1050,7 @@ function renderHist(){setTimeout(()=>{try{renderProg()}catch(e){}},0);setTimeout
     if(s.bw)body+='<div><b>Masa</b>: '+esc(s.bw)+' kg</div>';
     if(s.notes)body+='<div><b>Notatki</b>: '+esc(s.notes)+'</div>';
     body+='</div><div class="tools">'+(PLAN[s.day]?'<button class="mini" data-fix="'+esc(s.id)+'">✎ Popraw</button>':'')+'<button class="del" data-id="'+esc(s.id)+'">Usuń wpis</button></div><div class="ai" id="ai_'+esc(s.id)+'"></div>';
-    d.innerHTML='<summary>'+esc(PLAN[s.day]?dl(s.day)+' '+PLAN[s.day].sub:(OLD[s.day]||{n:s.day}).n)+' · '+fmtDate(s.date)+(PLAN[s.day]?' <span>T'+(sessOf(s.day).indexOf(s)+1)+'</span>':'')+'</summary>'+body;
+    d.innerHTML='<summary>'+esc(PLAN[s.day]?dl(s.day)+' '+PLAN[s.day].sub:(OLD[s.day]||{n:s.dn||s.day}).n)+' · '+fmtDate(s.date)+(PLAN[s.day]?' <span>T'+(sessOf(s.day).indexOf(s)+1)+'</span>':'')+'</summary>'+body;
     h.append(d);
   }
   if(sessions.length>histLimit){const m=document.createElement("button");m.className="mini";m.textContent="Pokaż starsze ("+(sessions.length-histLimit)+")";m.onclick=()=>{histLimit+=30;renderHist()};h.append(m)}
@@ -1147,10 +1165,49 @@ function applyPlan(np,save){for(const k of Object.keys(PLAN))delete PLAN[k];Obje
   for(const d of DAYS)for(const e of PLAN[d].ex)if(!CATALOG[e.k])CATALOG[e.k]={k:e.k,n:e.n,g:"Własne",s:e.s,r:e.r,m:e.m};
   if(save){ls.set(P+"plan",PLAN);ls.set(P+"changed",Date.now());try{cloudDirty()}catch(e){}}if(!PLAN[day])day=DAYS[0];viewT=null;render(true);renderHist()}
 for(const d of DAYS)for(const e of PLAN[d].ex)if(!CATALOG[e.k])CATALOG[e.k]={k:e.k,n:e.n,g:"Własne",s:e.s,r:e.r,m:e.m};
+
+// ===== „+ Nowy trening”: własny trening dodatkowy (kafelek), nie zmienia kolejki planu =====
+const NTORD=["Klatka","Plecy","Barki","Biceps","Triceps","Nogi","Pośladki","Łydki","Core","Dynamika","Cardio","Własne","Inne"];
+const NTMAP={"Klatka":"Klatka","Plecy":"Plecy","Barki":"Barki","Nogi – uda":"Nogi","Tył uda i pośladki":"Pośladki","Łydki":"Łydki","Core":"Core","Własne":"Własne"};
+function ntGrp(e){if(e.kind==="dyn")return "Dynamika";if(e.kind==="cardio")return "Cardio";if(e.g==="Ramiona")return /uginanie|młotkow|biceps/i.test(e.n)?"Biceps":"Triceps";return NTMAP[e.g]||"Inne"}
+function genWarm(ex){const g=new Set(ex.map(e=>ntGrp(CATALOG[e.k]||e)));const has=a=>a.some(x=>g.has(x));
+  const legs=has(["Nogi","Pośladki","Łydki"]),push=has(["Klatka","Barki","Triceps"]),pull=has(["Plecy","Biceps"]);
+  const w=[{n:legs?"Rower":"Wioślarz lub orbitrek",d:"3 min",c:"Spokojnie, tętno 120–135, da się swobodnie mówić.",f:"cardio"}];
+  if(legs)w.push({n:"Biodro 90/90",d:"5/str.",c:"Siedzisz, obie nogi zgięte pod kątem 90°. Przekładasz kolana z jednej strony na drugą, tułów prosto.",f:"kneel"},
+    {n:"Kostka przy ścianie",d:"10/str.",c:"Stopa ok. 10 cm od ściany. Kolano do ściany, pięta zostaje na podłodze.",f:"kneel"},
+    {n:"Mostek biodrowy",d:"10",c:"Leżysz, stopy blisko pośladków. Unieś biodra, ściśnij pośladki, 1 s na górze – budzi pośladki przed nogami.",f:"bridge"},
+    {n:"Przysiad z pauzą na dole",d:"2 × 5",c:"Bez ciężaru, 3 s na dole. Łokcie rozpychają kolana na zewnątrz.",f:"squat"});
+  if(push)w.push({n:"Ślizgi rąk po ścianie",d:"8",c:"Plecy i ręce przy ścianie. Przesuwasz ręce w górę i w dół bez odrywania lędźwi.",f:"vpush"},
+    {n:"Pompki łopatkowe",d:"10",c:"Podpór na prostych rękach. Ruch tylko łopatkami: zbliżasz i rozsuwasz.",f:"core"});
+  if(pull)w.push({n:"Zwis na drążku",d:"20 s",c:"Luźny zwis, barki lekko aktywne.",f:"vpull"},
+    {n:"Rozciąganie gumy przed sobą",d:"15",c:"Proste ręce na wysokości barków, rozciągasz gumę ściągając łopatki.",f:"band"});
+  if(g.has("Core")||w.length<3)w.push({n:"Bird dog",d:"5/str.",c:"Na czworakach wyprostuj rękę i przeciwną nogę, plecy płasko, 2 s pauzy.",f:"quad"});
+  if(w.length<3)w.push({n:"Koci grzbiet",d:"8",c:"Na czworakach powoli zaokrąglasz i wyginasz plecy, z oddechem.",f:"quad"});
+  const m=ex.find(e=>e.m&&!e.kind)||ex.find(e=>!e.kind);
+  if(m){const gg=ntGrp(CATALOG[m.k]||m);w.push({n:"Serie dochodzące – "+m.n,d:m.m?"2 serie":"1 seria",c:m.m?"Około 50% ciężaru roboczego × 10 → 75% × 5, potem serie robocze.":"Lekki ciężar × 15, spokojnie, pełny zakres.",f:["Nogi","Pośladki","Łydki"].includes(gg)?"squat":["Plecy","Biceps"].includes(gg)?"hpull":"hpush"})}
+  return w.slice(0,8)}
+let ntSel=[],ntOn=new Set();
+function plCw(n){return n===1?"ćwiczenie":(n%10>=2&&n%10<=4&&(n%100<10||n%100>=20))?"ćwiczenia":"ćwiczeń"}
+function openNT(){if(DAYS.filter(isX).length>=6){toast("Masz już 6 treningów dodatkowych. Usuń któryś w Ustawienia → Edytuj plan.");return}
+  ntSel=[];ntOn=new Set();$("ntName").value="";ntRender();$("ntSheet").hidden=false;setTimeout(()=>$("ntName").focus(),50)}
+function ntRender(){const all=Object.values(CATALOG);const groups=NTORD.filter(g=>all.some(e=>ntGrp(e)===g));
+  $("ntChips").innerHTML=groups.map(g=>'<button type="button" data-g="'+g+'" aria-pressed="'+ntOn.has(g)+'">'+g+'</button>').join("");
+  $("ntChips").querySelectorAll("[data-g]").forEach(b=>b.onclick=()=>{const g=b.dataset.g;ntOn.has(g)?ntOn.delete(g):ntOn.add(g);ntRender()});
+  const show=groups.filter(g=>!ntOn.size||ntOn.has(g));
+  $("ntList").innerHTML=show.map(g=>'<div class="ntg">'+g+'</div>'+all.filter(e=>ntGrp(e)===g).sort((a,b)=>a.n.localeCompare(b.n,"pl")).map(e=>'<label class="nti"><input type="checkbox" data-k="'+e.k+'"'+(ntSel.includes(e.k)?' checked':'')+'><span>'+esc(e.n)+'<small>'+(e.s||3)+' × '+esc(e.r||"8–12")+'</small></span></label>').join("")).join("");
+  $("ntList").querySelectorAll("[data-k]").forEach(c=>c.onchange=()=>{const k=c.dataset.k;if(c.checked){if(!ntSel.includes(k))ntSel.push(k)}else ntSel=ntSel.filter(x=>x!==k);ntBtn()});
+  ntBtn()}
+function ntBtn(){const n=ntSel.length;$("ntGo").disabled=!n;$("ntGo").textContent=n?"Zacznij trening · "+n+" "+plCw(n):"Zaznacz ćwiczenia"}
+$("ntX").onclick=()=>{$("ntSheet").hidden=true};
+$("ntGo").onclick=()=>{if(!ntSel.length)return;const KO={dyn:0,undefined:1,core:2,cardio:3};
+  const ex=ntSel.map(k=>{const c=CATALOG[k];return Object.assign({k,n:c.n,s:c.s||3,r:c.r||"8–12",m:c.m?1:0},c.kind?{kind:c.kind}:{})}).map((e,i)=>[e,i]).sort((a,b)=>(KO[a[0].kind]-KO[b[0].kind])||a[1]-b[1]).map(x=>x[0]);
+  const name=$("ntName").value.trim().slice(0,24)||("Dodatkowy "+(DAYS.filter(isX).length+1));
+  const key="X"+Date.now().toString(36);persist();const np=JSON.parse(JSON.stringify(PLAN));np[key]={name,sub:"dodatkowy",extra:1,ex,warm:genWarm(ex)};
+  $("ntSheet").hidden=true;applyPlan(np,true);day=key;viewT=null;render(true);window.scrollTo({top:0});toast("Gotowe: „"+name+"” – trening zostaje jako kafelek.",true)};
 function edRender(){
-  $("edTabs").innerHTML=Object.keys(ed).map(d=>'<button data-ed="'+d+'" aria-pressed="'+(d===edDay)+'">Trening '+dl(d)+'</button>').join("");
+  $("edTabs").innerHTML=Object.keys(ed).map(d=>'<button data-ed="'+d+'" aria-pressed="'+(d===edDay)+'">'+(ed[d].extra?esc(ed[d].name||"Dodatkowy"):"Trening "+dl(d))+'</button>').join("");
   $("edTabs").querySelectorAll("[data-ed]").forEach(b=>b.onclick=()=>{edPull();edDay=b.dataset.ed;edRender()});
-  const P=ed[edDay];$("edSub").value=P.sub||"";
+  const P=ed[edDay];$("edSub").value=P.extra?P.name||"":P.sub||"";document.querySelector('label[for="edSub"]').textContent=P.extra?"Nazwa treningu dodatkowego":"Opis treningu";
   $("edList").innerHTML=P.ex.map((e,i)=>'<div class="edrow"><div class="edmv"><button class="mini" data-up="'+i+'" aria-label="W górę"'+(i?'':' disabled')+'>▲</button><button class="mini" data-dn="'+i+'" aria-label="W dół"'+(i<P.ex.length-1?'':' disabled')+'>▼</button></div><div class="edf"><input data-f="n" data-i="'+i+'" value="'+esc(e.n)+'" aria-label="Nazwa"><div class="edsr"><label>Serie <input data-f="s" data-i="'+i+'" type="number" min="1" max="10" inputmode="numeric" value="'+e.s+'"></label><label>Powt. <input data-f="r" data-i="'+i+'" value="'+esc(e.r)+'"></label><label class="edm"><input type="checkbox" data-f="m" data-i="'+i+'"'+(e.m?' checked':'')+'> z rozgrzewką</label></div></div><button class="x" data-del="'+i+'" aria-label="Usuń ćwiczenie">✕</button></div>').join("")||'<div class="hint">Brak ćwiczeń. Dodaj je poniżej.</div>';
   const used=new Set(P.ex.map(e=>e.k));
   $("edCat").innerHTML='<option value="">Dodaj ćwiczenie z katalogu…</option>'+GORDER.map(g=>{const it=Object.values(CATALOG).filter(e=>e.g===g&&!used.has(e.k)).sort((a,b)=>a.n.localeCompare(b.n,"pl"));return it.length?'<optgroup label="'+g+'">'+it.map(e=>'<option value="'+e.k+'">'+esc(e.n)+'</option>').join("")+'</optgroup>':''}).join("");
@@ -1158,19 +1215,19 @@ function edRender(){
   $("edList").querySelectorAll("[data-up]").forEach(b=>b.onclick=()=>mv(+b.dataset.up,+b.dataset.up-1));
   $("edList").querySelectorAll("[data-dn]").forEach(b=>b.onclick=()=>mv(+b.dataset.dn,+b.dataset.dn+1));
   $("edList").querySelectorAll("[data-del]").forEach(b=>b.onclick=()=>{edPull();P.ex.splice(+b.dataset.del,1);edRender()});
-  $("edDelDay").disabled=Object.keys(ed).length<2;$("edDelDay").textContent="Usuń trening "+edDay;$("edDelDay").dataset.armed="";
+  $("edDelDay").disabled=!ed[edDay].extra&&Object.keys(ed).filter(d=>!ed[d].extra).length<2;$("edDelDay").textContent="Usuń trening "+(ed[edDay].extra?ed[edDay].name:dl(edDay));$("edDelDay").dataset.armed="";
 }
-function edPull(){if(!ed||!ed[edDay])return;const P=ed[edDay];P.sub=$("edSub").value.trim();
+function edPull(){if(!ed||!ed[edDay])return;const P=ed[edDay];if(P.extra)P.name=$("edSub").value.trim().slice(0,24)||P.name;else P.sub=$("edSub").value.trim();
   $("edList").querySelectorAll("[data-f]").forEach(el=>{const e=P.ex[+el.dataset.i];if(!e)return;const f=el.dataset.f;if(f==="m")e.m=el.checked?1:0;else if(f==="s")e.s=Math.max(1,Math.min(10,parseInt(el.value)||1));else e[f]=el.value.trim()||e[f]})}
 $("editPlan").onclick=()=>{ed=JSON.parse(JSON.stringify(PLAN));edDay=day;edRender();$("edSheet").hidden=false};
 $("edX").onclick=()=>{$("edSheet").hidden=true;ed=null};
-$("edAddCat").onclick=()=>{const k=$("edCat").value;if(!k)return;edPull();const c=CATALOG[k];ed[edDay].ex.push({k,n:c.n,s:c.s||3,r:c.r||"8–12",m:c.m?1:0});edRender()};
+$("edAddCat").onclick=()=>{const k=$("edCat").value;if(!k)return;edPull();const c=CATALOG[k];ed[edDay].ex.push(Object.assign({k,n:c.n,s:c.s||3,r:c.r||"8–12",m:c.m?1:0},c.kind?{kind:c.kind}:{}));edRender()};
 $("edAddCustom").onclick=()=>{const n=$("edCustom").value.trim();if(!n)return;edPull();const k="c_"+Date.now().toString(36);CATALOG[k]={k,n,g:"Własne",s:3,r:"8–12"};ed[edDay].ex.push({k,n,s:3,r:"8–12",m:0});$("edCustom").value="";edRender()};
 $("edNewDay").onclick=()=>{edPull();const L=[...LETTERS].find(x=>!ed[x]);if(!L){toast("Maksymalnie 6 treningów.");return}ed[L]={sub:"",ex:[]};edDay=L;edRender()};
-$("edDelDay").onclick=()=>{const b=$("edDelDay");if(b.dataset.armed!=="1"){b.dataset.armed="1";b.textContent="Na pewno usunąć "+edDay+"?";return}delete ed[edDay];edDay=Object.keys(ed)[0];edRender()};
+$("edDelDay").onclick=()=>{const b=$("edDelDay");if(b.dataset.armed!=="1"){b.dataset.armed="1";b.textContent="Na pewno usunąć "+dl(edDay)+"?";return}delete ed[edDay];edDay=Object.keys(ed)[0];edRender()};
 $("edReset").onclick=()=>{const b=$("edReset");if(b.dataset.armed!=="1"){b.dataset.armed="1";b.textContent="Na pewno? Kliknij ponownie";return}b.dataset.armed="";b.textContent="Przywróć plan startowy";ed=JSON.parse(JSON.stringify(PLAN_DEFAULT));edDay=Object.keys(ed)[0];edRender()};
 $("edSave").onclick=()=>{edPull();for(const d of Object.keys(ed)){ed[d].ex=ed[d].ex.filter(e=>e.n);if(!ed[d].ex.length){toast("Trening "+dl(d)+" nie ma ćwiczeń. Dodaj ćwiczenie albo usuń trening.");edDay=d;edRender();return}}
-  const sorted={};for(const d of Object.keys(ed).sort())sorted[d]=ed[d];$("edSheet").hidden=true;ed=null;applyPlan(sorted,true);toast("Plan zapisany.",true)};
+  const sorted={},ks=Object.keys(ed);for(const d of ks.filter(d=>!ed[d].extra))sorted[d]=ed[d];for(const d of ks.filter(d=>ed[d].extra)){ed[d].warm=genWarm(ed[d].ex);sorted[d]=ed[d]}$("edSheet").hidden=true;ed=null;applyPlan(sorted,true);toast("Plan zapisany.",true)};
 /* --- kopia w chmurze (Google Apps Script) --- */
 const CLOUD_URL="https://script.google.com/macros/s/AKfycbzzzjP1Do6FjKgOA32tp6YX6x52G4By6UHoqB8Yyvd2jz6Jgi95mdhGZM4YsY7cg8MGVA/exec"; // adres wdrożonego skryptu Google
 SNAP_SKIP.add(P+"cloud");SNAP_SKIP.add(P+"cloudst");SNAP_SKIP.add(P+"rankc");
@@ -1226,7 +1283,7 @@ $("cloudRestore").onclick=async()=>{if(!cloud.pin){$("cloudPinBox").hidden=false
 $("cloudNow").onclick=()=>cloudSync();
 window.addEventListener("online",()=>cloudSync(true));
 // ===== Aktualizacje: numer wersji w aplikacji vs version.json na serwerze =====
-const APP_BUILD=4;
+const APP_BUILD=5;
 function verItems(j,from){return (j&&j.zmiany||[]).filter(x=>x.build>from)}
 function verHtml(list){return list.map(x=>'<h4>'+esc(x.data)+' · wersja '+x.build+'</h4><ul>'+x.lista.map(t=>'<li>'+esc(t)+'</li>').join("")+'</ul>').join("")}
 function renderVer(){const j=ls.get(P+"verc");const cur=(j&&j.zmiany||[]).find(x=>x.build===APP_BUILD);
@@ -1307,12 +1364,12 @@ $("rirClose").onclick=()=>{$("rirSheet").hidden=true};
 document.addEventListener("input",e=>{const t=e.target;if(!t||!t.id)return;
   if(t.closest("#exList")){const m=t.id.match(/^(.+)_kg_(\d+)$/);if(m)spread(m[1],+m[2]);updSum();persist()}
   else if(COMMON.includes(t.id))persist()});
-document.addEventListener("keydown",e=>{if(e.key==="Escape"){$("finSheet").hidden=true;$("edSheet").hidden=true;$("tipSheet").hidden=true;$("saveSheet").hidden=true;$("rirSheet").hidden=true}});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"){$("ntSheet").hidden=true;$("finSheet").hidden=true;$("edSheet").hidden=true;$("tipSheet").hidden=true;$("saveSheet").hidden=true;$("rirSheet").hidden=true}});
 
 function pickStart(){
   const wm=ls.get(P+"weekm");const lastTs=sessions[0]?sessions[0].created||0:0;
   
-  if(draft.day&&PLAN[draft.day]&&hasDraft(draft.day))day=draft.day;else{const l=sessions.find(x=>PLAN[x.day]);day=l?NEXT[l.day]:DAYS[0]}
+  if(draft.day&&PLAN[draft.day]&&hasDraft(draft.day))day=draft.day;else{day=nextReg()||DAYS[0]}
 }
 let dateAuto=true;$("date").addEventListener("input",()=>{dateAuto=$("date").value===today()});
 document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible"&&dateAuto&&$("date").value!==today())$("date").value=today()});
