@@ -41,7 +41,7 @@ h1{font-family:var(--f-display);font-size:34px;line-height:1;margin:0;letter-spa
 .ordr.done .nm{color:var(--muted)}.ordr.done .nm::after{content:" ✓";color:var(--accent)}
 .ordq{background:var(--field);border-radius:12px;padding:12px;margin:10px 0}.ordq b{display:block;font-size:15px;margin-bottom:4px}.ordq p{margin:0 0 10px;font-size:13px;color:var(--muted);line-height:1.4}
 .ordq .sg{display:grid;grid-template-columns:1fr 1fr;gap:8px}.ordq .sg button{padding:11px;border-radius:10px;border:1.5px solid var(--line);background:var(--surface);color:var(--fg);font:600 15px var(--f-body);cursor:pointer}.ordq .sg button[aria-pressed="true"]{border-color:var(--accent);background:var(--accent);color:var(--accent-fg)}
-#ssAsk{z-index:10}.ssbtns{display:flex;flex-direction:column;gap:8px;margin-top:10px}.ssbtns .save{font-size:18px;padding:13px}.ssbtns .mini{padding:12px;font-size:15px}#ntGo:disabled{opacity:.5;cursor:default}#ntSheet{max-height:92%;display:flex;flex-direction:column;padding-bottom:0}#ntSheet .ntl{overflow-y:auto;flex:1;min-height:120px;margin:0 -4px;padding:0 4px}
+#ssAsk,#valAsk{z-index:10}.ssbtns{display:flex;flex-direction:column;gap:8px;margin-top:10px}.ssbtns .save{font-size:18px;padding:13px}.ssbtns .mini{padding:12px;font-size:15px}#ntGo:disabled{opacity:.5;cursor:default}#ntSheet{max-height:92%;display:flex;flex-direction:column;padding-bottom:0}#ntSheet .ntl{overflow-y:auto;flex:1;min-height:120px;margin:0 -4px;padding:0 4px}
 .ntc{display:flex;gap:6px;overflow-x:auto;padding:2px 0 10px;scrollbar-width:none}.ntc button{white-space:nowrap;font:500 13px var(--f-body);border:1px solid var(--line);border-radius:99px;padding:7px 12px;color:var(--muted);background:none;cursor:pointer}.ntc button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-fg);font-weight:600}
 .ntg{font-size:12px;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;margin:12px 0 2px}
 .nti{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--line);font-size:15px;cursor:pointer}.nti input{width:22px;height:22px;accent-color:var(--accent);flex:none;margin:0}.nti small{display:block;color:var(--muted);font-size:12px;font-family:var(--f-mono)}
@@ -133,6 +133,10 @@ summary span{font-family:var(--f-mono);font-weight:500;font-size:12px;color:var(
 .cups{display:flex;gap:10px;margin-top:10px;flex-wrap:wrap}.cup{flex:1;min-width:90px;background:var(--field);border-radius:12px;padding:10px;text-align:center}.cup b{display:block;font-family:var(--f-display);font-size:24px}.cup span{font-size:12px;color:var(--muted)}
 .exr{padding:12px 0;border-top:1px solid var(--line)}.exr:first-of-type{border-top:0}.exr .t{font-weight:600;font-size:15px;margin-bottom:6px}.exr .t small{font-weight:400;color:var(--muted);font-size:12px}
 .pod{display:grid;grid-template-columns:24px 1fr auto;gap:8px;font-size:14px;padding:3px 0;align-items:center}.pod .k{font-family:var(--f-mono);font-size:13px}.pod.me{color:var(--accent);font-weight:600}
+.rper{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;background:var(--field);border-radius:10px;padding:3px;margin-bottom:12px}.rper button{border:0;background:none;border-radius:8px;padding:8px 4px;font:600 13px var(--f-body);color:var(--muted);cursor:pointer}.rper button[aria-pressed="true"]{background:var(--surface);color:var(--fg);box-shadow:0 1px 3px rgba(0,0,0,.2)}
+.rsub{font-size:11px;color:var(--muted);margin-top:4px;line-height:1.35}.rsub .up{color:var(--ok,#16a34a);font-weight:600}.rsub .dn{color:var(--accent);font-weight:600}
+.rhist{margin-top:12px}.rhist summary{cursor:pointer;font-weight:600;font-size:14px}.hrow{display:grid;grid-template-columns:78px 1fr 1fr;gap:6px;font-size:12px;padding:6px 0;border-top:1px solid var(--line)}.hrow small{color:var(--muted);font-family:var(--f-mono)}
+.pod .new{font-size:10px;background:var(--accent);color:var(--accent-fg);border-radius:4px;padding:1px 4px;margin-left:4px;font-weight:700}.pod .k small{color:var(--muted)}
 .rnote{font-size:12px;color:var(--muted);margin-top:8px;line-height:1.45}.rfoot{display:flex;justify-content:space-between;align-items:center;gap:10px}.ptrack{position:absolute;left:0;right:0;top:-1px;height:4px;background:var(--line);border-radius:2px;overflow:hidden}.ptrack i{display:block;height:100%;width:0;background:var(--accent);border-radius:2px;transition:width .35s}#sumTxt .pct{color:var(--fg);font-weight:600}
 .rest{display:flex;align-items:center;gap:8px;background:var(--field);border-radius:8px;padding:4px 8px}.rest b{font-family:var(--f-mono);font-size:18px}.rest.go{background:var(--ok);color:var(--accent-fg)}
 .fab{background:var(--accent);color:var(--accent-fg);border:0;border-radius:99px;padding:9px 14px;font-weight:600;cursor:pointer}
@@ -367,6 +371,11 @@ html,body{margin:0}
   </div>
   <div class="field"><label class="lbl" for="notes">Notatki</label><textarea id="notes" rows="2" placeholder="sen, zakwasy, ból, samopoczucie"></textarea></div>
   <button class="save" id="save">Zapisz trening</button>
+</section>
+<section class="sheet" id="valAsk" hidden role="dialog" aria-labelledby="valAskT">
+  <div class="exh"><b id="valAskT">Sprawdź wpis</b></div>
+  <p class="tipb" id="valAskB"></p>
+  <div class="ssbtns"><button class="save" id="valFix">Popraw</button><button class="mini" id="valOk">Tak, zgadza się</button></div>
 </section>
 <section class="sheet" id="ssAsk" hidden role="dialog" aria-labelledby="ssAskT">
   <div class="exh"><b id="ssAskT">Ćwiczenie z superserii</b></div>
@@ -971,7 +980,7 @@ function tonRule(k){const c=CATALOG[k]||{};const r=rOf(k);
   if(/\/(nogę|rękę|str)/.test(r)||/jednorącz|jednonóż|na jednej nodze/i.test(c.n||"")){f*=2;l.push("2 strony")}
   return {f,l:l.join(" × ")}}
 function vf(k){const R=tonRule(k);return R.x?0:R.f}
-function exVol(e){if(e.kind)return 0;const f=vf(e.k);if(!f)return 0;let v=0;for(const t of (e.sets||[]))v+=num(t.kg)*(parseInt(t.r)||0);return v*f}
+function exVol(e){if(e.kind)return 0;const f=vf(e.k);if(!f)return 0;let v=0;for(const t of (e.sets||[])){const kg=num(t.kg),r=parseInt(t.r)||0;if(kg<=1000&&r<=200)v+=kg*r}return v*f}
 function volOf(s){return Math.round((s.ex||[]).reduce((a,e)=>a+exVol(e),0))}
 // Serie do rankingu i porównań: tylko serie robocze z sekcji Ćwiczenia (bez rozgrzewki, dynamiki, core i cardio z planu)
 function setsOfS(s){let n=0;for(const e of (s.ex||[])){if(e.kind)continue;for(const t of (e.sets||[])){if(t.w)continue;if(String(t.kg||"").trim()||String(t.r||"").trim())n++}}return n}
@@ -1030,6 +1039,14 @@ function ordMove(id,dir,mode){const st=S();const L=exList();const ids=L.map(oid)
   else{const j=b+1;if(j>=ids.length||kinds[j]!==kinds[i])return;const [,y]=blk(j);const mv=ids.splice(a,m);ids.splice(y-m+1,0,...mv)}
   st.order=ids;st.moved=id;persist();renderEx(true);updSum();
   const r=document.querySelector('.ordr [data-id="'+id+'"]');if(r)r.closest(".ordr").scrollIntoView({block:"nearest"})}
+// Ochrona przed literówkami: pytanie, gdy ciężar jest ponad 2× większy niż Twój najlepszy w tym ćwiczeniu (albo > 300 kg bez historii) lub powtórzeń > 60
+function bestKg(k){let b=0;for(const s of sessions)for(const e of (s.ex||[]))if(e.k===k&&!e.kind)for(const t of (e.sets||[])){const kg=num(t.kg);if(kg<=1000&&kg>b)b=kg}return b}
+$("exList").addEventListener("change",ev=>{const el=ev.target;if(!el||el.tagName!=="INPUT"||!el.value||el.dataset.ok===el.value)return;const m=el.id.match(/^(.+)_(w?kg|w?r)_(\d+)$/);if(!m)return;const k=m[1],isKg=/kg$/.test(m[2]);const v=isKg?num(el.value):parseInt(el.value)||0;const c=CATALOG[k]||{};let msg="";
+  if(isKg){const b=bestKg(k);if(b>=5&&v>2*b)msg="Wpisałeś "+String(el.value)+" kg w ćwiczeniu „"+(c.n||k)+"”. To ponad 2× więcej niż Twój dotychczasowy najlepszy wynik ("+String(b).replace(".",",")+" kg). Na pewno?";else if(!b&&v>300)msg="Wpisałeś "+String(el.value)+" kg w ćwiczeniu „"+(c.n||k)+"”. Na pewno?"}
+  else if(v>60)msg="Wpisałeś "+v+" powtórzeń w ćwiczeniu „"+(c.n||k)+"”. Na pewno?";
+  if(!msg)return;$("valAskB").textContent=msg;$("valAsk").hidden=false;
+  $("valOk").onclick=()=>{el.dataset.ok=el.value;$("valAsk").hidden=true};
+  $("valFix").onclick=()=>{$("valAsk").hidden=true;el.value="";try{persist();updSum()}catch(e){}el.focus()}});
 function askSS(e,p,cb){$("ssAskB").innerHTML='„'+esc(e.n)+'” jest w superserii '+esc(e.ss)+' z „'+esc(p.n)+'”. Przesunąć tylko to ćwiczenie? Wtedy zrobisz je osobno, z normalną przerwą.';
   $("ssAsk").hidden=false;$("ssOne").onclick=()=>{$("ssAsk").hidden=true;cb("one")};$("ssPair").onclick=()=>{$("ssAsk").hidden=true;cb("pair")};$("ssNo").onclick=()=>{$("ssAsk").hidden=true}}
 function orderChanged(){const st=S();if(!st.order||!st.order.length)return false;return exList(true).map(oid).join("|")!==exList().map(oid).join("|")}
@@ -1486,7 +1503,7 @@ $("cloudRestore").onclick=async()=>{if(!cloud.pin){$("cloudPinBox").hidden=false
 $("cloudNow").onclick=()=>cloudSync();
 window.addEventListener("online",()=>cloudSync(true));
 // ===== Aktualizacje: numer wersji w aplikacji vs version.json na serwerze =====
-const APP_BUILD=8;
+const APP_BUILD=9;
 function verItems(j,from){return (j&&j.zmiany||[]).filter(x=>x.build>from)}
 function verHtml(list){return list.map(x=>'<h4>'+esc(x.data)+' · wersja '+x.build+'</h4><ul>'+x.lista.map(t=>'<li>'+esc(t)+'</li>').join("")+'</ul>').join("")}
 function renderVer(){const j=ls.get(P+"verc");const cur=(j&&j.zmiany||[]).find(x=>x.build===APP_BUILD);
@@ -1526,26 +1543,42 @@ function wkLabel(w){const a=new Date(w+"T12:00:00"),b=new Date(a);b.setDate(a.ge
 function kgTxt(v){return String(v).replace(".",",")}
 let rankBusy=false;
 function rankCard(t,body){return '<div class="rc">'+(t?'<h3>'+t+'</h3>':'')+body+'</div>'}
-function drawRank(j,at,state){const box=$("rank");
-  const dl=7-((new Date().getDay()+6)%7);
-  let h=rankCard("",'<div class="wk"><div><div class="sm">Konkurs tygodnia</div><div class="big">'+wkLabel(j.week)+'</div></div><span class="cd">'+(dl>1?"jeszcze "+dl+" dni":"ostatni dzień!")+'</span></div>');
-  const ppl=j.people||[],top=ppl.length?ppl[0].sets:0;let rows="",pos=0,prev=null;
-  ppl.forEach((p,i)=>{if(p.sets!==prev){pos=i+1;prev=p.sets}
-    rows+='<div class="rrow'+(p.lead?' lead':'')+'"><div class="pos">'+(p.lead?'🏆':pos)+'</div><div><div class="nm">'+esc(p.name)+(p.me?'<span class="rme">TY</span>':'')+'</div><div class="rbar"><i style="width:'+(top?Math.round(p.sets/top*100):0)+'%"></i></div></div><div class="val">'+p.sets+'<small>'+plSerie(p.sets)+' · '+p.trainings+' tr.</small></div></div>'});
-  const me=ppl.find(p=>p.me),second=ppl.find(p=>p.sets<top);
-  let note=!top?"Nikt jeszcze nie zrobił serii w tym tygodniu. Pierwszy trening = prowadzenie!":me?(me.lead&&ppl.filter(p=>p.lead).length>1?"Remis na prowadzeniu – jedna seria robi różnicę!":me.lead?(second?"Prowadzisz! Przewaga: "+(top-second.sets)+" "+plSerie(top-second.sets)+" nad kolejnym miejscem.":"Prowadzisz!"):"Do lidera brakuje Ci "+(top-me.sets)+" "+plSerie(top-me.sets)+"."):"";
+// Okres rankingu: w = tydzień, m = miesiąc, a = od początku (skrypt v4); starszy skrypt → tylko tydzień
+let rankPer=(()=>{try{return ls.get(P+"rankPer")||"w"}catch(e){return "w"}})();
+const MIESM=["styczeń","luty","marzec","kwiecień","maj","czerwiec","lipiec","sierpień","wrzesień","październik","listopad","grudzień"];
+function agoTxt(d){if(!d)return"";const a=new Date(d+"T12:00:00"),t=new Date(today()+"T12:00:00");const n=Math.round((t-a)/864e5);return n<=0?"dziś":n===1?"wczoraj":n<7?n+" dni temu":a.getDate()+"."+String(a.getMonth()+1).padStart(2,"0")}
+function chg(cur,prev){if(!prev)return cur?'<span class="up">nowość</span>':'';const d=Math.round((cur-prev)/prev*100);return d?'<span class="'+(d>0?'up':'dn')+'">'+(d>0?'▲ ':'▼ ')+Math.abs(d)+'%</span>':'<span>= jak poprzednio</span>'}
+function rankRows(ppl,val,fmt,icon,per){const sorted=[...ppl].sort((a,b)=>val(b)-val(a)||a.name.localeCompare(b.name));const top=sorted.length?val(sorted[0]):0;let pos=0,prev=null;
+  return sorted.map((p,i)=>{const v=val(p);if(v!==prev){pos=i+1;prev=v}const lead=top>0&&v===top;
+    const sub=[];if(per&&p[per.prev])sub.push(chg(v,per.prevVal(p)));if(p.streak>1)sub.push('🔥 '+p.streak+' tyg. z rzędu');if(p.last)sub.push('ostatnio: '+agoTxt(p.last));
+    return '<div class="rrow'+(lead?' lead':'')+'"><div class="pos">'+(lead?icon:pos)+'</div><div><div class="nm">'+esc(p.name)+(p.me?'<span class="rme">TY</span>':'')+'</div><div class="rbar"><i style="width:'+(top?Math.round(v/top*100):0)+'%"></i></div>'+(sub.length?'<div class="rsub">'+sub.join(' · ')+'</div>':'')+'</div><div class="val">'+fmt(v,p)+'</div></div>'}).join("")}
+function drawRank(j,at,state){const box=$("rank");const v4=!!(j.people||[]).some(p=>p.w);if(!v4)rankPer="w";const per=rankPer;
+  const ppl=(j.people||[]).map(p=>v4?Object.assign({},p,{S:p[per].sets,K:p[per].kg,T:p[per].tr}):Object.assign({},p,{S:p.sets,K:p.kg,T:p.trainings}));
+  let title,cd="";
+  if(per==="w"){const dl=7-((new Date().getDay()+6)%7);title=wkLabel(j.week);cd=dl>1?"jeszcze "+dl+" dni":"ostatni dzień!"}
+  else if(per==="m"){const t=new Date(today()+"T12:00:00");const end=new Date(t.getFullYear(),t.getMonth()+1,0).getDate();const left=end-t.getDate()+1;title=MIESM[t.getMonth()]+" "+t.getFullYear();cd=left>1?"jeszcze "+left+" dni":"ostatni dzień!"}
+  else title="Od początku";
+  let h=rankCard("",(v4?'<div class="rper" role="group" aria-label="Okres rankingu">'+[["w","Tydzień"],["m","Miesiąc"],["a","Od początku"]].map(([k,t])=>'<button type="button" data-per="'+k+'" aria-pressed="'+(per===k)+'">'+t+'</button>').join("")+'</div>':'')+
+    '<div class="wk"><div><div class="sm">'+(per==="a"?"Łączny dorobek":per==="m"?"Konkurs miesiąca":"Konkurs tygodnia")+'</div><div class="big">'+title+'</div></div>'+(cd?'<span class="cd">'+cd+'</span>':'')+'</div>');
+  const PV=per==="w"?{prev:"pw",prevVal:p=>p.pw.sets}:per==="m"?{prev:"pm",prevVal:p=>p.pm.sets}:null;
+  const rows=rankRows(ppl,p=>p.S,(v,p)=>v+'<small>'+plSerie(v)+' · '+p.T+' tr.</small>','🏆',v4?PV:null);
+  const top=Math.max(0,...ppl.map(p=>p.S)),me=ppl.find(p=>p.me),second=[...ppl].sort((a,b)=>b.S-a.S).find(p=>p.S<top),leaders=ppl.filter(p=>top>0&&p.S===top);
+  const word=per==="w"?"w tym tygodniu":per==="m"?"w tym miesiącu":"";
+  let note=!top?"Nikt jeszcze nie zrobił serii "+(word||"")+". Pierwszy trening = prowadzenie!":me?(leaders.includes(me)&&leaders.length>1?"Remis na prowadzeniu – jedna seria robi różnicę!":leaders.includes(me)?(second?"Prowadzisz! Przewaga: "+(top-second.S)+" "+plSerie(top-second.S)+" nad kolejnym miejscem.":"Prowadzisz!"):"Do lidera brakuje Ci "+(top-me.S)+" "+plSerie(top-me.S)+"."):"";
   if(j.me&&j.me.rank===false)note="Jesteś ukryty w rankingu – zmienisz to w Ustawieniach.";
-  h+=rankCard("Serie w tym tygodniu",'<div class="sm">PN–ND · serie robocze z sekcji Ćwiczenia</div><div style="margin-top:8px">'+(rows||'<div class="rnote">Nikogo jeszcze nie ma w rankingu.</div>')+'</div>'+(note?'<div class="rnote">'+note+' Nowy konkurs startuje w poniedziałek o 00:00.</div>':''));
-  if(ppl.some(p=>p.kg!=null)){const kp=[...ppl].sort((a,b)=>(b.kg||0)-(a.kg||0)||a.name.localeCompare(b.name));const kt=kp.length?kp[0].kg||0:0;let kr="",kpos=0,kprev=null;
-    kp.forEach((p,i)=>{if(p.kg!==kprev){kpos=i+1;kprev=p.kg}const lead=kt>0&&p.kg===kt;kr+='<div class="rrow'+(lead?' lead':'')+'"><div class="pos">'+(lead?'🏋️':kpos)+'</div><div><div class="nm">'+esc(p.name)+(p.me?'<span class="rme">TY</span>':'')+'</div><div class="rbar"><i style="width:'+(kt?Math.round((p.kg||0)/kt*100):0)+'%"></i></div></div><div class="val">'+fmtT(p.kg||0).replace(/ (kg|t)$/,'<small>$1</small>')+'</div></div>'});
-    h+=rankCard("Kilogramy w tym tygodniu",'<div class="sm">PN–ND · seria × kg × powtórzenia (z rozgrzewką R1/R2)</div><div style="margin-top:8px">'+kr+'</div>')}
-  const cups=j.cups||[];
-  h+=rankCard("Puchary",'<div class="sm">Wygrane tygodnie'+(j.last?' · ostatnio: '+j.last.names.map(esc).join(" i ")+' ('+j.last.sets+' '+plSerie(j.last.sets)+')':'')+'</div>'+(cups.length?'<div class="cups">'+cups.map(c=>'<div class="cup"><b>🏆×'+c.n+'</b><span>'+esc(c.name)+'</span></div>').join("")+'</div>'+((j.kgCups||[]).length?'<div class="sm" style="margin-top:10px">Za kilogramy'+(j.lastKg?' · ostatnio: '+j.lastKg.names.map(esc).join(" i ")+' ('+fmtT(j.lastKg.kg)+')':'')+'</div><div class="cups">'+j.kgCups.map(c=>'<div class="cup"><b>🏋️×'+c.n+'</b><span>'+esc(c.name)+'</span></div>').join("")+'</div>':''):'<div class="rnote">Pierwszy puchar dostanie zwycięzca tego tygodnia.</div>'));
-  const recs=j.records||[];const M=["🥇","🥈","🥉"];
+  h+=rankCard("Serie "+(word||"łącznie"),'<div class="sm">'+(per==="w"?"PN–ND · ":"")+'serie robocze z sekcji Ćwiczenia'+(PV?' · zmiana wobec poprzedniego '+(per==="w"?"tygodnia":"miesiąca"):'')+'</div><div style="margin-top:8px">'+(rows||'<div class="rnote">Nikogo jeszcze nie ma w rankingu.</div>')+'</div>'+(note?'<div class="rnote">'+note+(per==="w"?' Nowy konkurs startuje w poniedziałek o 00:00.':'')+'</div>':''));
+  if(ppl.some(p=>p.K!=null)){const KV=per==="w"?{prev:"pw",prevVal:p=>p.pw.kg}:per==="m"?{prev:"pm",prevVal:p=>p.pm.kg}:null;
+    const kr=rankRows(ppl.map(p=>Object.assign({},p,{streak:0,last:""})),p=>p.K||0,v=>fmtT(v).replace(/ (kg|t)$/,'<small>$1</small>'),'🏋️',v4?KV:null);
+    h+=rankCard("Kilogramy "+(word||"łącznie"),'<div class="sm">seria × kg × powtórzenia (z rozgrzewką R1/R2)</div><div style="margin-top:8px">'+kr+'</div>')}
+  if(per==="w"){const cups=j.cups||[];const hist=(j.history||[]).map(x=>{const a=new Date(x.week+"T12:00:00"),b=new Date(a);b.setDate(a.getDate()+6);return '<div class="hrow"><span>'+a.getDate()+'.'+String(a.getMonth()+1).padStart(2,"0")+'–'+b.getDate()+'.'+String(b.getMonth()+1).padStart(2,"0")+'</span><span>'+(x.sets?'🏆 '+x.sets.names.map(esc).join(" i ")+' <small>'+x.sets.v+'</small>':'–')+'</span><span>'+(x.kg?'🏋️ '+x.kg.names.map(esc).join(" i ")+' <small>'+fmtT(x.kg.v)+'</small>':'–')+'</span></div>'}).join("");
+    h+=rankCard("Puchary",'<div class="sm">Wygrane tygodnie'+(j.last?' · ostatnio: '+j.last.names.map(esc).join(" i ")+' ('+j.last.sets+' '+plSerie(j.last.sets)+')':'')+'</div>'+(cups.length?'<div class="cups">'+cups.map(c=>'<div class="cup"><b>🏆×'+c.n+'</b><span>'+esc(c.name)+'</span></div>').join("")+'</div>'+((j.kgCups||[]).length?'<div class="sm" style="margin-top:10px">Za kilogramy'+(j.lastKg?' · ostatnio: '+j.lastKg.names.map(esc).join(" i ")+' ('+fmtT(j.lastKg.kg)+')':'')+'</div><div class="cups">'+j.kgCups.map(c=>'<div class="cup"><b>🏋️×'+c.n+'</b><span>'+esc(c.name)+'</span></div>').join("")+'</div>':''):'<div class="rnote">Pierwszy puchar dostanie zwycięzca tego tygodnia.</div>')+
+      (hist?'<details class="rhist"><summary>Historia konkursów</summary>'+hist+'</details>':''))}
+  const recs=j.records||[];const M=["🥇","🥈","🥉"];const wk0=j.week||"";
   h+=rankCard("Rekordy w ćwiczeniach",'<div class="sm">Największy ciężar w serii roboczej · ćwiczenia, które robią co najmniej 2 osoby</div>'+(recs.length?recs.map(r=>{const c=CATALOG[r.k];let l=r.list.slice(0,3);const mi=r.list.findIndex(x=>x.me);if(mi>2)l=l.concat([r.list[mi]]);
-    return '<div class="exr"><div class="t">'+esc(c?c.n:r.n)+(DB.has(r.k)?' <small>kg / hantel</small>':'')+'</div>'+l.map(x=>{const ix=r.list.indexOf(x);return '<div class="pod'+(x.me?' me':'')+'"><span>'+(M[ix]||(ix+1)+'.')+'</span><span>'+esc(x.name)+'</span><span class="k">'+kgTxt(x.kg)+' kg'+(x.r?' × '+x.r:'')+'</span></div>'}).join("")+'</div>'}).join(""):'<div class="rnote">Rekordy pojawią się, gdy co najmniej 2 osoby zrobią to samo ćwiczenie z ciężarem.</div>'));
+    return '<div class="exr"><div class="t">'+esc(c?c.n:r.n)+(DB.has(r.k)?' <small>kg / hantel</small>':'')+'</div>'+l.map(x=>{const ix=r.list.indexOf(x);const nw=wk0&&x.date&&x.date>=wk0;return '<div class="pod'+(x.me?' me':'')+'"><span>'+(M[ix]||(ix+1)+'.')+'</span><span>'+esc(x.name)+(nw?' <b class="new">NOWY</b>':'')+'</span><span class="k">'+kgTxt(x.kg)+' kg'+(x.r?' × '+x.r:'')+(x.date?'<small> · '+fmtDate(x.date).slice(0,5)+'</small>':'')+'</span></div>'}).join("")+'</div>'}).join(""):'<div class="rnote">Rekordy pojawią się, gdy co najmniej 2 osoby zrobią to samo ćwiczenie z ciężarem.</div>'));
   const d=new Date(at);h+='<div class="rfoot"><span class="rnote" style="margin:0">'+(state||"Stan z "+String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0")+(d.toDateString()!==new Date().toDateString()?" ("+d.getDate()+"."+String(d.getMonth()+1).padStart(2,"0")+")":""))+'</span><button class="mini" id="rankRef">↻ Odśwież</button></div>';
-  box.innerHTML=h;$("rankRef").onclick=()=>renderRank(true)}
+  box.innerHTML=h;$("rankRef").onclick=()=>renderRank(true);
+  box.querySelectorAll("[data-per]").forEach(b=>b.onclick=()=>{rankPer=b.dataset.per;ls.set(P+"rankPer",rankPer);drawRank(j,at,state)})}
 function rankMsg(t,btn){$("rank").innerHTML=rankCard("Ranking",'<div class="rnote" style="font-size:14px">'+t+'</div>'+(btn?'<div style="margin-top:12px"><button class="mini" id="rankGo">'+btn+'</button></div>':''));const g=$("rankGo");if(g)g.onclick=()=>setView("set")}
 async function renderRank(fetchNow){
   if(!CLOUD_URL)return rankMsg("Ranking nie jest dostępny w tej wersji aplikacji.");
@@ -1570,7 +1603,7 @@ $("rirClose").onclick=()=>{$("rirSheet").hidden=true};
 document.addEventListener("input",e=>{const t=e.target;if(!t||!t.id)return;
   if(t.closest("#exList")){const m=t.id.match(/^(.+)_kg_(\d+)$/);if(m)spread(m[1],+m[2]);updSum();persist()}
   else if(COMMON.includes(t.id))persist()});
-document.addEventListener("keydown",e=>{if(e.key==="Escape"){$("ssAsk").hidden=true;$("ntSheet").hidden=true;$("finSheet").hidden=true;$("edSheet").hidden=true;$("tipSheet").hidden=true;$("saveSheet").hidden=true;$("rirSheet").hidden=true}});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"){$("valAsk").hidden=true;$("ssAsk").hidden=true;$("ntSheet").hidden=true;$("finSheet").hidden=true;$("edSheet").hidden=true;$("tipSheet").hidden=true;$("saveSheet").hidden=true;$("rirSheet").hidden=true}});
 
 function pickStart(){
   const wm=ls.get(P+"weekm");const lastTs=sessions[0]?sessions[0].created||0:0;

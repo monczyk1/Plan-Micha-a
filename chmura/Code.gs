@@ -2,7 +2,8 @@
  * @OnlyCurrentDoc
  *
  * Tytanowa siła – kopia w chmurze i ranking dla wielu osób (Google Apps Script), wersja 4
- * (4: ranking „Kilogramy tygodnia” i puchary za kilogramy)
+ * (4: ranking kilogramów, okresy tydzień/miesiąc/od początku, zmiana wobec poprzedniego tygodnia,
+ *  seria tygodni, ostatnia aktywność, historia konkursów, ochrona przed literówkami, szybszy ranking)
  *
  * Skrypt ma dostęp TYLKO do arkusza, w którym go zainstalujesz.
  * Nie widzi żadnych innych plików na Twoim Dysku.
@@ -42,8 +43,8 @@ function doPost(e) {
     if (u === "dup") return out_({ ok: false, error: "pin_dup" });
     if (!u) { Utilities.sleep(1200); return out_({ ok: false, error: "pin" }); } // spowalnia zgadywanie PIN-u
     if (req.action === "ping") return out_({ ok: true, name: u.name });
-    if (req.rank === true || req.rank === false) setRank_(u, req.rank);
-    if (req.action === "save") return out_(save_(u, req.snapshot));
+    if (req.rank === true || req.rank === false) { if (u.rank !== req.rank) rankCacheClear_(); setRank_(u, req.rank); }
+    if (req.action === "save") { const r = save_(u, req.snapshot); rankCacheClear_(); return out_(r); }
     if (req.action === "pref") return out_({ ok: true });
     if (req.action === "rank") return out_(rank_(u, req.today));
     if (req.action === "list") return out_(list_(u));
@@ -232,7 +233,7 @@ function kg_(v) { const t = String(v == null ? "" : v).trim().replace(",", ".");
 function vol_(s) {
   if (typeof s.vol === "number") return s.vol;
   let v = 0;
-  (s.ex || []).forEach(function (e) { if (e.kind) return; (e.sets || []).forEach(function (t) { if (!t.w) v += kg_(t.kg) * (parseInt(t.r, 10) || 0); }); });
+  (s.ex || []).forEach(function (e) { if (e.kind) return; (e.sets || []).forEach(function (t) { const kg = kg_(t.kg), r = parseInt(t.r, 10) || 0; if (!t.w && sane_(kg, r)) v += kg * r; }); });
   return Math.round(v);
 }
 
@@ -251,53 +252,91 @@ function setsOf_(s) {
   return n;
 }
 
+// Seria z nierealnym wpisem (literówka, np. 6000 kg) nie liczy się do rankingu, kilogramów ani rekordów
+const MAX_KG = 1000, MAX_REPS = 200;
+function sane_(kg, r) { return kg <= MAX_KG && r <= MAX_REPS; }
+
+// Wynik rankingu jest liczony raz na minutę i zapamiętywany (szybciej przy wielu osobach).
+// Zapis kopii albo zmiana ptaszka rankingu od razu kasuje zapamiętany wynik.
+function rankCacheKey_(today) { return "rank_" + today; }
+function rankCacheClear_() { try { CacheService.getScriptCache().removeAll(["rank_" + new Date().toISOString().slice(0, 10)]); CacheService.getScriptCache().put("rank_gen", String(Date.now()), 21600); } catch (e) {} }
+
 function rank_(me, today) {
   if (!/^\d{4}-\d{2}-\d{2}$/.test(String(today || ""))) today = new Date().toISOString().slice(0, 10);
-  const wk = monday_(today), prev = plusDays_(wk, -7);
+  let base = null;
+  try {
+    const c = CacheService.getScriptCache();
+    const gen = c.get("rank_gen") || "0";
+    const hit = c.get(rankCacheKey_(today) + "_" + gen);
+    if (hit) base = JSON.parse(hit);
+    if (!base) { base = rankBase_(today); const txt = JSON.stringify(base); if (txt.length < 90000) c.put(rankCacheKey_(today) + "_" + gen, txt, 60); }
+  } catch (e) { base = base || rankBase_(today); }
+  // „me” (TY) ustawiamy osobno dla pytającej osoby
+  base.people.forEach(function (p) { p.me = p.row === me.row; });
+  base.records.forEach(function (x) { x.list.forEach(function (y) { y.me = y.row === me.row; }); });
+  base.me = { name: me.name, rank: me.rank };
+  return base;
+}
+
+function rankBase_(today) {
+  const wk = monday_(today), prev = plusDays_(wk, -7), mo = today.slice(0, 7);
+  const pmDate = day_(mo + "-01"); pmDate.setUTCMonth(pmDate.getUTCMonth() - 1); const pmo = pmDate.toISOString().slice(0, 7);
   const ppl = [], weeks = {}, weeksKg = {}, rec = {};
   rows_().forEach(function (u) {
     if (!u.active || !u.rank) return;
     const snap = latest_(u);
     if (!snap || !Array.isArray(snap.sessions)) return;
-    const p = { name: u.name, me: u.row === me.row, sets: 0, trainings: 0, kg: 0 };
+    const z = function () { return { sets: 0, kg: 0, tr: 0 }; };
+    const p = { name: u.name, row: u.row, sets: 0, trainings: 0, kg: 0, w: z(), pw: z(), m: z(), pm: z(), a: z(), last: "", streak: 0 };
+    const active = {};
     snap.sessions.forEach(function (s) {
       const w = monday_(s.date); if (!w || w > wk) return;
-      const n = setsOf_(s);
-      const v = vol_(s);
+      const d = String(s.date).slice(0, 10), mm = d.slice(0, 7);
+      const n = setsOf_(s), v = vol_(s);
+      const add = function (o) { o.sets += n; o.kg += v; if (n || v) o.tr++; };
+      add(p.a); if (w === wk) add(p.w); if (w === prev) add(p.pw); if (mm === mo) add(p.m); if (mm === pmo) add(p.pm);
+      if (n || v) { active[w] = 1; if (d > p.last) p.last = d; }
       weeks[w] = weeks[w] || {}; weeks[w][u.name] = (weeks[w][u.name] || 0) + n;
       weeksKg[w] = weeksKg[w] || {}; weeksKg[w][u.name] = (weeksKg[w][u.name] || 0) + v;
-      if (w === wk) { p.sets += n; p.kg += v; if (n) p.trainings++; }
       (s.ex || []).forEach(function (e) {
         if (e.kind || !e.k) return;
         (e.sets || []).forEach(function (t) {
           if (t.w) return;
           const kg = kg_(t.kg); if (!kg) return;
           const r = parseInt(t.r, 10) || 0;
+          if (!sane_(kg, r)) return;
           const x = rec[e.k] = rec[e.k] || { k: e.k, n: e.n, by: {} };
           const b = x.by[u.name];
-          if (!b || kg > b.kg || (kg === b.kg && (r > b.r || (r === b.r && String(s.date) < b.date)))) x.by[u.name] = { name: u.name, me: p.me, kg: kg, r: r, date: String(s.date) };
+          if (!b || kg > b.kg || (kg === b.kg && (r > b.r || (r === b.r && d < b.date)))) x.by[u.name] = { name: u.name, row: u.row, kg: kg, r: r, date: d };
         });
       });
     });
+    // seria tygodni z treningiem; bieżący tydzień bez treningu jeszcze jej nie przerywa
+    let w = active[wk] ? wk : prev;
+    while (active[w]) { p.streak++; w = plusDays_(w, -7); }
+    p.sets = p.w.sets; p.kg = p.w.kg; p.trainings = p.w.tr; // pola dla starszych wersji aplikacji
     ppl.push(p);
   });
   ppl.sort(function (a, b) { return b.sets - a.sets || a.name.localeCompare(b.name); });
   const top = ppl.length && ppl[0].sets ? ppl[0].sets : 0;
   ppl.forEach(function (p) { p.lead = top > 0 && p.sets === top; });
-  function cupsOf(W) {
-    const c = {}; let l = null;
-    Object.keys(W).forEach(function (w) {
-      if (w >= wk) return;
-      const names = Object.keys(W[w]); const mx = Math.max.apply(null, names.map(function (n) { return W[w][n]; }));
-      if (!(mx > 0)) return;
-      const win = names.filter(function (n) { return W[w][n] === mx; });
-      win.forEach(function (n) { c[n] = (c[n] || 0) + 1; });
-      if (w === prev) l = { names: win, v: mx };
-    });
-    return { list: Object.keys(c).map(function (n) { return { name: n, n: c[n] }; }).sort(function (a, b) { return b.n - a.n || a.name.localeCompare(b.name); }), last: l };
+  function winners(W, w) {
+    if (!W[w]) return null;
+    const names = Object.keys(W[w]); const mx = Math.max.apply(null, names.map(function (n) { return W[w][n]; }));
+    if (!(mx > 0)) return null;
+    return { names: names.filter(function (n) { return W[w][n] === mx; }), v: mx };
   }
-  const cs = cupsOf(weeks), ck = cupsOf(weeksKg);
-  const last = cs.last ? { names: cs.last.names, sets: cs.last.v } : null;
+  function cupsOf(W) {
+    const c = {};
+    Object.keys(W).forEach(function (w) { if (w >= wk) return; const x = winners(W, w); if (x) x.names.forEach(function (n) { c[n] = (c[n] || 0) + 1; }); });
+    return Object.keys(c).map(function (n) { return { name: n, n: c[n] }; }).sort(function (a, b) { return b.n - a.n || a.name.localeCompare(b.name); });
+  }
+  const history = [];
+  for (let i = 1, w = prev; i <= 8; i++, w = plusDays_(w, -7)) {
+    const a = winners(weeks, w), b = winners(weeksKg, w);
+    if (a || b) history.push({ week: w, sets: a, kg: b });
+  }
+  const ls = winners(weeks, prev), lk = winners(weeksKg, prev);
   const records = Object.keys(rec).map(function (k) {
     const list = Object.keys(rec[k].by).map(function (n) { return rec[k].by[n]; });
     list.sort(function (a, b) { return b.kg - a.kg || b.r - a.r || a.date.localeCompare(b.date); });
@@ -305,8 +344,8 @@ function rank_(me, today) {
   }).filter(function (x) { return x.list.length >= 2; });
   records.sort(function (a, b) { return b.list.length - a.list.length || b.list[0].kg - a.list[0].kg; });
   return {
-    ok: true, week: wk, people: ppl, last: last, records: records,
-    cups: cs.list, kgCups: ck.list, lastKg: ck.last ? { names: ck.last.names, kg: ck.last.v } : null,
-    me: { name: me.name, rank: me.rank }
+    ok: true, v: 4, week: wk, month: mo, people: ppl, records: records, history: history,
+    cups: cupsOf(weeks), kgCups: cupsOf(weeksKg),
+    last: ls ? { names: ls.names, sets: ls.v } : null, lastKg: lk ? { names: lk.names, kg: lk.v } : null
   };
 }

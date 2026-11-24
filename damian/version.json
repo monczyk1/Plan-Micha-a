@@ -1,7 +1,17 @@
 {
- "build": 8,
+ "build": 9,
  "data": "24.11.2026",
  "zmiany": [
+  {
+   "build": 9,
+   "data": "24.11.2026",
+   "lista": [
+    "Ranking: przełącznik Tydzień / Miesiąc / Od początku (po aktualizacji skryptu w arkuszu)",
+    "Ranking: zmiana wobec poprzedniego tygodnia, seria tygodni z treningiem 🔥 i ostatnia aktywność",
+    "Ranking: historia konkursów z 8 tygodni i oznaczenie NOWY przy świeżych rekordach",
+    "Ochrona przed literówkami: pytanie „Na pewno?”, gdy wpis jest ponad 2× większy niż Twój dotychczasowy najlepszy"
+   ]
+  },
   {
    "build": 8,
    "data": "24.11.2026",
