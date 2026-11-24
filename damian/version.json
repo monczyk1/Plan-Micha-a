@@ -1,7 +1,17 @@
 {
- "build": 9,
+ "build": 10,
  "data": "24.11.2026",
  "zmiany": [
+  {
+   "build": 10,
+   "data": "24.11.2026",
+   "lista": [
+    "Podciąganie i dipy: w kg wpisujesz swoją masę ciała (z obciążeniem razem, np. 80 + 3 = 83) – liczy się do tonażu",
+    "Serie rozgrzewkowe R1/R2 w ćwiczeniach liczą się teraz także jako serie (ranking, podsumowanie)",
+    "Przypomnienie przy hantlach: wpisujesz ciężar jednego hantla",
+    "Po aktualizacji treningi przeliczają się same i trafiają do chmury – ranking pokazuje te same kilogramy co Postępy"
+   ]
+  },
   {
    "build": 9,
    "data": "24.11.2026",

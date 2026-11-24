@@ -41,7 +41,7 @@ h1{font-family:var(--f-display);font-size:34px;line-height:1;margin:0;letter-spa
 .ordr.done .nm{color:var(--muted)}.ordr.done .nm::after{content:" ✓";color:var(--accent)}
 .ordq{background:var(--field);border-radius:12px;padding:12px;margin:10px 0}.ordq b{display:block;font-size:15px;margin-bottom:4px}.ordq p{margin:0 0 10px;font-size:13px;color:var(--muted);line-height:1.4}
 .ordq .sg{display:grid;grid-template-columns:1fr 1fr;gap:8px}.ordq .sg button{padding:11px;border-radius:10px;border:1.5px solid var(--line);background:var(--surface);color:var(--fg);font:600 15px var(--f-body);cursor:pointer}.ordq .sg button[aria-pressed="true"]{border-color:var(--accent);background:var(--accent);color:var(--accent-fg)}
-#ssAsk,#valAsk{z-index:10}.ssbtns{display:flex;flex-direction:column;gap:8px;margin-top:10px}.ssbtns .save{font-size:18px;padding:13px}.ssbtns .mini{padding:12px;font-size:15px}#ntGo:disabled{opacity:.5;cursor:default}#ntSheet{max-height:92%;display:flex;flex-direction:column;padding-bottom:0}#ntSheet .ntl{overflow-y:auto;flex:1;min-height:120px;margin:0 -4px;padding:0 4px}
+#ssAsk,#valAsk,#qAsk{z-index:10}.ssbtns{display:flex;flex-direction:column;gap:8px;margin-top:10px}.ssbtns .save{font-size:18px;padding:13px}.ssbtns .mini{padding:12px;font-size:15px}#ntGo:disabled{opacity:.5;cursor:default}#ntSheet{max-height:92%;display:flex;flex-direction:column;padding-bottom:0}#ntSheet .ntl{overflow-y:auto;flex:1;min-height:120px;margin:0 -4px;padding:0 4px}
 .ntc{display:flex;gap:6px;overflow-x:auto;padding:2px 0 10px;scrollbar-width:none}.ntc button{white-space:nowrap;font:500 13px var(--f-body);border:1px solid var(--line);border-radius:99px;padding:7px 12px;color:var(--muted);background:none;cursor:pointer}.ntc button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-fg);font-weight:600}
 .ntg{font-size:12px;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;margin:12px 0 2px}
 .nti{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--line);font-size:15px;cursor:pointer}.nti input{width:22px;height:22px;accent-color:var(--accent);flex:none;margin:0}.nti small{display:block;color:var(--muted);font-size:12px;font-family:var(--f-mono)}
@@ -225,7 +225,8 @@ html,body{margin:0}
 .tonc{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:10px}.tonc div{background:var(--field);border-radius:10px;padding:10px}.tonc b{display:block;font-family:var(--f-display);font-size:24px}.tonc span{font-size:11px;color:var(--muted)}
 .tchart{display:flex;align-items:flex-end;gap:6px;height:130px;padding:18px 0 0;border-bottom:1px solid var(--line)}.tchart button{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;background:none;border:0;padding:0;cursor:pointer;color:inherit;min-width:0}.tchart .sel i{outline:2px solid var(--fg);outline-offset:1px}
 .tdet{margin:10px 0 0;background:var(--field);border-radius:12px;padding:10px 12px}.tdh{font-size:14px;margin-bottom:6px}.tds{border-top:1px solid var(--line);padding:6px 0}.tds summary{display:flex;justify-content:space-between;gap:10px;cursor:pointer;font-size:14px;padding:4px 0}.tds summary b{font-family:var(--f-mono);font-weight:500}.tout{margin-top:6px}.tchart i{display:block;width:100%;background:color-mix(in srgb,var(--accent) 45%,var(--field));border-radius:6px 6px 0 0;min-height:2px}.tchart .now i{background:var(--accent)}.tchart em{font-style:normal;font-size:10px;color:var(--muted);font-family:var(--f-mono);margin-bottom:3px;white-space:nowrap}
-.tlab{display:flex;gap:6px;margin-top:4px}.tlab span{flex:1;text-align:center;font-size:10px;color:var(--muted);font-family:var(--f-mono)}.tfun{font-size:13px;color:var(--muted);margin:10px 0 14px}
+.tlab{display:flex;gap:6px;margin-top:4px}.tlab span{flex:1;text-align:center;font-size:10px;color:var(--muted);font-family:var(--f-mono)}.bwl{margin:6px 0 2px;font-size:12px}
+.tfun{font-size:13px;color:var(--muted);margin:10px 0 14px}
 .finpr ul{margin:4px 0 0;padding-left:0;list-style:none;display:flex;flex-direction:column;gap:4px;font-size:14px}.barin:has(.rest:not([hidden])) .vol{display:none}.whint{font-size:13px;color:var(--muted);padding:0 14px 8px;display:flex;align-items:center;gap:4px}.cloud{display:flex;flex-direction:column;gap:8px;border-top:1px solid var(--line);padding-top:10px}
 .cloudrow{display:grid;grid-template-columns:28px 1fr;gap:8px;align-items:start;cursor:pointer}.cloudrow input{width:24px;height:24px;margin:2px 0 0;accent-color:var(--accent)}
 .cloudst{font-size:13px;font-weight:500}.cloudst.good{color:var(--ok)}.cloudst.bad{color:var(--accent)}.cloudst.wait{color:var(--muted)}
@@ -371,6 +372,12 @@ html,body{margin:0}
   </div>
   <div class="field"><label class="lbl" for="notes">Notatki</label><textarea id="notes" rows="2" placeholder="sen, zakwasy, ból, samopoczucie"></textarea></div>
   <button class="save" id="save">Zapisz trening</button>
+</section>
+<section class="sheet" id="qAsk" hidden role="dialog" aria-labelledby="qAskT">
+  <div class="exh"><b id="qAskT">Pytanie od Damiana</b></div>
+  <p class="tipb" id="qAskB"></p>
+  <div id="qFixBox" hidden><div class="field"><label class="lbl" for="qKg">Ile kg było naprawdę?</label><input id="qKg" inputmode="decimal" placeholder="np. 20"></div></div>
+  <div class="ssbtns"><button class="save" id="qYes">Tak, zgadza się</button><button class="mini" id="qFix">Popraw ciężar</button><button class="mini" id="qLater">Później</button></div>
 </section>
 <section class="sheet" id="valAsk" hidden role="dialog" aria-labelledby="valAskT">
   <div class="exh"><b id="valAskT">Sprawdź wpis</b></div>
@@ -970,11 +977,13 @@ let viewT=null,pvDirty=false;
 // Tonaż: seria × kg × powtórzenia, razem z seriami rozgrzewkowymi R1/R2.
 // ×2 gdy dwa hantle naraz, ×2 gdy powtórzenia są na stronę (/nogę, /rękę, /str., jednorącz).
 // Nie wlicza się: ćwiczenia z ciężarem ciała, na czas lub dystans, dynamika, core i cardio z planu.
+// Podciąganie i dipy: w kg wpisujesz masę ciała (z obciążeniem razem) – liczy się do tonażu
+const BWL=new Set(["pull","chinup","dips"]);
 const DB1=new Set(["ohext","dbrow","goblet","kbswing","pullover","conccurl","kickback","sidebend","suitcase","landmine"]);
 const TONX=new Set([...BW,"hang","hollow","copen","hangraise","mbslam","mbrot","mbchest","boxjump","broadjump","plyopush","pogo","lmpunch","stepdown"]);
 function rOf(k){const c=CATALOG[k];return c?String(c.r||""):""}
 function tonRule(k){const c=CATALOG[k]||{};const r=rOf(k);
-  if(c.kind)return {x:"poza sekcją Ćwiczenia"};if(TONX.has(k))return {x:"ciężar ciała"};
+  if(c.kind)return {x:"poza sekcją Ćwiczenia"};if(BWL.has(k))return {f:1,l:"masa ciała"};if(TONX.has(k))return {x:"ciężar ciała"};
   if(/\d\s*(s|sek|min)\b|\d\s*m\b|^max$/i.test(r))return {x:"na czas lub dystans"};
   let f=1;const l=[];if(DB.has(k)&&!DB1.has(k)){f*=2;l.push("2 hantle")}
   if(/\/(nogę|rękę|str)/.test(r)||/jednorącz|jednonóż|na jednej nodze/i.test(c.n||"")){f*=2;l.push("2 strony")}
@@ -982,12 +991,13 @@ function tonRule(k){const c=CATALOG[k]||{};const r=rOf(k);
 function vf(k){const R=tonRule(k);return R.x?0:R.f}
 function exVol(e){if(e.kind)return 0;const f=vf(e.k);if(!f)return 0;let v=0;for(const t of (e.sets||[])){const kg=num(t.kg),r=parseInt(t.r)||0;if(kg<=1000&&r<=200)v+=kg*r}return v*f}
 function volOf(s){return Math.round((s.ex||[]).reduce((a,e)=>a+exVol(e),0))}
-// Serie do rankingu i porównań: tylko serie robocze z sekcji Ćwiczenia (bez rozgrzewki, dynamiki, core i cardio z planu)
-function setsOfS(s){let n=0;for(const e of (s.ex||[])){if(e.kind)continue;for(const t of (e.sets||[])){if(t.w)continue;if(String(t.kg||"").trim()||String(t.r||"").trim())n++}}return n}
+// Serie do rankingu i porównań: wszystkie serie z wpisem w sekcji Ćwiczenia, razem z R1/R2 (bez listy rozgrzewki, dynamiki, core i cardio z planu)
+function setsOfS(s){let n=0;for(const e of (s.ex||[])){if(e.kind)continue;for(const t of (e.sets||[])){if(String(t.kg||"").trim()||String(t.r||"").trim())n++}}return n}
 function fmtKg(v){return Math.round(v).toLocaleString("pl")+" kg"}
 function fmtT(v){return v>=1000?(Math.round(v/100)/10).toLocaleString("pl")+" t":fmtKg(v)}
 function monOf(d){const x=new Date(String(d)+"T12:00:00");x.setDate(x.getDate()-((x.getDay()+6)%7));return x}
-function saveSessions(){sessions.forEach(x=>{x.vol=volOf(x);x.nsets=setsOfS(x)});const ok=ls.set(P+"sessions",sessions);ls.set(P+"changed",Date.now());try{cloudDirty()}catch(e){}return ok}
+const RULES_V=2; // podbij przy zmianie zasad liczenia tonażu/serii
+function saveSessions(){sessions.forEach(x=>{x.vol=volOf(x);x.nsets=setsOfS(x);x.rv=RULES_V});const ok=ls.set(P+"sessions",sessions);ls.set(P+"changed",Date.now());try{cloudDirty()}catch(e){}return ok}
 function reloadSessions(){sessions=(ls.get(P+"sessions")||[]).map(x=>Object.assign(x,{local:true}));sortS()}
 function sessOf(d){return sessions.filter(x=>x.day===d).sort((a,b)=>String(a.date).localeCompare(String(b.date))||(a.created||0)-(b.created||0))}
 function renderWeeks(){
@@ -1047,6 +1057,16 @@ $("exList").addEventListener("change",ev=>{const el=ev.target;if(!el||el.tagName
   if(!msg)return;$("valAskB").textContent=msg;$("valAsk").hidden=false;
   $("valOk").onclick=()=>{el.dataset.ok=el.value;$("valAsk").hidden=true};
   $("valFix").onclick=()=>{$("valAsk").hidden=true;el.value="";try{persist();updSum()}catch(e){}el.focus()}});
+// Jednorazowe pytania kontrolne (np. podejrzany wpis) – pokazywane przy uruchomieniu, aż do odpowiedzi
+const ASKS=[{id:"cc40",prof:"",date:"2026-11-24",k:"cablecross",kg:"40",txt:"W treningu A z 24.11 wpisałeś w rozpiętkach na bramie 40 kg × 12 (3 serie). Czy to się zgadza? To sporo jak na rozpiętki – sprawdzamy, żeby ranking kilogramów był uczciwy."}];
+function askOnce(){const q=ASKS.find(a=>a.prof===PROF&&!ls.get(P+"ask_"+a.id)&&sessions.some(s=>s.date===a.date&&(s.ex||[]).some(e=>e.k===a.k&&(e.sets||[]).some(t=>String(t.kg)===a.kg))));if(!q)return;
+  $("qAskB").textContent=q.txt;$("qFixBox").hidden=true;$("qFix").textContent="Popraw ciężar";$("qAsk").hidden=false;
+  $("qYes").onclick=()=>{ls.set(P+"ask_"+q.id,"ok");$("qAsk").hidden=true;toast("Dzięki! Zostaje 40 kg.",true)};
+  $("qLater").onclick=()=>{$("qAsk").hidden=true};
+  $("qFix").onclick=()=>{if($("qFixBox").hidden){$("qFixBox").hidden=false;$("qFix").textContent="Zapisz poprawkę";$("qKg").focus();return}
+    const v=$("qKg").value.trim().replace(".",",");if(!(num(v)>0)){$("qKg").focus();return}let n=0;
+    for(const s of sessions)if(s.date===q.date)for(const e of (s.ex||[]))if(e.k===q.k)for(const t of (e.sets||[]))if(String(t.kg)===q.kg){t.kg=v;n++}
+    saveSessions();renderHist();ls.set(P+"ask_"+q.id,"fixed:"+v);$("qAsk").hidden=true;toast("Poprawiono "+n+" "+(n===1?"serię":"serie")+" na "+v+" kg. Dzięki!",true)}}
 function askSS(e,p,cb){$("ssAskB").innerHTML='„'+esc(e.n)+'” jest w superserii '+esc(e.ss)+' z „'+esc(p.n)+'”. Przesunąć tylko to ćwiczenie? Wtedy zrobisz je osobno, z normalną przerwą.';
   $("ssAsk").hidden=false;$("ssOne").onclick=()=>{$("ssAsk").hidden=true;cb("one")};$("ssPair").onclick=()=>{$("ssAsk").hidden=true;cb("pair")};$("ssNo").onclick=()=>{$("ssAsk").hidden=true}}
 function orderChanged(){const st=S();if(!st.order||!st.order.length)return false;return exList(true).map(oid).join("|")!==exList().map(oid).join("|")}
@@ -1089,7 +1109,10 @@ function renderEx(fromDraft){
     if(ex.pull)h+='<select id="pull_stage" aria-label="Etap podciągania">'+PULL.map((p,i)=>'<option value="'+i+'"'+(i===pullStage?' selected':'')+'>Etap '+p+'</option>').join("")+'</select>';
     h+=suggest(ex,prev);
     if(prev)h+='<div class="prev">Ostatnio '+fmtDate(prev.s.date)+': '+prev.e.sets.filter(t=>t.kg||t.r).map(t=>esc((t.kg?t.kg+"×":"")+(t.r||"–"))).join(" · ")+(prev.e.rir?" · RIR "+esc(prev.e.rir):"")+'</div>';
-    h+='<div class="sets"><div class="set cols"><span><button class="tip" data-tip="sets" aria-label="Wyjaśnienie">?</button></span><span>'+(DB.has(ex.k)?'kg / hantel':BW.has(ex.k)?'kg (opc.)':'kg')+'</span><span>'+unit+'</span><span>✓</span></div>';
+    if(BWL.has(ex.k))h+='<div class="hint bwl">W kg wpisz swoją masę ciała. Z obciążeniem – razem, np. 80 + 3 kg = 83.</div>';
+    else if(DB.has(ex.k)&&!DB1.has(ex.k))h+='<div class="hint bwl">🏋️ Wpisz ciężar <b>jednego</b> hantla (2 × 15 kg → wpisz 15). Aplikacja sama policzy oba.</div>';
+    else if(DB1.has(ex.k))h+='<div class="hint bwl">🏋️ Wpisz ciężar hantla lub odważnika, którym ćwiczysz.</div>';
+    h+='<div class="sets"><div class="set cols"><span><button class="tip" data-tip="sets" aria-label="Wyjaśnienie">?</button></span><span>'+(DB.has(ex.k)?'kg / hantel':BWL.has(ex.k)?'kg ciała':BW.has(ex.k)?'kg (opc.)':'kg')+'</span><span>'+unit+'</span><span>✓</span></div>';
     if(ex.m){const top=prev?Math.max(...prev.e.sets.map(t=>num(t.kg))):0;const wuOpen=st.wus[ex.k]||[0,1].some(i=>keep[ex.k+"_wkg_"+i]||keep[ex.k+"_wr_"+i]);
       h+='<button class="wutog" data-wus="'+ex.k+'" aria-expanded="'+wuOpen+'">'+(wuOpen?'− ':'+ ')+'serie rozgrzewkowe (R1, R2)</button><div class="wubox"'+(wuOpen?'':' hidden')+'>';[[.5,"10"],[.75,"5"]].forEach(([f,r],i)=>{h+='<div class="set wu"><span class="n">R'+(i+1)+'</span><input id="'+ex.k+'_wkg_'+i+'" inputmode="decimal" placeholder="'+(top?r25(top*f):Math.round(f*100)+"%")+'" aria-label="Rozgrzewka '+(i+1)+' kg"><input id="'+ex.k+'_wr_'+i+'" inputmode="numeric" placeholder="'+r+'" aria-label="Rozgrzewka '+(i+1)+' powtórzenia"><span></span></div>'});h+='</div><div class="wul">Serie robocze</div>'}
     for(let i=0;i<n;i++){const p=prev&&prev.e.sets[i];h+='<div class="set"><span class="n">'+(i+1)+'</span><input id="'+ex.k+'_kg_'+i+'" inputmode="decimal" placeholder="'+(p&&p.kg?esc(p.kg):"kg")+'" aria-label="Seria '+(i+1)+' kg"><input id="'+ex.k+'_r_'+i+'" inputmode="numeric" placeholder="'+(p&&p.r?esc(p.r):unit)+'" aria-label="Seria '+(i+1)+' '+unit+'"><button class="ok" data-k="'+ex.k+'" data-i="'+i+'" data-rest="'+rest+'" aria-pressed="'+(!!st.done[ex.k+'_'+i])+'" aria-label="Seria zrobiona">✓</button></div>'}
@@ -1154,7 +1177,7 @@ function openFinish(){if(ordMode){ordMode=false;renderEx(true)}persist();const s
     const nb=prBest(cur);if(!nb)continue;let old=null;for(const s of sessions)for(const x of (s.ex||[]))if(x.k===e.k&&!x.kind){const b=prBest(x.sets||[]);if(b&&(!old||b.v>old.v))old=b}
     if(old&&nb.v>old.v+1e-9)prs.push('<li>🏆 <b>'+esc(e.n)+'</b>: '+(nb.kg?String(nb.kg).replace(".",",")+' kg × ':'')+nb.r+' <span class="hint">(dotąd najlepiej '+(old.kg?String(old.kg).replace(".",",")+' kg × ':'')+old.r+')</span></li>')}
   vol=curVol();const mins=st.start?Math.max(1,Math.round((Date.now()-st.start)/60000)):null;
-  $("finStats").innerHTML='<div><b>'+(mins!==null?(mins>=60?Math.floor(mins/60)+' h '+(mins%60)+' min':mins+' min'):'–')+'</b><span>czas</span></div><div><b>'+filled+'</b><span>serii z wpisem</span></div><div><b>'+Math.round(vol).toLocaleString("pl")+' kg</b><span>objętość</span></div>';
+  $("finStats").innerHTML='<div><b>'+(mins!==null?(mins>=60?Math.floor(mins/60)+' h '+(mins%60)+' min':mins+' min'):'–')+'</b><span>czas</span></div><div><b>'+curSets()+'</b><span>serii z wpisem</span></div><div><b>'+Math.round(vol).toLocaleString("pl")+' kg</b><span>objętość</span></div>';
   $("finPR").innerHTML=(prs.length?'<div class="lbl">Nowe rekordy</div><ul>'+prs.join("")+'</ul>':'')+(filled<total?'<div class="hint">'+(total-filled)+' '+(total-filled===1?'seria bez wpisu nie zostanie zapisana':'serie bez wpisu nie zostaną zapisane')+'.</div>':'');
   finExtra(vol,mins,prs.length);
   const oc=orderChanged();$("finOrd").hidden=!oc;if(oc){ordKeep=isX(day)?"perm":"today";$("finOrdT").textContent="Zapamiętać tę kolejność w planie "+(isX(day)?"„"+dl(day)+"”":dl(day))+"? Przy „Tylko dziś” następnym razem wróci kolejność z planu.";ordSeg()}
@@ -1503,7 +1526,7 @@ $("cloudRestore").onclick=async()=>{if(!cloud.pin){$("cloudPinBox").hidden=false
 $("cloudNow").onclick=()=>cloudSync();
 window.addEventListener("online",()=>cloudSync(true));
 // ===== Aktualizacje: numer wersji w aplikacji vs version.json na serwerze =====
-const APP_BUILD=9;
+const APP_BUILD=10;
 function verItems(j,from){return (j&&j.zmiany||[]).filter(x=>x.build>from)}
 function verHtml(list){return list.map(x=>'<h4>'+esc(x.data)+' · wersja '+x.build+'</h4><ul>'+x.lista.map(t=>'<li>'+esc(t)+'</li>').join("")+'</ul>').join("")}
 function renderVer(){const j=ls.get(P+"verc");const cur=(j&&j.zmiany||[]).find(x=>x.build===APP_BUILD);
@@ -1566,7 +1589,7 @@ function drawRank(j,at,state){const box=$("rank");const v4=!!(j.people||[]).some
   const word=per==="w"?"w tym tygodniu":per==="m"?"w tym miesiącu":"";
   let note=!top?"Nikt jeszcze nie zrobił serii "+(word||"")+". Pierwszy trening = prowadzenie!":me?(leaders.includes(me)&&leaders.length>1?"Remis na prowadzeniu – jedna seria robi różnicę!":leaders.includes(me)?(second?"Prowadzisz! Przewaga: "+(top-second.S)+" "+plSerie(top-second.S)+" nad kolejnym miejscem.":"Prowadzisz!"):"Do lidera brakuje Ci "+(top-me.S)+" "+plSerie(top-me.S)+"."):"";
   if(j.me&&j.me.rank===false)note="Jesteś ukryty w rankingu – zmienisz to w Ustawieniach.";
-  h+=rankCard("Serie "+(word||"łącznie"),'<div class="sm">'+(per==="w"?"PN–ND · ":"")+'serie robocze z sekcji Ćwiczenia'+(PV?' · zmiana wobec poprzedniego '+(per==="w"?"tygodnia":"miesiąca"):'')+'</div><div style="margin-top:8px">'+(rows||'<div class="rnote">Nikogo jeszcze nie ma w rankingu.</div>')+'</div>'+(note?'<div class="rnote">'+note+(per==="w"?' Nowy konkurs startuje w poniedziałek o 00:00.':'')+'</div>':''));
+  h+=rankCard("Serie "+(word||"łącznie"),'<div class="sm">'+(per==="w"?"PN–ND · ":"")+'serie z sekcji Ćwiczenia (z R1/R2)'+(PV?' · zmiana wobec poprzedniego '+(per==="w"?"tygodnia":"miesiąca"):'')+'</div><div style="margin-top:8px">'+(rows||'<div class="rnote">Nikogo jeszcze nie ma w rankingu.</div>')+'</div>'+(note?'<div class="rnote">'+note+(per==="w"?' Nowy konkurs startuje w poniedziałek o 00:00.':'')+'</div>':''));
   if(ppl.some(p=>p.K!=null)){const KV=per==="w"?{prev:"pw",prevVal:p=>p.pw.kg}:per==="m"?{prev:"pm",prevVal:p=>p.pm.kg}:null;
     const kr=rankRows(ppl.map(p=>Object.assign({},p,{streak:0,last:""})),p=>p.K||0,v=>fmtT(v).replace(/ (kg|t)$/,'<small>$1</small>'),'🏋️',v4?KV:null);
     h+=rankCard("Kilogramy "+(word||"łącznie"),'<div class="sm">seria × kg × powtórzenia (z rozgrzewką R1/R2)</div><div style="margin-top:8px">'+kr+'</div>')}
@@ -1613,8 +1636,11 @@ function pickStart(){
 let dateAuto=true;$("date").addEventListener("input",()=>{dateAuto=$("date").value===today()});
 document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible"&&dateAuto&&$("date").value!==today())$("date").value=today()});
 $("date").value=today();pullStage=ls.get(P+"pull")||0;
-sessions=(ls.get(P+"sessions")||[]).map(s=>Object.assign(s,{local:true}));sortS();pickStart();render(true);renderHist();
+sessions=(ls.get(P+"sessions")||[]).map(s=>Object.assign(s,{local:true}));sortS();
+if(sessions.some(x=>x.rv!==RULES_V))try{saveSessions()}catch(e){} // przeliczenie tonażu i serii wg aktualnych zasad
+pickStart();render(true);renderHist();
 try{renderCloud();cloudSync(true)}catch(e){}
+setTimeout(askOnce,600);
 
 $("storeInfo").textContent=INFO_TXT+" · zapis w tej przeglądarce";
 if(PRO.name){document.title="Tytanowa siła · "+PRO.name;const mt=document.querySelector('meta[name="apple-mobile-web-app-title"]');if(mt)mt.content="Siła · "+PRO.name}

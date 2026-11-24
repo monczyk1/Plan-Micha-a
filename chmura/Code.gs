@@ -237,15 +237,14 @@ function vol_(s) {
   return Math.round(v);
 }
 
-// Serie do rankingu: aplikacja zapisuje je w polu nsets (tylko serie robocze z sekcji Ćwiczenia);
-// dla starszych zapisów liczymy serie robocze z wpisem, bez rozgrzewki, dynamiki, core i cardio
+// Serie do rankingu: aplikacja zapisuje je w polu nsets (serie z wpisem w sekcji Ćwiczenia, razem z R1/R2);
+// dla starszych zapisów liczymy to samo tutaj (bez dynamiki, core i cardio)
 function setsOf_(s) {
   if (typeof s.nsets === "number") return s.nsets;
   let n = 0;
   (s.ex || []).forEach(function (e) {
     if (e.kind) return;
     (e.sets || []).forEach(function (t) {
-      if (t.w) return;
       if (String(t.kg || "").trim() || String(t.r || "").trim()) n++;
     });
   });
