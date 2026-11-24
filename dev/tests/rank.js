@@ -41,7 +41,7 @@ ok('R8 pref przywraca Tomka',(await post({pin:'TOMEK-333',action:'pref',rank:tru
 await post({pin:'TOMEK-333',action:'pref',rank:false});
 // ===== UI =====
 const b=await chromium.launch({args:['--lang=pl-PL']});
-const mk=async(url,pin)=>{const c=await b.newContext({viewport:{width:393,height:852},deviceScaleFactor:2,locale:'pl-PL',colorScheme:'dark'});await c.route(/fonts\.(googleapis|gstatic)/,r=>r.abort());const p=await c.newPage();p.errs=[];p.on('pageerror',e=>p.errs.push(e.message));p.ctx=c;await p.goto(url);await p.waitForTimeout(300);await p.click('#welcomeOk').catch(()=>{});if(pin)await p.evaluate(pin=>{cloud={on:true,pin};saveCloud()},pin);return p};
+const mk=async(url,pin)=>{const c=await b.newContext({viewport:{width:393,height:852},deviceScaleFactor:2,locale:'pl-PL',colorScheme:'dark'});await c.route(/fonts\.(googleapis|gstatic)/,r=>r.abort());const p=await c.newPage();p.errs=[];p.on('pageerror',e=>p.errs.push(e.message));p.ctx=c;await p.goto(url);await p.waitForTimeout(300);await p.click('#welcomeOk',{timeout:1500}).catch(()=>{});if(pin)await p.evaluate(pin=>{cloud={on:true,pin};saveCloud()},pin);return p};
 const d=await mk(B+'damian/','DAMIAN-222');
 await d.click('.tabs [data-view="rank"]');await d.waitForTimeout(600);
 const tx=await d.textContent('#rank');
@@ -67,8 +67,8 @@ ok('U4 bez chmury: zaproszenie i przycisk',(await n.textContent('#rank')).includ
 await n.click('.tabs [data-view="train"]');await n.click('#seg button:nth-child(1)');await n.waitForTimeout(100);
 const s0=await n.textContent('#sumTxt');ok('P1 start: 0% · 0/27 serii · ~min',/^0% · 0\/27 serii · ~\d+ min/.test(s0),s0);
 const m0=+s0.match(/~(\d+)/)[1];ok('P1 szacunek realny (50–90 min z cardio)',m0>=50&&m0<=90,m0);
-for(const [k,i] of [['mbchest',0],['mbchest',1],['mbchest',2],['plyopush',0],['plyopush',1]]){await n.click('.ok[data-k="'+k+'"][data-i="'+i+'"]');await n.click('#restX').catch(()=>{})}
-await n.fill('#bench_kg_0','60');await n.fill('#bench_r_0','8');await n.click('.ok[data-k="bench"][data-i="0"]');await n.click('#restX').catch(()=>{});
+for(const [k,i] of [['mbchest',0],['mbchest',1],['mbchest',2],['plyopush',0],['plyopush',1]]){await n.click('.ok[data-k="'+k+'"][data-i="'+i+'"]');await n.click('#restX',{timeout:1500}).catch(()=>{})}
+await n.fill('#bench_kg_0','60');await n.fill('#bench_r_0','8');await n.click('.ok[data-k="bench"][data-i="0"]');await n.click('#restX',{timeout:1500}).catch(()=>{});
 const s1=await n.textContent('#sumTxt');const w1=await n.$eval('#pbar',e=>e.style.width);
 ok('P2 po 6 seriach: 22% · 6/27',s1.startsWith('22% · 6/27 serii'),s1);ok('P2 pasek 22%',w1==='22%',w1);
 const m1=+s1.match(/~(\d+)/)[1];ok('P2 czas maleje',m1<m0,[m0,m1]);

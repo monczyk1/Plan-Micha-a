@@ -3,13 +3,13 @@ const {chromium}=require('playwright');
 const R='http://localhost:8765/damian/';
 const ok=(n,c,i)=>console.log((c?'PASS ':'FAIL ')+n+(c?'':'  → '+JSON.stringify(i)));
 (async()=>{const b=await chromium.launch({args:['--lang=pl-PL']});
-const mk=async()=>{const c=await b.newContext({viewport:{width:393,height:852},locale:'pl-PL',serviceWorkers:'block'});c.setDefaultTimeout(5000);await c.route(/fonts\.(googleapis|gstatic)/,r=>r.abort());await c.route(/version\.json/,r=>r.abort());const p=await c.newPage();p.errs=[];p.on('pageerror',e=>p.errs.push(e.message));await p.goto(R);await p.waitForTimeout(300);await p.click('#welcomeOk').catch(()=>{});await p.click('#seg button:nth-child(1)');return p};
+const mk=async()=>{const c=await b.newContext({viewport:{width:393,height:852},locale:'pl-PL',serviceWorkers:'block'});c.setDefaultTimeout(5000);await c.route(/fonts\.(googleapis|gstatic)/,r=>r.abort());await c.route(/version\.json/,r=>r.abort());const p=await c.newPage();p.errs=[];p.on('pageerror',e=>p.errs.push(e.message));await p.goto(R);await p.waitForTimeout(300);await p.click('#welcomeOk',{timeout:1500}).catch(()=>{});await p.click('#seg button:nth-child(1)');return p};
 const str=p=>p.evaluate(()=>exList().filter(e=>!e.kind).map(e=>e.k+(e.ss?'('+e.ss+')':'')).join(','));
 const mv=async(p,k,d)=>{await p.click('.ordr [data-id="'+k+'"][data-mv="'+d+'"]');await p.waitForTimeout(60)};
 let p=await mk();
 ok('O1 przycisk „⇅ Kolejność”',await p.isVisible('#ordGo'));
-await p.fill('#bench_kg_0','60');await p.fill('#bench_r_0','8');await p.click('.ok[data-k="bench"][data-i="0"]');await p.click('#restX').catch(()=>{});
-for(const i of [0,1,2]){await p.click('.ok[data-k="mbchest"][data-i="'+i+'"]');await p.click('#restX').catch(()=>{})}
+await p.fill('#bench_kg_0','60');await p.fill('#bench_r_0','8');await p.click('.ok[data-k="bench"][data-i="0"]');await p.click('#restX',{timeout:1500}).catch(()=>{});
+for(const i of [0,1,2]){await p.click('.ok[data-k="mbchest"][data-i="'+i+'"]');await p.click('#restX',{timeout:1500}).catch(()=>{})}
 await p.click('#ordGo');await p.waitForTimeout(100);
 ok('O2 tryb kolejności: lista 10 ćwiczeń, bez kart i rozgrzewki',(await p.$$('.ordr')).length===10&&!(await p.$('.ex[data-card]'))&&!(await p.$('.wup')));
 ok('O2 sekcje',JSON.stringify(await p.$$eval('.ordg',x=>x.map(e=>e.textContent)))==='["Dynamika","Ćwiczenia","Core","Cardio na koniec"]');
@@ -28,7 +28,7 @@ ok('O7 wpisane serie zostały',await p.inputValue('#bench_kg_0')==='60');
 await p.reload();await p.waitForTimeout(300);ok('O8 kolejność po odświeżeniu',(await str(p))==='incline,bench,ohp,latraise,pushdown');
 // zakończenie – tylko dziś
 await p.click('#finish');ok('O9 pytanie przy zakończeniu, domyślnie „Tylko dziś”',await p.isVisible('#finOrd')&&(await p.getAttribute('#ordToday','aria-pressed'))==='true');
-await p.click('#save');await p.waitForTimeout(250);await p.click('#ssLater').catch(()=>{});await p.click('#tipX').catch(()=>{});
+await p.click('#save');await p.waitForTimeout(250);await p.click('#ssLater',{timeout:1500}).catch(()=>{});await p.click('#tipX',{timeout:1500}).catch(()=>{});
 const saved=await p.evaluate(()=>sessions[0].ex.filter(e=>!e.kind).map(e=>e.k).join(','));ok('O10 historia zapisana w kolejności z dziś',saved==='incline,bench,ohp,latraise,pushdown',saved);
 ok('O10 plan bez zmian',await p.evaluate(()=>PLAN.PN.ex.filter(e=>!e.kind).map(e=>e.k+(e.ss?'('+e.ss+')':'')).join(','))==='bench,ohp,incline(A),latraise(A),pushdown');
 // cała superseria + skok nad parą
@@ -37,12 +37,12 @@ await mv(p,'incline',1);await p.click('#ssPair');ok('O11 cała superseria w dó�
 await mv(p,'pushdown',1);ok('O12 pojedyncze przeskakuje nad całą parą',(await str(p))==='bench,ohp,incline(A),latraise(A),pushdown',await str(p));
 await mv(p,'ohp',1);ok('O12 ...i w drugą stronę',(await str(p))==='bench,incline(A),latraise(A),ohp,pushdown',await str(p));
 await p.click('#ordDone');await p.fill('#bench_kg_0','60');await p.fill('#bench_r_0','8');
-await p.click('#finish');await p.click('#ordPerm');await p.click('#save');await p.waitForTimeout(250);await p.click('#ssLater').catch(()=>{});await p.click('#tipX').catch(()=>{});
+await p.click('#finish');await p.click('#ordPerm');await p.click('#save');await p.waitForTimeout(250);await p.click('#ssLater',{timeout:1500}).catch(()=>{});await p.click('#tipX',{timeout:1500}).catch(()=>{});
 ok('O13 „Na stałe” zapisuje plan',await p.evaluate(()=>PLAN.PN.ex.filter(e=>!e.kind).map(e=>e.k+(e.ss?'('+e.ss+')':'')).join(','))==='bench,incline(A),latraise(A),ohp,pushdown');
 ok('O13 plan zapisany w telefonie',await p.evaluate(()=>JSON.parse(localStorage.getItem('goradamian_plan')).PN.ex.filter(e=>!e.kind).map(e=>e.k)[1])==='incline');
 await p.click('#seg button:nth-child(1)');await p.fill('#bench_kg_0','60');await p.fill('#bench_r_0','8');await p.click('#finish');ok('O14 bez zmian kolejności – bez pytania',await p.isHidden('#finOrd'));await p.click('#finBack');
 // na stałe z rozdzieloną superserią → superseria znika z planu
-await p.click('#ordGo');await mv(p,'latraise',1);await p.click('#ssOne');await p.click('#ordDone');await p.click('#finish');await p.click('#ordPerm');await p.click('#save');await p.waitForTimeout(250);await p.click('#ssLater').catch(()=>{});await p.click('#tipX').catch(()=>{});
+await p.click('#ordGo');await mv(p,'latraise',1);await p.click('#ssOne');await p.click('#ordDone');await p.click('#finish');await p.click('#ordPerm');await p.click('#save');await p.waitForTimeout(250);await p.click('#ssLater',{timeout:1500}).catch(()=>{});await p.click('#tipX',{timeout:1500}).catch(()=>{});
 ok('O15 rozdzielona superseria usunięta z planu',await p.evaluate(()=>PLAN.PN.ex.filter(e=>!e.kind).map(e=>e.k+(e.ss?'('+e.ss+')':'')).join(','))==='bench,incline,ohp,latraise,pushdown',await p.evaluate(()=>PLAN.PN.ex.filter(e=>!e.kind).map(e=>e.k+(e.ss?'('+e.ss+')':'')).join(',')));
 // trening dodatkowy: domyślnie „Na stałe”
 await p.click('#seg .addt');await p.fill('#ntName','Nogi 1');await p.click('#ntChips [data-g="Nogi"]');for(const k of ['squat','lunge'])await p.check('#ntList [data-k="'+k+'"]');await p.click('#ntGo');await p.waitForTimeout(150);

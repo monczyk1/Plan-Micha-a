@@ -34,7 +34,9 @@ Każdy ma własny link, własny plan i własny PIN do kopii w chmurze. Wpisują 
 ## Sprawdzanie zmian
 
 - Lokalnie: `python3 -m http.server 8765` w katalogu repo → http://localhost:8765/ (i `/damian/`, `/mateusz/`).
-- Testy: `cd dev && npm install && npx playwright install chromium` (raz). Po każdej zmianie `./run-tests.sh calc` (kilka sekund: tonaż, masa ciała, plan, profile); przed wydaniem `./run-tests.sh` (wszystkie, ok. 10 min); wybrane: `./run-tests.sh mt ton`.
+- Testy: `cd dev && npm install && npx playwright install chromium` (raz), potem z `dev/`:
+  - po każdej zmianie: `./run-tests.sh szybkie` (5 s – obliczenia) + zestaw pasujący do zmiany: `trening` (serie, zapis, historia, kopie z pliku, kolejność, offline), `osoby` (Damian, Mateusz, plany), `chmura` (kopia w chmurze, ranking, aktualizacje, `Code.gs`), `wyglad` (dostępność); można łączyć i dodawać pojedyncze testy, np. `./run-tests.sh trening mt`,
+  - przed wydaniem zawsze wszystkie: `./run-tests.sh` (ok. 35 s – równolegle; testy chmury po kolei, bo dzielą atrapę arkusza).
   Skrypt stawia własne serwery i atrapę skryptu Google (prawdziwy `Code.gs` w Node) – prawdziwy arkusz nie jest dotykany. Ma się kończyć „WSZYSTKO OK”.
   Jeśli celowo zmieniasz tekst lub zasadę sprawdzaną w teście – popraw test w tej samej zmianie.
   Blokada: jeśli w kopii testowej zostanie adres prawdziwego arkusza, testy się zatrzymają. `CLOUD_URL` musi zostać w jednej linii.
@@ -92,4 +94,4 @@ Do zrobienia / otwarte:
 - Przed zmianą wyglądu lub działania: zapytaj, najlepiej z makietą lub zrzutem („pokaż, zanim napiszesz kod”). Poprawki kodu bez wpływu na użytkownika – rób bez pytania.
 - Pytania zadawaj z gotowymi propozycjami odpowiedzi do wyboru.
 - Jakość „na piątkę”: każda zmiana z testem i sprawdzeniem na ekranie telefonu, także w trybie ciemnym.
-- Oszczędzaj limit: szukaj grepem w `kod/aplikacja.js` (ok. 4,5 tys. linii) zamiast czytać całość; zmiana planu osoby = tylko `dane/plan-<osoba>.js`; nie odpalaj wszystkich testów, gdy wystarczy `calc` lub wybrane.
+- Oszczędzaj limit: szukaj grepem w `kod/aplikacja.js` (ok. 4,5 tys. linii) zamiast czytać całość; zmiana planu osoby = tylko `dane/plan-<osoba>.js`; między zmianami odpalaj `szybkie` + pasujący zestaw, wszystkie dopiero przed wydaniem.

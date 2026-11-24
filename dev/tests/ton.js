@@ -39,7 +39,7 @@ ok('T7 bez chmury brak rankingu na żywo',await p.isHidden('#finRank'));
 const [dl]=await Promise.all([p.waitForEvent('download'),p.click('#finShare')]);const fp=__dirname+'/dm/share.png';await dl.saveAs(fp);
 ok('T8 obrazek do udostępnienia',fs.statSync(fp).size>20000&&dl.suggestedFilename().startsWith('trening-'),[fs.statSync(fp).size,dl.suggestedFilename()]);
 await p.screenshot({path:__dirname+'/dm/ton2.png'});
-await p.click('#save');await p.waitForTimeout(300);await p.click('#ssLater').catch(()=>{});
+await p.click('#save');await p.waitForTimeout(300);await p.click('#ssLater',{timeout:1500}).catch(()=>{});
 const s0=await p.evaluate(()=>sessions[0]);ok('T9 zapis: vol, liczba serii i czas',s0.vol===2480&&s0.nsets===5&&s0.dur>=1,[s0.vol,s0.nsets,s0.dur]);
 ok('T9 starsze treningi też mają vol',await p.evaluate(()=>sessions.every(s=>typeof s.vol==='number')));
 // ranking na żywo + kg (skrypt v4 w atrapie)

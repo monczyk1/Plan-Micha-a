@@ -15,19 +15,44 @@ for f in $(grep -rl "script.google.com" "$SRV"); do
 done
 # blokada: jeśli adres prawdziwego arkusza został w kopii testowej, przerywamy (testy nie mogą pisać do arkusza)
 if grep -rq "script.google.com" "$SRV"; then echo "STOP: w kopii testowej został adres prawdziwego arkusza – popraw podmianę CLOUD_URL w run-tests.sh"; exit 1; fi
-(cd "$ROOT" && python3 -m http.server 8765 >/dev/null 2>&1) & P1=$!
-(cd "$SRV" && python3 -m http.server 8766 >/dev/null 2>&1) & P2=$!
+(cd "$ROOT" && exec python3 -m http.server 8765 >/dev/null 2>&1) & P1=$!
+(cd "$SRV" && exec python3 -m http.server 8766 >/dev/null 2>&1) & P2=$!
 node "$T/gas-mock3.js" 8792 >/dev/null 2>&1 & P3=$!
 trap 'kill $P1 $P2 $P3 2>/dev/null' EXIT INT TERM
 sleep 2
-LIST=${*:-"calc full2 newf damian nt ord ton mt rank rank2 cloud3 upd off v1guard axe2"}
-cd "$T" && mkdir -p dm; FAILS=0
-for t in $LIST; do
+# Zestawy testów (można mieszać z nazwami pojedynczych testów, np. ./run-tests.sh trening mt):
+#   szybkie – calc: obliczenia (tonaż, masa ciała, plan, profile), kilka sekund – po każdej zmianie
+#   trening – wpisywanie serii, zakończenie, zapis, historia, kopie z pliku, kolejność, nowy trening, offline
+#   osoby   – profile Damiana i Mateusza, ich plany, izolacja danych
+#   chmura  – kopia w chmurze, ranking, tonaż w rankingu, aktualizacje (każda zmiana w chmura/Code.gs lub wysyłce)
+#   wyglad  – dostępność (kontrast, etykiety)
+#   (bez nazw) – wszystkie
+CHMURA="ton rank rank2 cloud3 upd v1guard"   # korzystają ze wspólnej atrapy arkusza – idą po kolei
+ALL="calc full2 newf damian nt ord mt off axe2 $CHMURA"
+LIST=""
+for a in ${*:-$ALL}; do case $a in
+  szybkie) LIST="$LIST calc";; trening) LIST="$LIST full2 nt ord newf off";; osoby) LIST="$LIST calc damian mt";;
+  chmura) LIST="$LIST $CHMURA";; wyglad) LIST="$LIST axe2";; *) LIST="$LIST $a";; esac; done
+LIST=$(echo $LIST | tr ' ' '\n' | awk '!s[$0]++' | tr '\n' ' ')   # bez powtórzeń
+cd "$T" && mkdir -p dm; RES="$DEV/.wyniki"; rm -rf "$RES"; mkdir -p "$RES"
+run(){ t=$1
+  [ -f "$t.js" ] || { echo "== $t: nie ma takiego testu" > "$RES/$t"; touch "$RES/$t.fail"; return; }
   PRE="--require $T/preload.js"; case $t in mt|full2) PRE="";; esac   # mt sprawdza pytanie o masę; full2 jest stabilniejszy bez preload
   OUT=$(NODE_PATH="$DEV/node_modules" NODE_OPTIONS="$PRE" timeout 300 node "$t.js" 2>&1); RC=$?
   P=$(echo "$OUT" | grep -c '^PASS'); F=$(echo "$OUT" | grep -c '^FAIL'); E=$(echo "$OUT" | grep -m1 -E 'Error:' )
   [ $RC -ne 0 ] && [ -z "$E" ] && E="test przerwany (kod $RC$([ $RC -eq 124 ] && echo ', przekroczony czas'))"
-  echo "== $t: $P ok, $F błędów ${E:+· $E}"; echo "$OUT" | grep '^FAIL'
-  [ "$F" -gt 0 ] || [ -n "$E" ] && FAILS=$((FAILS+1))
-done
-[ $FAILS -eq 0 ] && echo "WSZYSTKO OK" || echo "UWAGA: $FAILS zestaw(y) z błędami"
+  { echo "== $t: $P ok, $F błędów ${E:+· $E}"; echo "$OUT" | grep '^FAIL'; } > "$RES/$t"
+  { [ "$F" -gt 0 ] || [ -n "$E" ] || [ "$P" -eq 0 ]; } && touch "$RES/$t.fail"
+}
+START=$(date +%s)
+# testy z atrapą arkusza: po kolei, w tle
+( for t in $LIST; do case " $CHMURA " in *" $t "*) run $t;; esac; done ) & PC=$!
+# pozostałe: po 4 naraz
+PIDS=""; n=0
+for t in $LIST; do case " $CHMURA " in *" $t "*) continue;; esac
+  run $t & PIDS="$PIDS $!"; n=$((n+1)); [ $((n % 4)) -eq 0 ] && { wait $PIDS; PIDS=""; }; done
+wait $PC $PIDS   # tylko testy – serwery w tle zamyka trap przy wyjściu
+for t in $LIST; do cat "$RES/$t"; done
+FAILS=$(ls "$RES"/*.fail 2>/dev/null | wc -l | tr -d ' ')
+[ "$FAILS" -eq 0 ] && echo "WSZYSTKO OK ($(( $(date +%s)-START )) s)" || echo "UWAGA: $FAILS zestaw(y) z błędami"
+[ "$FAILS" -eq 0 ]

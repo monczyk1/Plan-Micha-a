@@ -15,7 +15,7 @@ ok('D1 5 dni PN–PT',JSON.stringify(days)===JSON.stringify(['PN','WT','ŚR','CZ
 ok('D1 opis 5 treningów',(await p.textContent('#storeInfo')).includes('5 treningów'),await p.textContent('#storeInfo'));
 ok('D1 tytuł',(await p.title()).includes('Damian'));
 ok('D1 powitanie PN–PT',(await p.textContent('#welcome')).includes('PN–PT'));
-await p.click('#welcomeOk').catch(()=>{});
+await p.click('#welcomeOk',{timeout:1500}).catch(()=>{});
 await p.click('#seg button:nth-child(1)');await p.waitForTimeout(60);
 await p.screenshot({path:OUT+'d1.png'});
 // D2 rozgrzewka
@@ -32,10 +32,10 @@ ok('D3 PN: bench, OHP, StairMaster',exn.some(x=>x.includes('Wyciskanie sztangi n
 await p.click('.ok[data-k="stair"][data-i="0"]');await p.waitForTimeout(60);
 ok('D4 cardio ✓ bez minutnika przerwy',await p.isHidden('#rest'));
 await p.click('.ok[data-k="mbchest"][data-i="0"]');await p.waitForTimeout(60);
-ok('D4 dynamika ✓ startuje minutnik',await p.isVisible('#rest'));await p.click('#restX').catch(()=>{});
+ok('D4 dynamika ✓ startuje minutnik',await p.isVisible('#rest'));await p.click('#restX',{timeout:1500}).catch(()=>{});
 // D5 zapis
-await p.fill('#bench_kg_0','60');await p.fill('#bench_r_0','8');await p.click('.ok[data-k="bench"][data-i="0"]');await p.click('#restX').catch(()=>{});
-await p.click('#finish');await p.waitForTimeout(100);await p.screenshot({path:OUT+'d5.png'});await p.click('#save');await p.waitForTimeout(200);await p.click('#ssLater').catch(()=>{});
+await p.fill('#bench_kg_0','60');await p.fill('#bench_r_0','8');await p.click('.ok[data-k="bench"][data-i="0"]');await p.click('#restX',{timeout:1500}).catch(()=>{});
+await p.click('#finish');await p.waitForTimeout(100);await p.screenshot({path:OUT+'d5.png'});await p.click('#save');await p.waitForTimeout(200);await p.click('#ssLater',{timeout:1500}).catch(()=>{});
 const k1=await keys();
 ok('D5 dane tylko w goradamian_*',k1.some(k=>k==='goradamian_sessions')&&!k1.some(k=>k.startsWith('gora_')),k1);
 const nx=await p.$eval('#seg button.on, #seg button[aria-pressed="true"]',b=>b.innerText).catch(()=>null);
@@ -54,9 +54,9 @@ ok('D8 edytor ma PN–PT',tabs.slice(0,5).join(',')==='Trening PN,Trening WT,Tre
 await p.goto(BASE);await p.waitForTimeout(300);
 const d2=await p.$$eval('#seg button:not(.addt)',bs=>bs.map(x=>x.innerText.split('\n')[0].trim()));
 ok('D9 Michał: A/B',JSON.stringify(d2)===JSON.stringify(['A','B']),d2);
-await p.click('#welcomeOk').catch(()=>{});await go('hist');
+await p.click('#welcomeOk',{timeout:1500}).catch(()=>{});await go('hist');
 ok('D9 Michał: pusta historia',!(await p.textContent('#hist')).includes('T1'),await p.textContent('#hist'));
-await go('train');await p.fill('#incline_kg_0','20');await p.fill('#incline_r_0','8');await p.click('#finish');await p.click('#save');await p.waitForTimeout(200);await p.click('#ssLater').catch(()=>{});
+await go('train');await p.fill('#incline_kg_0','20');await p.fill('#incline_r_0','8');await p.click('#finish');await p.click('#save');await p.waitForTimeout(200);await p.click('#ssLater',{timeout:1500}).catch(()=>{});
 const snapM=await p.evaluate(()=>Object.keys(snapshot().storage));
 ok('D9 kopia Michała bez danych Damiana',snapM.length&&snapM.every(k=>k.startsWith('gora_')),snapM);
 ok('D9 cloud u Michała widoczny',await p.evaluate(()=>!!CLOUD_URL));

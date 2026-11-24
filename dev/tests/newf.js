@@ -18,7 +18,7 @@ await p.click(card+' .csum');await p.click('.ok[data-k="incline"][data-i="2"]');
 await go('set');await p.uncheck('#optCollapse');await go('train');ok('N3 wyłączone zwijanie',!(await p.$eval(card,e=>e.classList.contains('collapsed'))));await go('set');await p.check('#optCollapse');await go('train');
 // N2 finish + PR
 await p.click('#finish');ok('N2 podsumowanie otwarte',await p.isVisible('#finSheet'));const st=await p.textContent('#finStats');ok('N2 statystyki (3 serie, 960 kg – hantle ×2)',/4serii/.test(st.replace(/\s/g,''))&&/960/.test(st),st);
-await p.click('#finBack');ok('N2 wróć zamyka',await p.isHidden('#finSheet'));await p.click('#finish');await p.click('#save');await p.waitForTimeout(200);await p.click('#ssLater').catch(()=>{});
+await p.click('#finBack');ok('N2 wróć zamyka',await p.isHidden('#finSheet'));await p.click('#finish');await p.click('#save');await p.waitForTimeout(200);await p.click('#ssLater',{timeout:1500}).catch(()=>{});
 await go('train');await p.click('#seg button:nth-child(1)');await p.fill('#incline_kg_0','22,5');await p.fill('#incline_r_0','8');await p.click('#finish');
 ok('N2 nowy rekord',/rekord/i.test(await p.textContent('#finPR'))&&/22,5 kg × 8/.test(await p.textContent('#finPR')),await p.textContent('#finPR'));await p.click('#finBack');
 // N6 names + no stage select

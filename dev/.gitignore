@@ -3,3 +3,4 @@ node_modules/
 tests/dm/
 tests/log.txt
 tests/clog.txt
+.wyniki/

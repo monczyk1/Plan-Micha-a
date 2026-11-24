@@ -60,5 +60,5 @@ Ptaszek „Pokazuj mnie w rankingu” w Ustawieniach ukrywa osobę (kolumna *Ran
 ## Praca w Claude Code
 
 - `CLAUDE.md` – zasady projektu, budowa aplikacji, reguły tonażu i kroki wydania (Claude Code czyta go sam).
-- `dev/` – testy automatyczne: `cd dev && npm install && npx playwright install chromium`, potem `./run-tests.sh calc` (kilka sekund) albo `./run-tests.sh` (wszystkie, ok. 10 min).
+- `dev/` – testy automatyczne: `cd dev && npm install && npx playwright install chromium`, potem `./run-tests.sh szybkie` (5 s), zestaw (`trening`, `osoby`, `chmura`, `wyglad`) albo `./run-tests.sh` (wszystkie, ok. 35 s).
 - `film/` – źródła i gotowe pliki filmu-przewodnika.
