@@ -1,7 +1,16 @@
 {
- "build": 5,
- "data": "23.11.2026",
+ "build": 6,
+ "data": "24.11.2026",
  "zmiany": [
+  {
+   "build": 6,
+   "data": "24.11.2026",
+   "lista": [
+    "Przycisk „⇅ Kolejność” nad ćwiczeniami: zmieniasz kolejność strzałkami ▲▼, np. gdy maszyna jest zajęta",
+    "Przy ćwiczeniu z superserii aplikacja pyta, czy przesunąć tylko je, czy całą superserię",
+    "Przy „Zakończ trening” wybierasz: nowa kolejność tylko dziś czy na stałe w planie"
+   ]
+  },
   {
    "build": 5,
    "data": "23.11.2026",
