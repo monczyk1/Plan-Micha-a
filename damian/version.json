@@ -1,7 +1,19 @@
 {
- "build": 7,
+ "build": 8,
  "data": "24.11.2026",
  "zmiany": [
+  {
+   "build": 8,
+   "data": "24.11.2026",
+   "lista": [
+    "Dokładniejszy tonaż: ×2 tylko przy dwóch hantlach, ×2 gdy ćwiczysz na stronę (wykroki, jednorącz), wliczone serie rozgrzewkowe R1/R2",
+    "Do tonażu nie wliczają się ćwiczenia z ciężarem ciała ani na czas czy dystans",
+    "Postępy: stuknij słupek tygodnia – zobaczysz treningi i kilogramy z każdego ćwiczenia",
+    "Serie w rankingu i porównaniach: tylko serie robocze z sekcji Ćwiczenia (bez rozgrzewki, dynamiki, core i cardio)",
+    "Katalog: 41 nowych popularnych ćwiczeń (np. butterfly, martwy ciąg sumo, modlitewnik, szrugsy, wykroki w marszu, brzuszki)",
+    "Podsumowanie treningu: sam tonaż, szczegóły są w Postępach"
+   ]
+  },
   {
    "build": 7,
    "data": "24.11.2026",

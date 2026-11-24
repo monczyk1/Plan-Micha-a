@@ -219,7 +219,8 @@ html,body{margin:0}
 .finex{margin:8px 0}.finex summary{cursor:pointer;font-weight:600;font-size:14px;padding:6px 0}.frow{display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-top:1px solid var(--line);font-size:14px}.frow small{display:block;color:var(--muted);font-family:var(--f-mono);font-size:12px;margin-top:2px}.frow span{font-family:var(--f-mono);white-space:nowrap}
 .mini.share{width:100%;margin:4px 0 10px;padding:11px;font-size:15px}
 .tonc{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:10px}.tonc div{background:var(--field);border-radius:10px;padding:10px}.tonc b{display:block;font-family:var(--f-display);font-size:24px}.tonc span{font-size:11px;color:var(--muted)}
-.tchart{display:flex;align-items:flex-end;gap:6px;height:130px;padding:18px 0 0;border-bottom:1px solid var(--line)}.tchart div{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%}.tchart i{display:block;width:100%;background:color-mix(in srgb,var(--accent) 45%,var(--field));border-radius:6px 6px 0 0;min-height:2px}.tchart .now i{background:var(--accent)}.tchart em{font-style:normal;font-size:10px;color:var(--muted);font-family:var(--f-mono);margin-bottom:3px;white-space:nowrap}
+.tchart{display:flex;align-items:flex-end;gap:6px;height:130px;padding:18px 0 0;border-bottom:1px solid var(--line)}.tchart button{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;background:none;border:0;padding:0;cursor:pointer;color:inherit;min-width:0}.tchart .sel i{outline:2px solid var(--fg);outline-offset:1px}
+.tdet{margin:10px 0 0;background:var(--field);border-radius:12px;padding:10px 12px}.tdh{font-size:14px;margin-bottom:6px}.tds{border-top:1px solid var(--line);padding:6px 0}.tds summary{display:flex;justify-content:space-between;gap:10px;cursor:pointer;font-size:14px;padding:4px 0}.tds summary b{font-family:var(--f-mono);font-weight:500}.tout{margin-top:6px}.tchart i{display:block;width:100%;background:color-mix(in srgb,var(--accent) 45%,var(--field));border-radius:6px 6px 0 0;min-height:2px}.tchart .now i{background:var(--accent)}.tchart em{font-style:normal;font-size:10px;color:var(--muted);font-family:var(--f-mono);margin-bottom:3px;white-space:nowrap}
 .tlab{display:flex;gap:6px;margin-top:4px}.tlab span{flex:1;text-align:center;font-size:10px;color:var(--muted);font-family:var(--f-mono)}.tfun{font-size:13px;color:var(--muted);margin:10px 0 14px}
 .finpr ul{margin:4px 0 0;padding-left:0;list-style:none;display:flex;flex-direction:column;gap:4px;font-size:14px}.barin:has(.rest:not([hidden])) .vol{display:none}.whint{font-size:13px;color:var(--muted);padding:0 14px 8px;display:flex;align-items:center;gap:4px}.cloud{display:flex;flex-direction:column;gap:8px;border-top:1px solid var(--line);padding-top:10px}
 .cloudrow{display:grid;grid-template-columns:28px 1fr;gap:8px;align-items:start;cursor:pointer}.cloudrow input{width:24px;height:24px;margin:2px 0 0;accent-color:var(--accent)}
@@ -358,7 +359,6 @@ html,body{margin:0}
   <div class="fincmp" id="finCmp"></div>
   <div class="finpr" id="finPR"></div>
   <div class="finrank" id="finRank" hidden></div>
-  <details class="finex" id="finEx"><summary>Rozpiska ćwiczeń</summary><div id="finExL"></div></details>
   <button class="mini share" id="finShare">📤 Udostępnij wynik</button>
   <div class="ordq" id="finOrd" hidden><b>⇅ Zmieniłeś kolejność ćwiczeń</b><p id="finOrdT"></p><div class="sg" role="group" aria-label="Zapamiętać kolejność"><button type="button" id="ordToday">Tylko dziś</button><button type="button" id="ordPerm">Na stałe</button></div></div>
   <div class="row2">
@@ -638,6 +638,47 @@ const LIB=[
  ["kneeraise","Unoszenie kolan (podpór na poręczach)","Core","core",3,"10–12",0,"Brzuch, zginacze biodra","Plecy oparte","Podwijasz miednicę na górze"],
  ["cablecrunch","Spięcia brzucha na wyciągu","Core","core",3,"12–15",0,"Prosty brzucha","Klęk, lina przy głowie","Zwijasz tułów, biodra stoją"],
  ["suitcase","Spacer walizkowy (jednorącz)","Core","carry",3,"30 m/str.",0,"Core, chwyt","Ciężar w jednej ręce","Tułów prosto, bez przechylania"],
+ ["declinebench","Wyciskanie sztangi na ławce skośnej ujemnej","Klatka","hpush",3,"8–10",1,"Dolna część klatki, triceps","Nogi zablokowane pod wałkami","Sztanga do dolnej części klatki"],
+ ["inclinefly","Rozpiętki z hantlami na ławce skośnej","Klatka","iso",3,"12–15",0,"Górna część klatki","Łokcie lekko ugięte przez cały ruch","Opuszczasz do linii barków, nie niżej"],
+ ["pecdeck","Rozpiętki na maszynie (butterfly)","Klatka","iso",3,"12–15",0,"Klatka","Łopatki dociśnięte do oparcia","Pauza 1 s przy złączeniu"],
+ ["lowcablefly","Rozpiętki na bramie z dolnych wyciągów","Klatka","iso",3,"12–15",0,"Górna część klatki","Ręce łukiem w górę do wysokości brody","Łokcie lekko ugięte"],
+ ["pullover","Przenoszenie hantla za głowę (pullover)","Klatka","iso",3,"10–12",0,"Klatka, najszerszy grzbietu","Hantel trzymany oburącz, łokcie lekko ugięte","Ruch tylko w barkach"],
+ ["latpdsup","Ściąganie drążka podchwytem","Plecy","vpull",3,"8–12",1,"Najszerszy grzbietu, biceps","Chwyt na szerokość barków","Drążek do górnej części klatki"],
+ ["assistpull","Podciąganie na maszynie z odciążeniem","Plecy","vpull",3,"6–10",0,"Plecy, biceps","Większe odciążenie = łatwiej","Pełny zwis na dole, broda nad uchwyt"],
+ ["bentdbrow","Wiosłowanie hantlami w opadzie tułowia","Plecy","hpull",3,"8–12",1,"Plecy, tył barku","Plecy płasko, tułów ok. 45°","Łokcie prowadzisz do bioder"],
+ ["pendlay","Wiosłowanie Pendlay (sztanga z podłogi)","Plecy","hpull",3,"5–8",1,"Plecy","Tułów równolegle do podłogi","Każde powtórzenie zaczyna się z podłogi"],
+ ["sacablerow","Wiosłowanie jednorącz na wyciągu","Plecy","hpull",3,"10–12/rękę",0,"Najszerszy grzbietu","Łokieć blisko tułowia","Lekki skręt tułowia na końcu ruchu"],
+ ["shrug","Szrugsy ze sztangą (unoszenie barków)","Plecy","iso",3,"10–15",0,"Kapturowy","Ręce proste","Barki prosto w górę, bez krążenia"],
+ ["dbshrug","Szrugsy z hantlami","Plecy","iso",3,"10–15",0,"Kapturowy","Hantle wzdłuż boków","Pauza 1 s na górze"],
+ ["sumodl","Martwy ciąg sumo","Tył uda i pośladki","hinge",3,"5–6",1,"Pośladki, uda, plecy","Szeroki rozstaw, palce na zewnątrz","Kolana wypychasz na zewnątrz"],
+ ["goodmorning","Skłony ze sztangą na karku (good morning)","Tył uda i pośladki","hinge",3,"8–10",0,"Dwugłowe uda, prostowniki","Kolana lekko ugięte","Biodra w tył, plecy neutralne"],
+ ["standcurl","Uginanie nogi stojąc na maszynie","Tył uda i pośladki","iso",3,"10–12/nogę",0,"Dwugłowe uda","Biodro stabilne","Opuszczanie 2 s"],
+ ["glutekick","Wykopy nogi w tył na wyciągu","Tył uda i pośladki","iso",3,"12–15/nogę",0,"Pośladki","Tułów stabilny","Ruch z biodra, bez wyginania lędźwi"],
+ ["adductor","Przywodzenie nóg na maszynie","Nogi – uda","iso",3,"12–15",0,"Przywodziciele","Powoli, pełnym zakresem","Pauza przy złączeniu"],
+ ["walklunge","Wykroki w marszu z hantlami","Nogi – uda","lunge",3,"10/nogę",0,"Uda, pośladki","Długi krok, tułów prosto","Kolano tylnej nogi prawie do podłogi"],
+ ["bblunge","Wykroki ze sztangą","Nogi – uda","lunge",3,"8/nogę",1,"Uda, pośladki","Sztanga na barkach jak w przysiadzie","Stabilny tułów, krok do przodu"],
+ ["dbsquat","Przysiad z hantlami","Nogi – uda","squat",3,"10–12",0,"Uda, pośladki","Hantle wzdłuż boków","Plecy proste, zejście do równoległej"],
+ ["lpcalf","Wspięcia na palce na suwnicy","Łydki","calf",3,"12–15",0,"Łydki","Pięty poza platformą","Pełny zakres, pauza na dole"],
+ ["frontraise","Unoszenie hantli w przód","Barki","iso",3,"10–12",0,"Przedni akton barku","Ręce do wysokości oczu","Bez bujania tułowiem"],
+ ["uprightrow","Podciąganie sztangi wzdłuż tułowia","Barki","iso",3,"10–12",0,"Barki, kapturowy","Chwyt szerzej niż barki","Łokcie do wysokości barków, nie wyżej"],
+ ["revpecdeck","Odwrotne rozpiętki na maszynie","Barki","iso",3,"12–20",0,"Tył barku","Ramiona lekko ugięte","Prowadzisz łokcie w tył"],
+ ["pushpress","Wyciskanie z podrzutem (push press)","Barki","vpush",3,"5–6",1,"Barki, triceps, nogi","Krótkie ugięcie kolan i dynamiczny wypych","Blokada łokci nad głową"],
+ ["preacher","Uginanie ramion na modlitewniku","Ramiona","iso",3,"10–12",0,"Biceps","Łokcie oparte przez cały ruch","Pełny wyprost na dole"],
+ ["ezcurl","Uginanie ramion ze sztangą łamaną","Ramiona","iso",3,"10–12",0,"Biceps","Łokcie przy tułowiu","Bez bujania"],
+ ["conccurl","Uginanie ramienia w siadzie (koncentryczne)","Ramiona","iso",3,"10–12/rękę",0,"Biceps","Łokieć oparty o udo","Pauza na górze"],
+ ["inclinecurl","Uginanie ramion z hantlami na ławce skośnej","Ramiona","iso",3,"10–12",0,"Biceps (głowa długa)","Ręce zwisają za tułowiem","Łokcie nieruchomo"],
+ ["ezskull","Francuskie wyciskanie sztangi łamanej leżąc","Ramiona","iso",3,"10–12",0,"Triceps","Łokcie wąsko i nieruchomo","Sztanga do czoła lub za głowę"],
+ ["kickback","Prostowanie ramienia z hantlem w opadzie","Ramiona","iso",3,"12–15/rękę",0,"Triceps","Ramię równolegle do tułowia","Pełny wyprost i pauza"],
+ ["pushdownbar","Prostowanie ramion na wyciągu (drążek)","Ramiona","iso",3,"10–12",0,"Triceps","Łokcie przy tułowiu","Pełny wyprost w dół"],
+ ["cableohext","Prostowanie ramion nad głową na wyciągu","Ramiona","iso",3,"10–12",0,"Triceps (głowa długa)","Tyłem do wyciągu, lina za głową","Łokcie nieruchomo"],
+ ["benchdips","Pompki w podporze tyłem (na ławce)","Ramiona","iso",3,"10–15",0,"Triceps","Barki z dala od uszu","Łokcie w tył, nie na boki"],
+ ["wristcurl","Uginanie nadgarstków ze sztangą","Ramiona","iso",2,"15–20",0,"Przedramiona","Przedramiona oparte na udach","Pełny zakres nadgarstka"],
+ ["crunch","Brzuszki (spięcia brzucha)","Core","core",3,"15–20",0,"Prosty brzucha","Lędźwie przy podłodze","Wydech na górze"],
+ ["legraise","Unoszenie nóg leżąc","Core","core",3,"10–15",0,"Brzuch","Lędźwie dociśnięte do podłogi","Opuszczasz powoli"],
+ ["rtwist","Russian twist (skręty tułowia w siadzie)","Core","rot",3,"10/str.",0,"Skośne brzucha","Tułów odchylony, plecy proste","Skręt z tułowia, nie z rąk"],
+ ["abmachine","Spięcia brzucha na maszynie","Core","core",3,"12–15",0,"Prosty brzucha","Ruch z tułowia","Bez szarpania"],
+ ["sidebend","Skłony boczne z hantlem","Core","side",3,"12/str.",0,"Skośne brzucha","Hantel w jednej ręce","Bez skrętu tułowia"],
+ ["mountain","Wspinaczka (mountain climbers)","Core","core",3,"30 s",0,"Brzuch, kondycja","Biodra nisko","Szybko, ale kontrolowanie"],
  ["seatcalf","Wspięcia na palce siedząc","Łydki","calf",3,"12–15",0,"Łydki (płaszczkowaty)","Pauza na dole i na górze","Pełny zakres"]
 ];
 const GROUP={squat:"Nogi – uda",goblet:"Nogi – uda",legpress:"Nogi – uda",lunge:"Nogi – uda",bss:"Nogi – uda",stepdown:"Nogi – uda",
@@ -651,7 +692,7 @@ const GROUP={squat:"Nogi – uda",goblet:"Nogi – uda",legpress:"Nogi – uda",
 const GORDER=["Nogi – uda","Tył uda i pośladki","Klatka","Plecy","Barki","Ramiona","Core","Łydki","Własne"];
 const ALT={chestrow:["machrow","tbar","bbrow"],thrust:["glutebridge","pullthrough","dl"],slcalf:["calf","seatcalf"],ohp:["dbohp","machohp","landmine"],dl:["thrust","rdl","dbrdl"],rdl:["dbrdl","hyper","pullthrough"],dbbench:["bench","machpress","pushup"],closepd:["latpd","cablerow","machrow"],latraise:["cablelat"],reversefly:["facepull"],facepull:["reversefly"],pushdown:["ohext"],curl:["hammer","cablecurl","bbcurl"],bbcurl:["curl","hammer","cablecurl"],legpress:["hacksquat","goblet","smithsquat"],stepup:["lunge","revlunge","bss"],hangraise:["kneeraise","cablecrunch","deadbug"],squat:["hacksquat","smithsquat","goblet","legpress"],bench:["dbbench","machpress","smithbench","pushup"],dbrow:["chestrow","cablerow","machrow","bbrow"],legcurl:["seatcurl","dbrdl","glutebridge"],calf:["seatcalf","tib"],
  dbrdl:["rdl","hyper","kbswing","pullthrough"],latpd:["pull","closepd","invrow","machrow"],dbohp:["machohp","arnold","landmine"],lunge:["revlunge","stepup","bss","legpress"],cablerow:["machrow","dbrow","chestrow"],plank:["deadbug","sideplank","pallof"],
- goblet:["squat","legpress","hacksquat","smithsquat"],incline:["inclinebar","machpress","dbbench"],bbrow:["tbar","dbrow","machrow","chestrow"],thrust:["glutebridge","pullthrough","kbswing"],farmer:["suitcase","sideplank"]};
+ goblet:["squat","legpress","hacksquat","smithsquat"],incline:["inclinebar","machpress","dbbench"],bbrow:["tbar","dbrow","machrow","chestrow"],thrust:["glutebridge","pullthrough","kbswing"],farmer:["suitcase","sideplank"],declinebench:["bench","dips","machpress"],pecdeck:["fly","cablecross","inclinefly"],latpdsup:["latpd","chinup","closepd"],assistpull:["latpd","pull","invrow"],bentdbrow:["dbrow","bbrow","chestrow"],shrug:["dbshrug"],dbshrug:["shrug"],sumodl:["dl","rdl","thrust"],preacher:["ezcurl","bbcurl","cablecurl"],ezskull:["skull","pushdownbar","cableohext"],kickback:["pushdown","ohext"],frontraise:["dbohp","cablelat"],walklunge:["lunge","bblunge","stepup"],crunch:["cablecrunch","abmachine","legraise"]};
 Object.assign(ALT,{incline:["dbbench","inclinebar"],bench:["dbbench","pushup","cgbench"],chestrow:["dbrow","bbrow"],pull:["chinup","invrow"],chinup:["pull","invrow"],dbohp:["ohp","arnold"],bbrow:["chestrow","dbrow"],dbbench:["bench","pushup"],curl:["hammer","bbcurl"],hammer:["curl","bbcurl"],skull:["ohext","cgbench"],ohext:["skull","cgbench"],reversefly:["dbrow"],latraise:[]});
 const CATALOG=(()=>{const m={};for(const d of DAYS)for(const e of PLAN[d].ex)if(!m[e.k])m[e.k]=Object.assign({g:GROUP[e.k]},e);for(const e of EXTRA)m[e.k]=Object.assign({g:GROUP[e.k]},e);for(const x of LIB)if(!m[x[0]])m[x[0]]={k:x[0],n:x[1],g:x[2],s:x[4],r:x[5],m:x[6]};else m[x[0]].g=m[x[0]].g||x[2];return m})();
 const NAMES={"cablelat": "Unoszenie ramienia bokiem na wyciągu", "facepull": "Face pull (przyciąganie liny do twarzy)", "landmine": "Wyciskanie landmine jednorącz", "latraise": "Unoszenie hantli bokiem", "ohp": "Wyciskanie żołnierskie (OHP)", "cablecrunch": "Allahy (spięcia brzucha na wyciągu)", "core": "Kółko do brzucha (ab wheel)", "deadbug": "Dead bug (martwy robak)", "hollow": "Hollow hold (łódka)", "kneeraise": "Unoszenie kolan w podporze na poręczach", "mbrot": "Rzut piłką lekarską z rotacją o ścianę", "mbslam": "Slam piłką lekarską o podłogę", "pallof": "Pallof press (antyrotacja na wyciągu)", "plank": "Deska (plank)", "sideplank": "Deska bokiem", "suitcase": "Spacer z ciężarem w jednej ręce", "woodchop": "Drwal na wyciągu (woodchop)", "cablecross": "Rozpiętki na bramie (krzyżowanie linek)", "dips": "Pompki na poręczach (dipy)", "fly": "Rozpiętki z hantlami na ławce płaskiej", "inclinebar": "Wyciskanie sztangi na ławce skośnej", "machpress": "Wyciskanie na maszynie siedząc (chest press)", "smithbench": "Wyciskanie leżąc na maszynie Smitha", "frontsquat": "Przysiad przedni ze sztangą", "goblet": "Przysiad z hantlem przy klatce (goblet)", "hacksquat": "Przysiad na maszynie hack", "legpress": "Suwnica (wypychanie nóg)", "smithsquat": "Przysiad na maszynie Smitha", "stepdown": "Zejścia ze stopnia (step-down)", "stepup": "Wejścia na skrzynię z hantlami (step-up)", "cablerow": "Wiosłowanie na wyciągu dolnym siedząc", "closepd": "Ściąganie drążka wąskim chwytem (uchwyt V)", "dbrow": "Wiosłowanie hantlem jednorącz", "invrow": "Wiosłowanie australijskie (TRX lub sztanga)", "latpd": "Ściąganie drążka wyciągu górnego do klatki", "pull": "Podciąganie nachwytem", "straightpd": "Ściąganie liny prostymi rękami (pullover na wyciągu)", "tbar": "Wiosłowanie sztangą T (T-bar)", "cablecurl": "Uginanie ramion na wyciągu dolnym", "cgbench": "Wyciskanie sztangi wąskim chwytem", "curl": "Uginanie ramion z hantlami", "pushdown": "Prostowanie ramion na wyciągu górnym (linka)", "dbrdl": "Martwy ciąg rumuński z hantlami", "hyper": "Wyprosty tułowia na ławce rzymskiej", "kbswing": "Swing kettlebell (wymachy odważnikiem)", "legcurl": "Uginanie nóg leżąc na maszynie", "nordic": "Nordic curl z asystą", "pullthrough": "Pull-through na wyciągu (wyprost bioder z liną)", "rdl": "Martwy ciąg rumuński ze sztangą", "seatcurl": "Uginanie nóg siedząc na maszynie", "thrust": "Hip thrust (wypychanie bioder ze sztangą)", "calf": "Wspięcia na palce stojąc", "slcalf": "Wspięcia na palce na jednej nodze", "tib": "Unoszenie palców stóp (mięsień piszczelowy)", "glutebridge": "Mostek biodrowy z podłogi", "abductor": "Odwodzenie nóg na maszynie", "boxjump": "Wskok na skrzynię", "broadjump": "Skok w dal z miejsca", "bss": "Przysiad bułgarski", "lunge": "Wykroki", "revlunge": "Wykroki w tył", "legext": "Prostowanie nóg na maszynie", "squat": "Przysiad ze sztangą", "dl": "Martwy ciąg klasyczny", "machrow": "Wiosłowanie na maszynie", "machohp": "Wyciskanie nad głowę na maszynie", "arnold": "Wyciskanie Arnolda", "seatcalf": "Wspięcia na palce siedząc", "hang": "Zwis na drążku", "hangraise": "Unoszenie nóg w zwisie", "copen": "Deska kopenhaska", "farmer": "Spacer farmera", "bbcurl": "Uginanie ramion ze sztangą", "mbchest": "Wyrzut piłki lekarskiej sprzed klatki"};for(const k in NAMES)if(CATALOG[k])CATALOG[k].n=NAMES[k];if(CATALOG.pull)delete CATALOG.pull.pull;
@@ -854,8 +895,8 @@ for(const x of LIB)if(!INFO[x[0]])INFO[x[0]]=[x[3],x[7],x[8],x[9]];
 Object.assign(WHY,{incline:"Bez regulacji skosu? Rób wyciskanie hantli na płasko.",chestrow:"Plecy bez obciążania lędźwi",pull:"Za trudne? Zrób negatywy: wskakujesz na górę i opuszczasz się 3–5 s.",chinup:"Za trudne? Zrób negatywy: wskakujesz na górę i opuszczasz się 3–5 s."});
 const RIRT=new Proxy({},{get:()=>"1–2"});
 const BIG=new Set(["squat","rdl","dl","legpress","thrust","hacksquat","smithsquat","frontsquat"]);
-const DB=new Set(["skull","ohext","reversefly","dbrow","dbrdl","dbohp","lunge","incline","farmer","dbbench","arnold","chestrow","hammer","curl","stepup","revlunge","bss","latraise","suitcase","stepdown"]);
-const BW=new Set(["chinup","plank","pushup","dips","pull","invrow","deadbug","sideplank","kneeraise","hyper","nordic","glutebridge","core","tib"]);
+const DB=new Set(["skull","ohext","reversefly","dbrow","dbrdl","dbohp","lunge","incline","farmer","dbbench","arnold","chestrow","hammer","curl","stepup","revlunge","bss","latraise","suitcase","stepdown","fly","inclinefly","bentdbrow","dbshrug","frontraise","inclinecurl","walklunge","dbsquat","pullover","conccurl","kickback","sidebend"]);
+const BW=new Set(["chinup","plank","pushup","dips","pull","invrow","deadbug","sideplank","kneeraise","hyper","nordic","glutebridge","core","tib","assistpull","benchdips","crunch","legraise","mountain"]);
 function topRep(r){const m=String(r).match(/(\d+)\s*[–-]\s*(\d+)/);return m?+m[2]:null}
 function num(v){return parseFloat(String(v==null?"":v).replace(",","."))||0}
 function unitOf(ex){return ex.unit||(/\ds?\s*s\b/.test(ex.r)?"s":/\dm?\s*m\b/.test(ex.r)?"m":"powt.")}
@@ -917,15 +958,27 @@ function renderSeg(){
   $("nextHint").textContent=last?"Ostatnio: "+(PLAN[last.day]?dl(last.day)+" "+(isX(last.day)?"(dodatkowy)":PLAN[last.day].sub):(OLD[last.day]||{n:last.dn||last.day}).n)+" ("+fmtDate(last.date)+")"+(nx?" → następny "+dl(nx):""):"Jeszcze nie ma zapisanych treningów.";
 }
 let viewT=null,pvDirty=false;
-// Tonaż: seria × kg × powtórzenia; przy hantlach (kg / hantel) ×2; serie rozgrzewkowe się nie liczą
-function vf(k){return DB.has(k)?2:1}
-function exVol(e){if(e.kind)return 0;let v=0;for(const t of (e.sets||[])){if(t.w)continue;v+=num(t.kg)*(parseInt(t.r)||0)}return v*vf(e.k)}
+// Tonaż: seria × kg × powtórzenia, razem z seriami rozgrzewkowymi R1/R2.
+// ×2 gdy dwa hantle naraz, ×2 gdy powtórzenia są na stronę (/nogę, /rękę, /str., jednorącz).
+// Nie wlicza się: ćwiczenia z ciężarem ciała, na czas lub dystans, dynamika, core i cardio z planu.
+const DB1=new Set(["ohext","dbrow","goblet","kbswing","pullover","conccurl","kickback","sidebend","suitcase","landmine"]);
+const TONX=new Set([...BW,"hang","hollow","copen","hangraise","mbslam","mbrot","mbchest","boxjump","broadjump","plyopush","pogo","lmpunch","stepdown"]);
+function rOf(k){const c=CATALOG[k];return c?String(c.r||""):""}
+function tonRule(k){const c=CATALOG[k]||{};const r=rOf(k);
+  if(c.kind)return {x:"poza sekcją Ćwiczenia"};if(TONX.has(k))return {x:"ciężar ciała"};
+  if(/\d\s*(s|sek|min)\b|\d\s*m\b|^max$/i.test(r))return {x:"na czas lub dystans"};
+  let f=1;const l=[];if(DB.has(k)&&!DB1.has(k)){f*=2;l.push("2 hantle")}
+  if(/\/(nogę|rękę|str)/.test(r)||/jednorącz|jednonóż|na jednej nodze/i.test(c.n||"")){f*=2;l.push("2 strony")}
+  return {f,l:l.join(" × ")}}
+function vf(k){const R=tonRule(k);return R.x?0:R.f}
+function exVol(e){if(e.kind)return 0;const f=vf(e.k);if(!f)return 0;let v=0;for(const t of (e.sets||[]))v+=num(t.kg)*(parseInt(t.r)||0);return v*f}
 function volOf(s){return Math.round((s.ex||[]).reduce((a,e)=>a+exVol(e),0))}
-function setsOfS(s){let n=0;for(const e of (s.ex||[]))for(const t of (e.sets||[])){if(t.w)continue;if(e.kind?t.done:(String(t.kg||"").trim()||String(t.r||"").trim()))n++}return n}
+// Serie do rankingu i porównań: tylko serie robocze z sekcji Ćwiczenia (bez rozgrzewki, dynamiki, core i cardio z planu)
+function setsOfS(s){let n=0;for(const e of (s.ex||[])){if(e.kind)continue;for(const t of (e.sets||[])){if(t.w)continue;if(String(t.kg||"").trim()||String(t.r||"").trim())n++}}return n}
 function fmtKg(v){return Math.round(v).toLocaleString("pl")+" kg"}
 function fmtT(v){return v>=1000?(Math.round(v/100)/10).toLocaleString("pl")+" t":fmtKg(v)}
 function monOf(d){const x=new Date(String(d)+"T12:00:00");x.setDate(x.getDate()-((x.getDay()+6)%7));return x}
-function saveSessions(){sessions.forEach(x=>{x.vol=volOf(x)});const ok=ls.set(P+"sessions",sessions);ls.set(P+"changed",Date.now());try{cloudDirty()}catch(e){}return ok}
+function saveSessions(){sessions.forEach(x=>{x.vol=volOf(x);x.nsets=setsOfS(x)});const ok=ls.set(P+"sessions",sessions);ls.set(P+"changed",Date.now());try{cloudDirty()}catch(e){}return ok}
 function reloadSessions(){sessions=(ls.get(P+"sessions")||[]).map(x=>Object.assign(x,{local:true}));sortS()}
 function sessOf(d){return sessions.filter(x=>x.day===d).sort((a,b)=>String(a.date).localeCompare(String(b.date))||(a.created||0)-(b.created||0))}
 function renderWeeks(){
@@ -1072,7 +1125,7 @@ function secOf(e){const r=String(e.r||"");if(e.kind==="cardio"){const m=r.match(
   const sm=r.match(/(\d+)\s*s\b/);if(sm)return +sm[1]*(/str/.test(r)?2:1)+5;return e.kind==="dyn"?20:e.kind==="core"?40:45}
 function restAfter(e,next){if(e.kind==="cardio")return 0;if(e.kind==="dyn")return 75;if(e.kind==="core")return 40;if(e.ss&&next&&next.ss===e.ss)return 15;return restOf(e)}
 function updSum(){let sets=0,doneN=0,vol=0,left=0;const st=S();const L=exList();const todo=[];
-  L.forEach((e,j)=>{const n=nSets(e);for(let i=0;i<n;i++){sets++;if(st.done[e.k+"_"+i])doneN++;else todo.push([e,L[j+1]]);if(!e.kind)vol+=num(($(e.k+"_kg_"+i)||{}).value)*(parseInt(($(e.k+"_r_"+i)||{}).value)||0)*vf(e.k)}});
+  L.forEach((e,j)=>{const n=nSets(e);for(let i=0;i<n;i++){sets++;if(st.done[e.k+"_"+i])doneN++;else todo.push([e,L[j+1]]);}});vol=curVol();
   todo.forEach(([e,nx],i)=>{left+=secOf(e)+(i<todo.length-1?restAfter(e,nx):0)});
   const pct=sets?Math.round(doneN/sets*100):0;const pb=$("pbar");if(pb){pb.style.width=pct+"%";pb.parentNode.setAttribute("aria-valuenow",pct)}
   const eta=doneN>=sets?"gotowe 💪":"~"+Math.max(1,Math.round(left/60))+" min";
@@ -1080,10 +1133,10 @@ function updSum(){let sets=0,doneN=0,vol=0,left=0;const st=S();const L=exList();
 
 function prBest(sets,bw){let best=null;for(const t of sets){if(t.w)continue;const kg=num(t.kg),r=parseInt(t.r)||0;if(!r)continue;const v=kg?kg*(1+r/30):r;if(!best||v>best.v)best={v,kg,r}}return best}
 function openFinish(){if(ordMode){ordMode=false;renderEx(true)}persist();const st=S();let done=0,filled=0,total=0,vol=0;const prs=[];
-  for(const e of exList()){if(e.kind)continue;const n=nSets(e);const cur=[];for(let i=0;i<n;i++){total++;const kg=($(e.k+"_kg_"+i)||{}).value||"",r=($(e.k+"_r_"+i)||{}).value||"";if(st.done[e.k+"_"+i])done++;if(kg||r){filled++;cur.push({kg,r});vol+=num(kg)*(parseInt(r)||0)*vf(e.k)}}
+  for(const e of exList()){if(e.kind)continue;const n=nSets(e);const cur=[];for(let i=0;i<n;i++){total++;const kg=($(e.k+"_kg_"+i)||{}).value||"",r=($(e.k+"_r_"+i)||{}).value||"";if(st.done[e.k+"_"+i])done++;if(kg||r){filled++;cur.push({kg,r})}}
     const nb=prBest(cur);if(!nb)continue;let old=null;for(const s of sessions)for(const x of (s.ex||[]))if(x.k===e.k&&!x.kind){const b=prBest(x.sets||[]);if(b&&(!old||b.v>old.v))old=b}
     if(old&&nb.v>old.v+1e-9)prs.push('<li>🏆 <b>'+esc(e.n)+'</b>: '+(nb.kg?String(nb.kg).replace(".",",")+' kg × ':'')+nb.r+' <span class="hint">(dotąd najlepiej '+(old.kg?String(old.kg).replace(".",",")+' kg × ':'')+old.r+')</span></li>')}
-  const mins=st.start?Math.max(1,Math.round((Date.now()-st.start)/60000)):null;
+  vol=curVol();const mins=st.start?Math.max(1,Math.round((Date.now()-st.start)/60000)):null;
   $("finStats").innerHTML='<div><b>'+(mins!==null?(mins>=60?Math.floor(mins/60)+' h '+(mins%60)+' min':mins+' min'):'–')+'</b><span>czas</span></div><div><b>'+filled+'</b><span>serii z wpisem</span></div><div><b>'+Math.round(vol).toLocaleString("pl")+' kg</b><span>objętość</span></div>';
   $("finPR").innerHTML=(prs.length?'<div class="lbl">Nowe rekordy</div><ul>'+prs.join("")+'</ul>':'')+(filled<total?'<div class="hint">'+(total-filled)+' '+(total-filled===1?'seria bez wpisu nie zostanie zapisana':'serie bez wpisu nie zostaną zapisane')+'.</div>':'');
   finExtra(vol,mins,prs.length);
@@ -1100,13 +1153,12 @@ function finExtra(vol,mins,nPR){const prevs=sessions.filter(x=>x.day===day);cons
   let rec="";const maxDay=Math.max(0,...prevs.map(volOf)),maxAll=Math.max(0,...sessions.map(volOf));
   if(vol>0&&prevs.length&&vol>maxDay)rec='<div class="volrec">🏆 '+(vol>maxAll&&sessions.length>prevs.length?'Najcięższy trening w historii':'Najcięższy trening '+esc(lbl)+' w historii')+' <span class="hint">(dotąd '+fmtKg(vol>maxAll?maxAll:maxDay)+')</span></div>';
   $("finCmp").innerHTML=(cmp.length?'<div class="cmp">vs poprzedni '+esc(lbl)+' ('+fmtDate(prev.date)+'): '+cmp.join(' · ')+'</div>':'')+rec;
-  // rozpiska
-  const rows=[];for(const e of exList()){if(e.kind)continue;const n=nSets(e);const ss=[];let v=0;for(let i=0;i<n;i++){const kg=($(e.k+"_kg_"+i)||{}).value||"",r=($(e.k+"_r_"+i)||{}).value||"";if(kg||r){ss.push((kg?String(kg).replace(".",",")+"×":"")+(r||"–"));v+=num(kg)*(parseInt(r)||0)}}
-    if(ss.length)rows.push('<div class="frow"><div><b>'+esc(e.n)+'</b><small>'+ss.join(" · ")+(vf(e.k)>1?' · hantle ×2':'')+'</small></div><span>'+(v?fmtKg(v*vf(e.k)):'–')+'</span></div>')}
-  $("finExL").innerHTML=rows.join("")||'<div class="hint">Brak wpisanych serii.</div>';$("finEx").hidden=!rows.length;
   finData={vol,mins,sets:curSets(),nPR,lbl,t:sessOf(day).length+1,date:$("date").value||today()};
   finRank()}
-function curSets(){const st=S();let n=0;for(const e of exList()){const k=nSets(e);for(let i=0;i<k;i++){if(e.kind){if(st.done[e.k+"_"+i])n++}else if((($(e.k+"_kg_"+i)||{}).value||"")||(($(e.k+"_r_"+i)||{}).value||""))n++}}return n}
+function curEx(){return exList().filter(e=>!e.kind).map(e=>{const sets=[];if(e.m)for(let i=0;i<2;i++){const kg=(($(e.k+"_wkg_"+i)||{}).value||"").trim(),r=(($(e.k+"_wr_"+i)||{}).value||"").trim();if(kg||r)sets.push({kg,r,w:true})}
+  for(let i=0;i<nSets(e);i++)sets.push({kg:(($(e.k+"_kg_"+i)||{}).value||"").trim(),r:(($(e.k+"_r_"+i)||{}).value||"").trim()});return {k:e.k,n:e.n,sets}})}
+function curVol(){return volOf({ex:curEx()})}
+function curSets(){return setsOfS({ex:curEx()})}
 async function finRank(){const box=$("finRank");box.hidden=true;if(!CLOUD_URL||!cloud.on||!rankOn())return;
   box.hidden=false;box.innerHTML='<span class="hint">Sprawdzam ranking tygodnia…</span>';
   try{const j=await cloudPost({pin:cloud.pin,action:"rank",today:today(),rank:rankOn()});if(!j||!j.ok)throw 0;
@@ -1129,8 +1181,8 @@ async function shareCard(){if(!finData)return;const W=1080,H=1350,c=document.cre
   x.fillStyle="#9aa39e";x.font=F("500",38,B);x.fillText("przerzucone na treningu",80,560);
   const st=[[finData.sets+"",plSerie(finData.sets)],[finData.mins?finData.mins+" min":"–","czas"],[String(finData.nPR),finData.nPR===1?"rekord":"rekordy"]];
   st.forEach((v,i)=>{const X=80+i*320;x.fillStyle="#1d2120";x.beginPath();x.roundRect?x.roundRect(X,620,290,170,24):x.rect(X,620,290,170);x.fill();x.fillStyle="#e8ebe9";x.font=F("700",84);x.fillText(v[0],X+28,720);x.fillStyle="#9aa39e";x.font=F("500",32,B);x.fillText(v[1],X+28,766)});
-  let y=880;x.font=F("600",36,B);const L=[...$("finExL").querySelectorAll(".frow")].slice(0,5);
-  L.forEach(r=>{x.fillStyle="#e8ebe9";let n=r.querySelector("b").textContent;while(x.measureText(n).width>700&&n.length>4)n=n.slice(0,-2);if(n!==r.querySelector("b").textContent)n+="…";x.fillText(n,80,y);x.fillStyle="#f97316";x.textAlign="right";x.fillText(r.querySelector("span").textContent,W-80,y);x.textAlign="left";y+=62});
+  let y=880;x.font=F("600",36,B);const L=curEx().map(e=>({n:e.n,v:exVol(e)})).filter(e=>e.v>0).sort((a,b)=>b.v-a.v).slice(0,5);
+  L.forEach(r=>{x.fillStyle="#e8ebe9";let n=r.n;while(x.measureText(n).width>700&&n.length>4)n=n.slice(0,-2);if(n!==r.n)n+="…";x.fillText(n,80,y);x.fillStyle="#f97316";x.textAlign="right";x.fillText(fmtKg(r.v),W-80,y);x.textAlign="left";y+=62});
   const prn=[...$("finPR").querySelectorAll("li b")].map(b=>b.textContent).slice(0,3);
   if(prn.length){y+=30;x.fillStyle="#f97316";x.font=F("700",48);x.fillText("🏆 NOWE REKORDY",80,y);y+=58;x.font=F("500",34,B);x.fillStyle="#e8ebe9";prn.forEach(n=>{while(x.measureText(n).width>900&&n.length>4)n=n.slice(0,-2);x.fillText(n,80,y);y+=50})}
   x.fillStyle="#6b746f";x.font=F("500",30,B);x.fillText("Tytanowa siła · dziennik treningowy",80,H-80);
@@ -1161,6 +1213,14 @@ function bestSet(e){let b=null;for(const t of (e.sets||[])){if(t.w||!(t.kg||t.r)
 function fmtSet(b){return b?(b.kg?String(b.kg).replace(".",",")+" kg × "+b.r:b.r+" powt."):"–"}
 function spark(pts){if(pts.length<2)return"";const W=96,H=28,v=pts.map(p=>p.v),mn=Math.min(...v),mx=Math.max(...v),rg=mx-mn||1;const xy=pts.map((p,i)=>[4+i*(W-8)/(pts.length-1),H-4-(p.v-mn)/rg*(H-8)]);
   return'<svg class="spk" viewBox="0 0 '+W+' '+H+'" aria-hidden="true"><polyline points="'+xy.map(q=>q.join(",")).join(" ")+'"/><circle cx="'+xy[xy.length-1][0]+'" cy="'+xy[xy.length-1][1]+'" r="3"/></svg>'}
+let tonSel=null;
+function tonDetail(wk){const a=wk.d,b=new Date(a);b.setDate(a.getDate()+6);const list=sessions.filter(s=>monOf(s.date).toDateString()===a.toDateString()).sort((x,y)=>String(x.date).localeCompare(String(y.date)));
+  const head='<div class="tdh"><b>'+a.getDate()+'.'+String(a.getMonth()+1).padStart(2,"0")+' – '+b.getDate()+'.'+String(b.getMonth()+1).padStart(2,"0")+'</b> · '+fmtT(wk.v)+'</div>';
+  if(!list.length)return head+'<div class="hint">W tym tygodniu nie ma treningów.</div>';
+  return head+list.map(s=>{const rows=[],out=[];for(const e of (s.ex||[])){if(e.kind)continue;const R=tonRule(e.k);const ss=(e.sets||[]).filter(t=>t.kg||t.r);if(!ss.length)continue;
+      if(R.x){out.push(esc(e.n)+' ('+R.x+')');continue}const v=exVol(e);
+      rows.push('<div class="frow"><div><b>'+esc(e.n)+'</b><small>'+ss.map(t=>(t.w?'R ':'')+String(t.kg||0).replace(".",",")+'×'+(t.r||0)).join(' · ')+(R.l?' · '+R.l:'')+'</small></div><span>'+fmtKg(v)+'</span></div>')}
+    return '<details class="tds"><summary><span>'+fmtDate(s.date)+' · '+esc(PLAN[s.day]?dl(s.day):(s.dn||s.day))+'</span><b>'+fmtKg(volOf(s))+'</b></summary>'+rows.join("")+(out.length?'<div class="hint tout">Nie wlicza się: '+out.join(", ")+'</div>':'')+'</details>'}).join("")}
 function tonBlock(){const tot=sessions.reduce((a,s)=>a+volOf(s),0);if(!tot)return"";
   const now=monOf(today());const wk=[];for(let i=7;i>=0;i--){const d=new Date(now);d.setDate(d.getDate()-7*i);wk.push({d,v:0})}
   let month=0;const ym=today().slice(0,7);
@@ -1168,14 +1228,16 @@ function tonBlock(){const tot=sessions.reduce((a,s)=>a+volOf(s),0);if(!tot)retur
   const mx=Math.max(1,...wk.map(w=>w.v));
   const fun=tot>=6000?["🐘",tot/6000,"słoni afrykańskich (6 t)"]:tot>=1500?["🚗",tot/1500,"samochodów osobowych (1,5 t)"]:["🎹",tot/400,"fortepianów (400 kg)"];
   return '<div class="tonc"><div><b>'+fmtT(tot)+'</b><span>łącznie</span></div><div><b>'+fmtT(wk[7].v)+'</b><span>ten tydzień</span></div><div><b>'+fmtT(month)+'</b><span>ten miesiąc</span></div></div>'+
-   '<div class="lbl">Tonaż tygodniowo</div><div class="tchart" role="img" aria-label="Tonaż w ostatnich 8 tygodniach">'+wk.map((w,i)=>'<div class="'+(i===7?'now':'')+'"><em>'+(w.v?fmtT(w.v).replace(" kg",""):"")+'</em><i style="height:'+Math.round(w.v/mx*100)+'%"></i></div>').join("")+'</div>'+
+   '<div class="lbl">Tonaż tygodniowo</div><div class="tchart">'+wk.map((w,i)=>'<button type="button" data-tw="'+i+'" class="'+(i===7?'now':'')+(tonSel===i?' sel':'')+'" aria-label="Tydzień od '+w.d.getDate()+'.'+String(w.d.getMonth()+1).padStart(2,"0")+': '+fmtT(w.v)+'" aria-pressed="'+(tonSel===i)+'"><em>'+(w.v?fmtT(w.v).replace(" kg",""):"")+'</em><i style="height:'+Math.round(w.v/mx*100)+'%"></i></button>').join("")+'</div>'+
    '<div class="tlab">'+wk.map(w=>'<span>'+w.d.getDate()+'.'+String(w.d.getMonth()+1).padStart(2,"0")+'</span>').join("")+'</div>'+
-   '<div class="tfun">'+fun[0]+' To już '+(Math.round(fun[1]*10)/10).toLocaleString("pl")+' '+fun[2]+'. Hantle liczymy ×2, rozgrzewka się nie liczy.</div>'}
+   (tonSel!=null?'<div class="tdet">'+tonDetail(wk[tonSel])+'</div>':'<div class="hint" style="margin-top:6px">Stuknij słupek, żeby zobaczyć, skąd wziął się tonaż.</div>')+
+   '<div class="tfun">'+fun[0]+' To już '+(Math.round(fun[1]*10)/10).toLocaleString("pl")+' '+fun[2]+'.</div>'}
 function renderProg(){
   const el=$("prog");const by={};
   for(const s of [...sessions].reverse()){if(!PLAN[s.day])continue;for(const e of (s.ex||[])){if(e.kind)continue;const b=bestSet(e);if(!b)continue;const w=s.created||0;(by[e.k]=by[e.k]||{n:e.n,w:{},d:{}});by[e.k].d[w]=fmtDate(s.date);const cur=by[e.k].w[w];const val=b.kg?b.kg*(1+b.r/30):b.r;if(!cur||val>cur.v)by[e.k].w[w]={b,v:val}}}
-  const keys=Object.keys(by);if(!keys.length){el.innerHTML=tonBlock()+'<div class="hint">Po kilku treningach zobaczysz tu, jak rosną ciężary i powtórzenia – tydzień po tygodniu.</div>';return}
+  const keys=Object.keys(by);if(!keys.length){setTimeout(()=>el.querySelectorAll("[data-tw]").forEach(b=>b.onclick=()=>{const i=+b.dataset.tw;tonSel=tonSel===i?null:i;renderProg()}),0);el.innerHTML=tonBlock()+'<div class="hint">Po kilku treningach zobaczysz tu, jak rosną ciężary i powtórzenia – tydzień po tygodniu.</div>';return}
   const order=[];for(const d of DAYS)for(const e of PLAN[d].ex)if(by[e.k]&&!order.includes(e.k))order.push(e.k);for(const k of keys)if(!order.includes(k))order.push(k);
+  setTimeout(()=>el.querySelectorAll("[data-tw]").forEach(b=>b.onclick=()=>{const i=+b.dataset.tw;tonSel=tonSel===i?null:i;renderProg()}),0);
   el.innerHTML=tonBlock()+'<div class="phead"><span>Ćwiczenie</span><span>Start → teraz</span><span></span></div>'+order.map(k=>{const o=by[k];const ws=Object.keys(o.w).map(Number).sort((a,b)=>a-b);const f=o.w[ws[0]],l=o.w[ws[ws.length-1]];
     let d="";if(ws.length>1){if(f.b.kg&&l.b.kg){const dk=Math.round((l.b.kg-f.b.kg)*10)/10;d=dk?(dk>0?"+":"")+String(dk).replace(".",",")+" kg":(l.b.r-f.b.r?(l.b.r>f.b.r?"+":"")+(l.b.r-f.b.r)+" powt.":"bez zmian")}else{const dr=l.b.r-f.b.r;d=dr?(dr>0?"+":"")+dr+" powt.":"bez zmian"}}
     return'<div class="prow"><div class="pn">'+esc(o.n)+'<span class="pd'+(d.startsWith("+")?" up":"")+'">'+d+'</span></div><div class="pv">'+o.d[ws[0]]+': '+fmtSet(f.b)+(ws.length>1?'<br>'+o.d[ws[ws.length-1]]+': <b>'+fmtSet(l.b)+'</b>':'')+'</div>'+spark(ws.map(w=>o.w[w]))+'</div>'}).join("");
@@ -1424,7 +1486,7 @@ $("cloudRestore").onclick=async()=>{if(!cloud.pin){$("cloudPinBox").hidden=false
 $("cloudNow").onclick=()=>cloudSync();
 window.addEventListener("online",()=>cloudSync(true));
 // ===== Aktualizacje: numer wersji w aplikacji vs version.json na serwerze =====
-const APP_BUILD=7;
+const APP_BUILD=8;
 function verItems(j,from){return (j&&j.zmiany||[]).filter(x=>x.build>from)}
 function verHtml(list){return list.map(x=>'<h4>'+esc(x.data)+' · wersja '+x.build+'</h4><ul>'+x.lista.map(t=>'<li>'+esc(t)+'</li>').join("")+'</ul>').join("")}
 function renderVer(){const j=ls.get(P+"verc");const cur=(j&&j.zmiany||[]).find(x=>x.build===APP_BUILD);
@@ -1471,12 +1533,12 @@ function drawRank(j,at,state){const box=$("rank");
   ppl.forEach((p,i)=>{if(p.sets!==prev){pos=i+1;prev=p.sets}
     rows+='<div class="rrow'+(p.lead?' lead':'')+'"><div class="pos">'+(p.lead?'🏆':pos)+'</div><div><div class="nm">'+esc(p.name)+(p.me?'<span class="rme">TY</span>':'')+'</div><div class="rbar"><i style="width:'+(top?Math.round(p.sets/top*100):0)+'%"></i></div></div><div class="val">'+p.sets+'<small>'+plSerie(p.sets)+' · '+p.trainings+' tr.</small></div></div>'});
   const me=ppl.find(p=>p.me),second=ppl.find(p=>p.sets<top);
-  let note=!top?"Nikt jeszcze nie zrobił serii w tym tygodniu. Pierwszy trening = prowadzenie!":me?(me.lead?(second?"Prowadzisz! Przewaga: "+(top-second.sets)+" "+plSerie(top-second.sets)+" nad kolejnym miejscem.":"Prowadzisz!"):"Do lidera brakuje Ci "+(top-me.sets)+" "+plSerie(top-me.sets)+"."):"";
+  let note=!top?"Nikt jeszcze nie zrobił serii w tym tygodniu. Pierwszy trening = prowadzenie!":me?(me.lead&&ppl.filter(p=>p.lead).length>1?"Remis na prowadzeniu – jedna seria robi różnicę!":me.lead?(second?"Prowadzisz! Przewaga: "+(top-second.sets)+" "+plSerie(top-second.sets)+" nad kolejnym miejscem.":"Prowadzisz!"):"Do lidera brakuje Ci "+(top-me.sets)+" "+plSerie(top-me.sets)+"."):"";
   if(j.me&&j.me.rank===false)note="Jesteś ukryty w rankingu – zmienisz to w Ustawieniach.";
-  h+=rankCard("Serie w tym tygodniu",'<div class="sm">PN–ND · serie robocze z wpisem lub ✓</div><div style="margin-top:8px">'+(rows||'<div class="rnote">Nikogo jeszcze nie ma w rankingu.</div>')+'</div>'+(note?'<div class="rnote">'+note+' Nowy konkurs startuje w poniedziałek o 00:00.</div>':''));
+  h+=rankCard("Serie w tym tygodniu",'<div class="sm">PN–ND · serie robocze z sekcji Ćwiczenia</div><div style="margin-top:8px">'+(rows||'<div class="rnote">Nikogo jeszcze nie ma w rankingu.</div>')+'</div>'+(note?'<div class="rnote">'+note+' Nowy konkurs startuje w poniedziałek o 00:00.</div>':''));
   if(ppl.some(p=>p.kg!=null)){const kp=[...ppl].sort((a,b)=>(b.kg||0)-(a.kg||0)||a.name.localeCompare(b.name));const kt=kp.length?kp[0].kg||0:0;let kr="",kpos=0,kprev=null;
     kp.forEach((p,i)=>{if(p.kg!==kprev){kpos=i+1;kprev=p.kg}const lead=kt>0&&p.kg===kt;kr+='<div class="rrow'+(lead?' lead':'')+'"><div class="pos">'+(lead?'🏋️':kpos)+'</div><div><div class="nm">'+esc(p.name)+(p.me?'<span class="rme">TY</span>':'')+'</div><div class="rbar"><i style="width:'+(kt?Math.round((p.kg||0)/kt*100):0)+'%"></i></div></div><div class="val">'+fmtT(p.kg||0).replace(/ (kg|t)$/,'<small>$1</small>')+'</div></div>'});
-    h+=rankCard("Kilogramy w tym tygodniu",'<div class="sm">PN–ND · seria × kg × powtórzenia, hantle ×2</div><div style="margin-top:8px">'+kr+'</div>')}
+    h+=rankCard("Kilogramy w tym tygodniu",'<div class="sm">PN–ND · seria × kg × powtórzenia (z rozgrzewką R1/R2)</div><div style="margin-top:8px">'+kr+'</div>')}
   const cups=j.cups||[];
   h+=rankCard("Puchary",'<div class="sm">Wygrane tygodnie'+(j.last?' · ostatnio: '+j.last.names.map(esc).join(" i ")+' ('+j.last.sets+' '+plSerie(j.last.sets)+')':'')+'</div>'+(cups.length?'<div class="cups">'+cups.map(c=>'<div class="cup"><b>🏆×'+c.n+'</b><span>'+esc(c.name)+'</span></div>').join("")+'</div>'+((j.kgCups||[]).length?'<div class="sm" style="margin-top:10px">Za kilogramy'+(j.lastKg?' · ostatnio: '+j.lastKg.names.map(esc).join(" i ")+' ('+fmtT(j.lastKg.kg)+')':'')+'</div><div class="cups">'+j.kgCups.map(c=>'<div class="cup"><b>🏋️×'+c.n+'</b><span>'+esc(c.name)+'</span></div>').join("")+'</div>':''):'<div class="rnote">Pierwszy puchar dostanie zwycięzca tego tygodnia.</div>'));
   const recs=j.records||[];const M=["🥇","🥈","🥉"];

@@ -236,13 +236,16 @@ function vol_(s) {
   return Math.round(v);
 }
 
-// Serie z wpisem (siłowe) albo odhaczone (dynamika, core, cardio); serie rozgrzewkowe się nie liczą
+// Serie do rankingu: aplikacja zapisuje je w polu nsets (tylko serie robocze z sekcji Ćwiczenia);
+// dla starszych zapisów liczymy serie robocze z wpisem, bez rozgrzewki, dynamiki, core i cardio
 function setsOf_(s) {
+  if (typeof s.nsets === "number") return s.nsets;
   let n = 0;
   (s.ex || []).forEach(function (e) {
+    if (e.kind) return;
     (e.sets || []).forEach(function (t) {
       if (t.w) return;
-      if (e.kind ? t.done : (String(t.kg || "").trim() || String(t.r || "").trim())) n++;
+      if (String(t.kg || "").trim() || String(t.r || "").trim()) n++;
     });
   });
   return n;
