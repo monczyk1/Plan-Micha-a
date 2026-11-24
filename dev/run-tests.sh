@@ -38,6 +38,7 @@ cd "$T" && mkdir -p dm; RES="$DEV/.wyniki"; rm -rf "$RES"; mkdir -p "$RES"
 run(){ t=$1
   [ -f "$t.js" ] || { echo "== $t: nie ma takiego testu" > "$RES/$t"; touch "$RES/$t.fail"; return; }
   PRE="--require $T/preload.js"; case $t in mt|full2) PRE="";; esac   # mt sprawdza pytanie o masę; full2 jest stabilniejszy bez preload
+  case $t in nowe|calc) ;; *) PRE="$PRE --require $T/legacy.js";; esac   # starsze testy: stary widok (wszystko rozwinięte); nowe.js sprawdza nowy
   OUT=$(NODE_PATH="$DEV/node_modules" NODE_OPTIONS="$PRE" timeout 300 node "$t.js" 2>&1); RC=$?
   P=$(echo "$OUT" | grep -c '^PASS'); F=$(echo "$OUT" | grep -c '^FAIL'); E=$(echo "$OUT" | grep -m1 -E 'Error:' )
   [ $RC -ne 0 ] && [ -z "$E" ] && E="test przerwany (kod $RC$([ $RC -eq 124 ] && echo ', przekroczony czas'))"

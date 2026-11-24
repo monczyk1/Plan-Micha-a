@@ -78,7 +78,7 @@ Każdy ma własny link, własny plan i własny PIN do kopii w chmurze. Wpisują 
 
 ## Stan prac
 
-Działa: kalkulator talerzy (`kod/talerze.js`, sztanga 20 kg, talerze do odznaczenia w Ustawieniach), odznaki (`kod/odznaki.js`, 12 kamieni milowych liczonych z historii), edycja/usuwanie treningu spod kafelków z „Cofnij”, notatka do ćwiczenia i duplikat w edytorze (wersja 13), trzy profile, chmura z PIN-ami, ranking, tonaż (Postępy + szczegóły tygodnia), podsumowanie z obrazkiem do udostępnienia, nowy trening, kolejność, aktualizacje z „Co nowego”, masa ciała, ankieta, film-przewodnik (`film/`, gotowe mp4 w `film/wideo/`).
+Działa: ekran treningu w trybie „tylko bieżące ćwiczenie rozwinięte” (`P+"focus"`, wersja 14; starsze testy wymuszają stary widok przez `dev/tests/legacy.js`), kalkulator talerzy (`kod/talerze.js`, sztanga 20 kg, talerze do odznaczenia w Ustawieniach), odznaki (`kod/odznaki.js`, 12 kamieni milowych liczonych z historii), edycja/usuwanie treningu spod kafelków z „Cofnij”, notatka do ćwiczenia i duplikat w edytorze (wersja 13), trzy profile, chmura z PIN-ami, ranking, tonaż (Postępy + szczegóły tygodnia), podsumowanie z obrazkiem do udostępnienia, nowy trening, kolejność, aktualizacje z „Co nowego”, masa ciała, ankieta, film-przewodnik (`film/`, gotowe mp4 w `film/wideo/`).
 
 Do zrobienia / otwarte:
 - Mateusz: jeszcze nie połączony z chmurą (po pierwszym zapisie powstaną jego karty w arkuszu). W planie martwy ciąg 3 × 5–8 bez ciężaru.

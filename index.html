@@ -4,7 +4,7 @@
 <link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="icon-180.png"><link rel="icon" href="icon-192.png"><meta name="theme-color" content="#c2410c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Tytanowa siła">
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap">
-<link rel="stylesheet" href="styl.css?v=13">
+<link rel="stylesheet" href="styl.css?v=14">
 </head><body>
 
 <main class="wrap">
@@ -31,14 +31,13 @@
   <section class="sec">
     <div class="lbl">Trening <button class="tip" data-tip="day" aria-label="Wyjaśnienie">?</button></div>
     <div class="seg" id="seg"></div>
-    <div class="daytools" id="dayTools"></div>
-    <div class="hint" id="nextHint"></div>
-  </section>
-
-  <section class="sec">
-    <div class="lbl" id="tLbl">Numer treningu</div>
-    <div class="tgrid" id="tgrid"></div>
-    <div class="hint" id="weekHint"></div>
+    <button class="morebtn" id="moreBtn" aria-expanded="false" aria-controls="dayMore"><span id="nextHint"></span><b id="moreTxt">Więcej ▾</b></button>
+    <div id="dayMore" hidden>
+      <div class="daytools" id="dayTools"></div>
+      <div class="lbl" id="tLbl">Numer treningu</div>
+      <div class="tgrid" id="tgrid"></div>
+      <div class="hint" id="weekHint"></div>
+    </div>
   </section>
   <section class="sec" id="pastView" hidden></section>
 
@@ -85,6 +84,11 @@
   </section>
   <section class="ex plain">
     <div class="exh"><span class="exn">Podczas treningu</span></div>
+    <div class="hint" id="focusLbl">Widok treningu</div>
+    <div role="radiogroup" aria-labelledby="focusLbl">
+      <label class="cloudrow" for="optFocus1"><input type="radio" name="optFocus" id="optFocus1"><span><b>Tylko bieżące ćwiczenie rozwinięte</b><br><span class="hint">Reszta to jedna linia: serie i ostatni wynik. Stuknięcie rozwija.</span></span></label>
+      <label class="cloudrow" for="optFocus0"><input type="radio" name="optFocus" id="optFocus0"><span><b>Wszystkie rozwinięte</b><br><span class="hint">Pełne karty wszystkich ćwiczeń (jak w starszych wersjach).</span></span></label>
+    </div>
     <label class="cloudrow" for="optCollapse"><input type="checkbox" id="optCollapse"><span><b>Zwijaj zrobione ćwiczenia</b><br><span class="hint">Gdy odhaczysz wszystkie serie, ćwiczenie zwija się do jednej linii. Kliknij je, żeby rozwinąć.</span></span></label>
   </section>
 
@@ -190,10 +194,11 @@
   <p class="hint">Plik trafi do folderu Pobrane. Do odtworzenia wystarczy najnowszy plik: Kopia zapasowa → Wczytaj kopię.</p>
 </section>
 <footer class="bar">
-  <div class="barin" id="statusRow"><div class="ptrack" role="progressbar" aria-label="Postęp treningu" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><i id="pbar"></i></div>
-    <span id="sumTxt">0/0 serii</span>
+  <div class="barin" id="statusRow">
+    <span id="sumTxt">0 / 0 serii</span>
     <div class="rest" id="rest" hidden><span>Przerwa</span><b id="restT">0:00</b><button class="pill" id="restPlus">+30 s</button><button class="pill" id="restX" aria-label="Zamknij przerwę">✕</button></div>
-    
+    <div class="ptrack" role="progressbar" aria-label="Postęp treningu" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><i id="pbar"></i></div>
+    <button class="save" id="finishBar" hidden>Zakończ trening</button>
   </div>
   <nav class="tabs" aria-label="Sekcje aplikacji">
     <button data-view="train" aria-pressed="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 7v10M3 9.5v5M18 7v10M21 9.5v5M6 12h12"/></svg>Trening</button>
@@ -213,16 +218,16 @@
 
 
 
-<script src="kod/profil.js?v=13"></script>
-<script src="dane/plan-start.js?v=13"></script>
-<script src="dane/plan-damian.js?v=13"></script>
-<script src="dane/plan-mateusz.js?v=13"></script>
-<script src="kod/plan.js?v=13"></script>
-<script src="dane/cwiczenia.js?v=13"></script>
-<script src="dane/rysunki.js?v=13"></script>
-<script src="dane/opisy.js?v=13"></script>
-<script src="kod/talerze.js?v=13"></script>
-<script src="kod/odznaki.js?v=13"></script>
-<script src="kod/aplikacja.js?v=13"></script>
+<script src="kod/profil.js?v=14"></script>
+<script src="dane/plan-start.js?v=14"></script>
+<script src="dane/plan-damian.js?v=14"></script>
+<script src="dane/plan-mateusz.js?v=14"></script>
+<script src="kod/plan.js?v=14"></script>
+<script src="dane/cwiczenia.js?v=14"></script>
+<script src="dane/rysunki.js?v=14"></script>
+<script src="dane/opisy.js?v=14"></script>
+<script src="kod/talerze.js?v=14"></script>
+<script src="kod/odznaki.js?v=14"></script>
+<script src="kod/aplikacja.js?v=14"></script>
 
 </body></html>

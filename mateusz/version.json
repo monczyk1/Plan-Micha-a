@@ -1,7 +1,17 @@
 {
- "build": 13,
+ "build": 14,
  "data": "24.11.2026",
  "zmiany": [
+  {
+   "build": 14,
+   "data": "24.11.2026",
+   "lista": [
+    "Spokojniejszy ekran treningu: rozwinięte jest tylko bieżące ćwiczenie („TERAZ”), reszta to jedna linia z planem i ostatnim wynikiem. Po skończeniu ćwiczenia następne samo wjeżdża na ekran. Stary widok włączysz w Ustawieniach → Widok treningu",
+    "Dni treningowe w jednym rzędzie, a numery treningów, Edytuj i Usuń schowane pod „Więcej”",
+    "Dolny pasek: duże „12 / 27 serii”, gruby pasek postępu (zielony po skończeniu) i przycisk „Zakończ trening” od razu pod ręką",
+    "Pomarańczowy tylko dla tego, co robisz teraz; drobne napisy są większe, a pytanie o masę ciała nie zasłania już zakładek"
+   ]
+  },
   {
    "build": 13,
    "data": "24.11.2026",

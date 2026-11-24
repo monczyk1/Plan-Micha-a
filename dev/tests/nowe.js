@@ -39,6 +39,9 @@ const st = (k, sets) => ({ k, n: k, sets: sets.map(([kg, r]) => ({ kg: String(kg
     await p.click("#bmLater", { timeout: 800 }).catch(() => {});
     return p;
   };
+  const more = async (p) => {
+    if (await p.isHidden("#dayMore")) await p.click("#moreBtn");
+  };
   const pick = (p, d) => p.evaluate((d) => [...document.querySelectorAll("#seg button")].find((b) => b.textContent.startsWith(d)).click(), d);
 
   // ---- Talerze: obliczenia ----
@@ -122,8 +125,10 @@ const st = (k, sets) => ({ k, n: k, sets: sets.map(([kg, r]) => ({ kg: String(kg
   await p.waitForTimeout(200);
   const days0 = await p.evaluate(() => DAYS.length);
   ok("E1 pod kafelkami: Edytuj i Usuń dla „Nogi 1”", /Edytuj „Nogi 1”/.test(await p.textContent("#dayTools")) && !!(await p.$("#dtDel")));
+  await more(p);
   await p.click("#dtDel");
   ok("E2 pierwsze stuknięcie tylko pyta", /Na pewno/.test(await p.textContent("#dtDel")) && (await p.evaluate(() => DAYS.length)) === days0);
+  await more(p);
   await p.click("#dtDel");
   await p.waitForTimeout(150);
   const afterDel = await p.evaluate(() => ({ n: DAYS.length, has: DAYS.some((d) => PLAN[d].name === "Nogi 1"), ses: sessions.length }));
@@ -136,7 +141,9 @@ const st = (k, sets) => ({ k, n: k, sets: sets.map(([kg, r]) => ({ kg: String(kg
   await p.waitForTimeout(400);
   ok("E6 przywrócony trening zostaje po ponownym otwarciu", await p.evaluate(() => DAYS.some((d) => PLAN[d].name === "Nogi 1")));
   await pick(p, "PT");
+  await more(p);
   await p.click("#dtDel");
+  await more(p);
   await p.click("#dtDel");
   await p.waitForTimeout(150);
   ok("E7 dzień planu też da się usunąć (zostają inne)", !(await p.evaluate(() => DAYS.includes("PT"))));
@@ -145,6 +152,7 @@ const st = (k, sets) => ({ k, n: k, sets: sets.map(([kg, r]) => ({ kg: String(kg
 
   // ---- Edytor: notatka, duplikat, wyjście bez zapisu ----
   await pick(p, "PN");
+  await more(p);
   await p.click("#dtEdit");
   ok("E9 Edytuj otwiera edytor na tym treningu", !(await p.isHidden("#edSheet")) && (await p.getAttribute("#edTabs [aria-pressed=true]", "data-ed")) === "PN");
   const bi = await p.evaluate(() => PLAN.PN.ex.findIndex((e) => e.k === "bench"));
@@ -154,6 +162,7 @@ const st = (k, sets) => ({ k, n: k, sets: sets.map(([kg, r]) => ({ kg: String(kg
   await p.click("#edSave");
   await p.waitForTimeout(150);
   ok("E11 notatka widoczna na karcie ćwiczenia", /ławka nr 2, stojaki 5/.test(await p.textContent('[data-card="bench"]')));
+  await more(p);
   await p.click("#dtEdit");
   await p.click("#edDup");
   await p.click("#edSave");
@@ -163,9 +172,56 @@ const st = (k, sets) => ({ k, n: k, sets: sets.map(([kg, r]) => ({ kg: String(kg
     return d ? { name: PLAN[d].name, n: PLAN[d].ex.length, src: PLAN.PN.ex.length, warm: !!PLAN[d].warm } : null;
   });
   ok("E12 duplikat treningu jako dodatkowy, te same ćwiczenia", dup && dup.n === dup.src && dup.warm, dup);
+  await more(p);
   await p.click("#dtEdit");
   await p.click("#edX");
   ok("E13 Anuluj bez zmian zamyka od razu", await p.isHidden("#edSheet"));
   ok("E14 brak błędów", !p.errs.length && !(await p.evaluate(() => BLEDY.length)), [p.errs, await p.evaluate(() => BLEDY)]);
+  // ---- Wygląd (wersja 14): tylko bieżące ćwiczenie rozwinięte, „Więcej”, pasek postępu ----
+  p = await open();
+  await pick(p, "PN");
+  const cards = () =>
+    p.evaluate(() =>
+      [...document.querySelectorAll("#exList .ex[data-card]")]
+        .filter((c) => c.querySelector(".csum"))
+        .map((c) => ({ k: c.dataset.card, cur: c.classList.contains("cur"), col: c.classList.contains("collapsed"), todo: c.classList.contains("todo"), done: c.classList.contains("alldone"), txt: (c.querySelector(".csum") || {}).textContent }))
+    );
+  let C = await cards();
+  ok("F1 jedno ćwiczenie „teraz” rozwinięte (pierwsze)", C.length > 3 && C[0].cur && !C[0].col && C.filter((x) => x.cur).length === 1, C.map((x) => x.k + (x.cur ? "*" : "")));
+  ok("F2 pozostałe zwinięte do jednej linii z planem", C.slice(1).every((x) => x.col && x.todo && /×/.test(x.txt)), C.slice(1));
+  const k0 = C[0].k;
+  await p.evaluate((k) => document.querySelectorAll('#exList .ok[data-k="' + k + '"]').forEach((b) => b.click()), k0);
+  await p.click("#restX", { timeout: 800 }).catch(() => {});
+  C = await cards();
+  ok("F3 po skończeniu ćwiczenia bieżące przechodzi na następne", C[0].done && C[0].col && C[1].cur && !C[1].col && C.filter((x) => x.cur).length === 1, C.slice(0, 3));
+  await p.click('#exList [data-card="' + C[3].k + '"] .csum');
+  C = await cards();
+  ok("F4 stuknięcie zwiniętego rozwija je", !C[3].col && C[1].cur, C.slice(0, 4).map((x) => x.k + (x.col ? "-" : "+")));
+  const sum = await p.textContent("#sumTxt"),
+    wd = await p.$eval("#pbar", (e) => e.style.width);
+  ok("F5 pasek: „N / M serii” i wypełnienie", /^\d+ \/ \d+ serii ~\d+ min do końca/.test(sum) && parseInt(wd) > 0 && (await p.isHidden("#finishBar")), [sum, wd]);
+  await p.evaluate(() => document.querySelectorAll("#exList .ok[data-k]").forEach((b) => b.getAttribute("aria-pressed") !== "true" && b.click()));
+  await p.click("#restX", { timeout: 800 }).catch(() => {});
+  ok("F6 wszystko zrobione: zielony pasek i „Zakończ trening” w pasku", !(await p.isHidden("#finishBar")) && (await p.$eval(".ptrack", (e) => e.classList.contains("full"))) && /wszystko zrobione/.test(await p.textContent("#sumTxt")), await p.textContent("#sumTxt"));
+  await p.click("#finishBar");
+  ok("F7 „Zakończ trening” z paska otwiera podsumowanie", !(await p.isHidden("#finSheet")));
+  await p.keyboard.press("Escape");
+  ok("F8 dolny pasek ma wysokość dla pytań nad nim", (await p.evaluate(() => parseInt(getComputedStyle(document.documentElement).getPropertyValue("--barh")) || 0)) > 80);
+  ok("F9 domyślnie „Więcej” zwinięte, po stuknięciu T1… widoczne, zapamiętane", (await p.isHidden("#dayMore")) && /Więcej/.test(await p.textContent("#moreBtn")) && (await (async () => { await p.click("#moreBtn"); return !(await p.isHidden("#tgrid")) && /Mniej/.test(await p.textContent("#moreBtn")); })()));
+  await p.reload();
+  await p.waitForTimeout(400);
+  ok("F10 „Więcej” zostaje otwarte po ponownym otwarciu", !(await p.isHidden("#dayMore")));
+  await p.click('.tabs [data-view="set"]');
+  ok("F11 Ustawienia: widok „tylko bieżące” zaznaczony", await p.isChecked("#optFocus1"));
+  await p.check("#optFocus0");
+  await p.click('.tabs [data-view="train"]');
+  await pick(p, "PN");
+  C = await cards();
+  ok("F12 „Wszystkie rozwinięte”: żadne niezrobione ćwiczenie nie jest zwinięte ani wyróżnione", C.length > 3 && C.every((x) => !x.todo && !x.cur), C.map((x) => x.k + (x.col ? "-" : "+")));
+  await p.reload();
+  await p.waitForTimeout(400);
+  ok("F13 wybrany widok zostaje po ponownym otwarciu", !(await p.evaluate(() => focusOn())));
+  ok("F14 brak błędów", !p.errs.length && !(await p.evaluate(() => BLEDY.length)), [p.errs, await p.evaluate(() => BLEDY)]);
+  await p.context().close();
   await b.close();
 })();

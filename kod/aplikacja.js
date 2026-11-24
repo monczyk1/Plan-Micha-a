@@ -224,7 +224,6 @@ function persist() {
 
 function renderSeg() {
   $("seg").innerHTML = "";
-  $("seg").style.gridTemplateColumns = "repeat(" + Math.min(DAYS.length + 1, 3) + ",1fr)";
   for (const d of DAYS) {
     const b = document.createElement("button");
     b.setAttribute("aria-pressed", d === day);
@@ -254,6 +253,8 @@ function renderSeg() {
     $("seg").append(a);
   }
   renderDayTools();
+  const sel = $("seg").querySelector('[aria-pressed="true"]');
+  if (sel) $("seg").scrollLeft = Math.max(0, sel.offsetLeft - 16);
   const last = sessions[0];
   const nx = nextReg();
   $("nextHint").textContent = last
@@ -1327,6 +1328,8 @@ function renderEx(fromDraft) {
     h += "</div>";
     c.innerHTML = h;
     box.append(c);
+    c.dataset.plan = n + "×" + ex.r;
+    c.dataset.last = prev && bestSet(prev.e) ? fmtSet(bestSet(prev.e)).replace(" kg × ", "×") : "";
     cardState(ex.k, c, n);
     plUpd(ex.k);
   });
@@ -1490,7 +1493,13 @@ function renderEx(fromDraft) {
         updSum();
         persist();
         const c = b.closest(".ex");
-        if (c && c.dataset.card) cardState(k, c, c.querySelectorAll(".ok[data-k]").length);
+        refreshCards();
+        // po skończeniu ćwiczenia następne (bieżące) wjeżdża na środek ekranu
+        if (focusOn() && c && c.classList.contains("alldone")) {
+          const nk = [...focusKeys()][0],
+            nx = nk && document.querySelector('#exList [data-card="' + nk + '"]');
+          if (nx && nx.scrollIntoView) nx.scrollIntoView({ block: "center", behavior: "smooth" });
+        }
       })
   );
   if ($("restoreEx"))
@@ -1558,6 +1567,35 @@ function setSummary(k, c) {
   });
   return parts.join(" · ");
 }
+// Widok „tylko bieżące ćwiczenie rozwinięte” (ustawienie P+"focus", domyślnie włączone)
+function focusOn() {
+  return ls.get(P + "focus") !== false;
+}
+// Ćwiczenie „teraz”: pierwsze z niezrobionymi seriami (przy superserii – oba). Dynamika, core i cardio (kind) się nie liczą.
+function focusKeys() {
+  const st = S(),
+    L = exList(),
+    out = new Set();
+  const undone = (e) => {
+    const n = nSets(e);
+    for (let i = 0; i < n; i++) if (!st.done[e.k + "_" + i]) return true;
+    return false;
+  };
+  const f = L.find((e) => !e.kind && undone(e));
+  if (f) {
+    out.add(f.k);
+    if (f.ss)
+      L.forEach((e) => {
+        if (e.ss === f.ss) out.add(e.k);
+      });
+  }
+  return out;
+}
+function refreshCards() {
+  document
+    .querySelectorAll("#exList [data-card]")
+    .forEach((c) => cardState(c.dataset.card, c, c.querySelectorAll(".ok[data-k]").length));
+}
 function cardState(k, c, n) {
   if (!c || !n) return;
   const st = S();
@@ -1567,17 +1605,25 @@ function cardState(k, c, n) {
       all = false;
       break;
     }
-  const col = optCollapse && all && !st.open[k];
+  const foc = focusOn(),
+    isCur = foc && focusKeys().has(k);
+  const canFold = (optCollapse && all) || (foc && !all && !isCur);
+  const col = canFold && !st.open[k];
   c.classList.toggle("collapsed", col);
   c.classList.toggle("alldone", all);
+  c.classList.toggle("cur", isCur);
+  c.classList.toggle("todo", col && !all);
   const b = c.querySelector(".csum");
   if (b) {
-    b.hidden = !all;
+    b.hidden = !canFold;
     b.innerHTML = col
-      ? '<span class="chk">✓</span><span class="cs">' + esc(setSummary(k, c)) + '</span><span class="chev">▾</span>'
+      ? all
+        ? '<span class="chk">✓</span><span class="cs">' + esc(setSummary(k, c)) + '</span><span class="chev">▾</span>'
+        : '<span class="cs">' +
+          esc((c.dataset.plan || "") + (c.dataset.last ? " · ostatnio " + c.dataset.last : "")) +
+          '</span><span class="chev">▾</span>'
       : '<span class="chev">▴ zwiń</span>';
     b.setAttribute("aria-label", col ? "Rozwiń ćwiczenie" : "Zwiń ćwiczenie");
-    if (!optCollapse) b.hidden = true;
   }
 }
 let optCollapse = true;
@@ -1672,17 +1718,20 @@ function updSum() {
     pb.style.width = pct + "%";
     pb.parentNode.setAttribute("aria-valuenow", pct);
   }
-  const eta = doneN >= sets ? "gotowe 💪" : "~" + Math.max(1, Math.round(left / 60)) + " min";
+  const fin = sets > 0 && doneN >= sets;
+  const eta = fin ? "wszystko zrobione" : "~" + Math.max(1, Math.round(left / 60)) + " min do końca";
   $("sumTxt").innerHTML =
-    '<b class="pct">' +
-    pct +
-    "%</b> · " +
+    '<b class="big">' +
     doneN +
-    "/" +
+    "<small> / " +
     sets +
-    " serii · " +
+    " serii</small></b> " +
+    '<span class="meta">' +
     eta +
-    (vol ? '<span class="vol"> · ' + Math.round(vol).toLocaleString("pl") + " kg</span>" : "");
+    (vol ? '<span class="vol"> · ' + Math.round(vol).toLocaleString("pl") + " kg</span>" : "") +
+    "</span>";
+  if (pb) pb.parentNode.classList.toggle("full", fin);
+  $("finishBar").hidden = !fin;
 }
 
 function prBest(sets, bw) {
@@ -3928,7 +3977,7 @@ $("cloudRestore").onclick = async () => {
 $("cloudNow").onclick = () => cloudSync();
 window.addEventListener("online", () => cloudSync(true));
 // ===== Aktualizacje: numer wersji w aplikacji vs version.json na serwerze =====
-const APP_BUILD = 13;
+const APP_BUILD = 14;
 function verItems(j, from) {
   return ((j && j.zmiany) || []).filter((x) => x.build > from);
 }
@@ -4472,6 +4521,38 @@ $("optCollapse").onchange = () => {
   ls.set(P + "collapse", optCollapse);
   renderEx();
 };
+// Ustawienia → Widok treningu
+$("optFocus1").checked = focusOn();
+$("optFocus0").checked = !focusOn();
+[$("optFocus1"), $("optFocus0")].forEach(
+  (r) =>
+    (r.onchange = () => {
+      ls.set(P + "focus", $("optFocus1").checked);
+      refreshCards();
+    })
+);
+$("finishBar").onclick = () => openFinish();
+// „Więcej ▾” pod kafelkami dni: numery treningów, edycja, usuwanie (pamięta ostatni wybór)
+function setMore(open) {
+  $("dayMore").hidden = !open;
+  $("moreBtn").setAttribute("aria-expanded", open);
+  $("moreTxt").textContent = open ? "Mniej ▴" : "Więcej ▾";
+}
+$("moreBtn").onclick = () => {
+  const o = $("dayMore").hidden;
+  setMore(o);
+  ls.set(P + "more", o);
+};
+setMore(ls.get(P + "more") === true);
+// wysokość dolnego paska – pytania z dołu ekranu (np. o masę ciała) wyskakują nad nim
+try {
+  const barEl = document.querySelector(".bar"),
+    setH = () => document.documentElement.style.setProperty("--barh", barEl.offsetHeight + "px");
+  setH();
+  if (window.ResizeObserver) new ResizeObserver(setH).observe(barEl);
+} catch (e) {
+  blad("wysokość paska", e);
+}
 $("restX").onclick = () => {
   clearInterval(restIv);
   $("rest").hidden = true;

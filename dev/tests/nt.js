@@ -4,7 +4,7 @@ const R='http://localhost:8765/';
 const ok=(n,c,i)=>console.log((c?'PASS ':'FAIL ')+n+(c?'':'  → '+JSON.stringify(i)));
 (async()=>{const b=await chromium.launch({args:['--lang=pl-PL']});
 const mk=async url=>{const c=await b.newContext({viewport:{width:393,height:852},deviceScaleFactor:2,locale:'pl-PL',colorScheme:'dark',serviceWorkers:'block'});await c.route(/fonts\.(googleapis|gstatic)/,r=>r.abort());await c.route(/version\.json/,r=>r.abort());c.setDefaultTimeout(5000);const p=await c.newPage();p.errs=[];p.on('pageerror',e=>p.errs.push(e.message));await p.goto(url);await p.waitForTimeout(400);await p.click('#welcomeOk',{timeout:1500}).catch(()=>{});return p};
-const tiles=p=>p.$$eval('#seg button',bs=>bs.map(x=>x.innerText.replace(/\n/g,'|')+(x.getAttribute('aria-pressed')==='true'?'*':'')));
+const tiles=p=>p.$$eval('#seg button',bs=>bs.map(x=>{const s=x.querySelector('small');return x.childNodes[0].textContent+(s?'|'+s.textContent:'')+(x.getAttribute('aria-pressed')==='true'?'*':'')}));
 const save=async p=>{await p.click('#finish');await p.click('#save');await p.waitForTimeout(250);await p.click('#ssLater',{timeout:1500}).catch(()=>{});await p.click('#tipX',{timeout:1500}).catch(()=>{})};
 const go=async(p,v)=>{await p.click('.tabs [data-view="'+v+'"]');await p.waitForTimeout(60)};
 const p=await mk(R+'damian/');
