@@ -1,7 +1,12 @@
 // Pozwala otworzyć aplikację bez internetu (np. na siłowni w piwnicy).
 // Najpierw próbuje pobrać najnowszą wersję (z pominięciem pamięci przeglądarki), a gdy nie ma sieci – używa zapisanej.
-const C="trening-v16";
-self.addEventListener("install",e=>{e.waitUntil(caches.open(C).then(c=>c.addAll(["./","index.html","manifest.webmanifest","icon-192.png"])).then(()=>self.skipWaiting()))});
+// ROOT i BUILD ustawia ./sync.sh (w folderach osób ROOT="../", bo wspólne pliki leżą piętro wyżej). Nie zmieniaj ręcznie.
+const ROOT="./";
+const BUILD=12;
+const C="tytanowa-b"+BUILD;
+// Wspólne pliki aplikacji – ta sama lista co w index.html (./sync.sh pilnuje, żeby niczego nie brakowało)
+const SHARED=["styl.css","kod/profil.js","dane/plan-start.js","dane/plan-damian.js","dane/plan-mateusz.js","kod/plan.js","dane/cwiczenia.js","dane/rysunki.js","dane/opisy.js","kod/aplikacja.js"];
+self.addEventListener("install",e=>{e.waitUntil(caches.open(C).then(c=>c.addAll(["./","index.html","manifest.webmanifest","icon-192.png",...SHARED.map(f=>ROOT+f+"?v="+BUILD)])).then(()=>self.skipWaiting()))});
 self.addEventListener("activate",e=>{e.waitUntil(caches.keys().then(k=>Promise.all(k.filter(x=>x!==C).map(x=>caches.delete(x)))).then(()=>self.clients.claim()))});
 self.addEventListener("fetch",e=>{if(e.request.method!=="GET")return;
   const same=new URL(e.request.url).origin===location.origin;

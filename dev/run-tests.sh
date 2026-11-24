@@ -8,13 +8,13 @@ cd "$(dirname "$0")" || exit 1
 DEV=$(pwd); ROOT=$(cd .. && pwd); T="$DEV/tests"
 [ -d node_modules/playwright ] || { echo "Najpierw: npm install && npx playwright install chromium"; exit 1; }
 # kopia aplikacji z adresem chmury podmienionym na atrapę (prawdziwy arkusz nie jest dotykany)
-SRV="$DEV/.srv"; rm -rf "$SRV"; mkdir -p "$SRV/damian" "$SRV/mateusz"
-for d in "" damian/ mateusz/; do
-  for f in index.html sw.js version.json manifest.webmanifest; do
-    [ -f "$ROOT/$d$f" ] && sed 's#CLOUD_URL="https://script.google.com[^"]*"#CLOUD_URL="http://localhost:8792/exec"#' "$ROOT/$d$f" > "$SRV/$d$f"
-  done
+SRV="$DEV/.srv"; rm -rf "$SRV"; mkdir -p "$SRV"
+rsync -a --exclude .git --exclude dev --exclude film --exclude chmura --exclude ankieta "$ROOT/" "$SRV/"
+for f in $(grep -rl "script.google.com" "$SRV"); do
+  sed -E 's#CLOUD_URL *= *"https://script\.google\.com[^"]*"#CLOUD_URL="http://localhost:8792/exec"#' "$f" > "$f.tmp" && mv "$f.tmp" "$f"
 done
-cp "$ROOT"/icon-*.png "$SRV/" 2>/dev/null
+# blokada: jeśli adres prawdziwego arkusza został w kopii testowej, przerywamy (testy nie mogą pisać do arkusza)
+if grep -rq "script.google.com" "$SRV"; then echo "STOP: w kopii testowej został adres prawdziwego arkusza – popraw podmianę CLOUD_URL w run-tests.sh"; exit 1; fi
 (cd "$ROOT" && python3 -m http.server 8765 >/dev/null 2>&1) & P1=$!
 (cd "$SRV" && python3 -m http.server 8766 >/dev/null 2>&1) & P2=$!
 node "$T/gas-mock3.js" 8792 >/dev/null 2>&1 & P3=$!
