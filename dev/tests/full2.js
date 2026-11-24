@@ -24,7 +24,7 @@ await p.fill('#bench_kg_0','40');await p.fill('#bench_r_0','8');await p.click('.
 ok('S2 zapis w historii',(await hist(p)).length===1,await hist(p));ok('S2 panel kopii po zapisie',await p.isVisible('#saveSheet'));
 ok('S2 następny trening B',(await p.$eval('#seg button[aria-pressed="true"]',e=>e.textContent)).startsWith('B'));
 await p.click('#ssLater');
-const bk1=await dlBackup(p,'bk1.json');ok('S2 kopia v2 ze storage',bk1.v===2&&!!bk1.storage&&!!bk1.storage.gora_sessions,Object.keys(bk1));
+const bk1=await dlBackup(p,'dm/bk1.json');ok('S2 kopia v2 ze storage',bk1.v===2&&!!bk1.storage&&!!bk1.storage.gora_sessions,Object.keys(bk1));
 ok('S2 baner znika po kopii',!(await p.isVisible('#bkTop')));
 
 // S3 draft on B
@@ -33,13 +33,13 @@ await p.reload();await p.waitForTimeout(300);
 ok('S3 szkic po odświeżeniu',(await p.inputValue('#dbohp_kg_0'))==='14');ok('S3 − seria zapamiętana',(await nsets(p,'bbrow'))===2,await nsets(p,'bbrow'));ok('S3 + seria zapamiętana',(await nsets(p,'dbbench'))===4);
 
 // S4 snapshot BK2 then mess
-const bk2=await dlBackup(p,'bk2.json');ok('S4 kopia zawiera szkic',!!bk2.storage.gora_draft&&bk2.storage.gora_draft.includes('14'));
+const bk2=await dlBackup(p,'dm/bk2.json');ok('S4 kopia zawiera szkic',!!bk2.storage.gora_draft&&bk2.storage.gora_draft.includes('14'));
 await p.fill('#dbohp_kg_0','99');await p.click('[data-rm="dbbench"]');
 await p.fill('#bbrow_kg_0','60');await p.fill('#bbrow_r_0','10');await saveSess(p);await p.waitForTimeout(200);await p.click('#ssLater');
 ok('S4 drugi trening zapisany',(await hist(p)).length===2);
 await go(p,'set');await p.click('#editPlan');await p.click('#edTabs button:nth-child(1)');await p.click('[data-del="0"]');await p.click('#edSave');await p.waitForTimeout(200);
 ok('S4 plan zmieniony',!(await p.$('#incline_kg_0')));
-await restore(p,'bk2.json');ok('S4 okno potwierdzenia',await p.isVisible('#rsSheet'));const rsTxt=await p.textContent('#rsTxt');ok('S4 ostrzeżenie o utracie',/1 trening zapisanych po tej kopii zniknie/.test(rsTxt),rsTxt);
+await restore(p,'dm/bk2.json');ok('S4 okno potwierdzenia',await p.isVisible('#rsSheet'));const rsTxt=await p.textContent('#rsTxt');ok('S4 ostrzeżenie o utracie',/1 trening zapisanych po tej kopii zniknie/.test(rsTxt),rsTxt);
 await confirmRestore(p);
 ok('S4 historia jak w kopii',(await hist(p)).length===1,await hist(p));
 ok('S4 plan jak w kopii',!!(await p.$('#incline_kg_0'))||(await p.$$eval('#seg button:not(.addt)',x=>x.length))===2);
@@ -55,7 +55,7 @@ ok('S5 cofnięcie: 2 treningi',(await hist(p)).length===2,await hist(p));ok('S5 
 ok('S5 brak błędów JS',p.errs.length===0,p.errs);await c.close();
 
 // S6 fresh device restore bk1
-({c,p}=await mk());await restore(p,'bk1.json');await confirmRestore(p);
+({c,p}=await mk());await restore(p,'dm/bk1.json');await confirmRestore(p);
 ok('S6 nowe urządzenie: 1 trening',(await hist(p)).length===1);
 // S10 edit past session
 await go(p,'hist');await p.click('#hist details summary');await p.click('[data-fix]');ok('S10 tryb poprawiania',await p.isVisible('#pvSave'));
@@ -83,7 +83,7 @@ fs.writeFileSync('old.json',JSON.stringify({app:"gora-ciala",v:1,exported:"2026-
 // S8 invalid
 fs.writeFileSync('bad.json','hello');await restore(p,'bad.json');ok('S8 zły plik: komunikat',/nie jest plik kopii/.test(await toastT(p)));ok('S8 dane nietknięte',(await hist(p)).length===1);
 // S9 paste
-await go(p,'set');if(await p.isHidden('#bkBox'))await p.click('#bkShow');await p.fill('#bkIn',fs.readFileSync('bk1.json','utf8'));await p.click('#bkLoad');ok('S9 wklejenie: potwierdzenie',await p.isVisible('#rsSheet'));await p.click('#rsCancel');ok('S9 anuluj nic nie zmienia',(await hist(p)).length===1);
+await go(p,'set');if(await p.isHidden('#bkBox'))await p.click('#bkShow');await p.fill('#bkIn',fs.readFileSync('dm/bk1.json','utf8'));await p.click('#bkLoad');ok('S9 wklejenie: potwierdzenie',await p.isVisible('#rsSheet'));await p.click('#rsCancel');ok('S9 anuluj nic nie zmienia',(await hist(p)).length===1);
 ok('S7-9 brak błędów JS',p.errs.length===0,p.errs);await c.close();
 
 // S16 storage failure

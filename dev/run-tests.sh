@@ -20,7 +20,7 @@ if grep -rq "script.google.com" "$SRV"; then echo "STOP: w kopii testowej zostaÅ
 node "$T/gas-mock3.js" 8792 >/dev/null 2>&1 & P3=$!
 trap 'kill $P1 $P2 $P3 2>/dev/null' EXIT INT TERM
 sleep 2
-LIST=${*:-"full2 newf damian nt ord ton mt rank rank2 cloud3 upd off v1guard axe2"}
+LIST=${*:-"calc full2 newf damian nt ord ton mt rank rank2 cloud3 upd off v1guard axe2"}
 cd "$T" && mkdir -p dm; FAILS=0
 for t in $LIST; do
   PRE="--require $T/preload.js"; case $t in mt|full2) PRE="";; esac   # mt sprawdza pytanie o masÄ™; full2 jest stabilniejszy bez preload

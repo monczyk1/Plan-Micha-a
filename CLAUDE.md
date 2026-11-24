@@ -18,7 +18,7 @@ Każdy ma własny link, własny plan i własny PIN do kopii w chmurze. Wpisują 
 
 1. **Główne miejsce: localStorage w telefonie każdej osoby.** Klucze z prefiksem `gora_` (Michał, katalog główny), `goradamian_`, `goramateusz_` – na jednym telefonie dane osób się nie mieszają.
    Najważniejsze: `P+"sessions"` (zapisane treningi), `P+"draft"` (trening w toku), `P+"plan"` (plan po edycji), `P+"bm"` (masa ciała).
-2. **Kopia w chmurze:** arkusz Google „Tytanowa sila - Michal” na Dysku Damiana, przez Apps Script (`CLOUD_URL` w `index.html` → `chmura/Code.gs`, wersja 4).
+2. **Kopia w chmurze:** arkusz Google „Tytanowa sila - Michal” na Dysku Damiana, przez Apps Script (`CLOUD_URL` w `kod/aplikacja.js` → `chmura/Code.gs`, wersja 4).
    Karta „Uczestnicy” (Imię | PIN | Aktywny | …) – tylko Damian dopisuje osoby i PIN-y; puste „Aktywny” = aktywny, „NIE” blokuje.
    Karty „Treningi – Imię” (czytelny log) i ukryte „Kopie – Imię” (pełne kopie do przywracania). Michał ma historyczne nazwy „Treningi”/„Kopie”.
 3. **Pliki kopii** pobierane ręcznie przez użytkownika (Ustawienia → Kopia zapasowa). Muszą się dać przywrócić także po aktualizacji (`reKey()`, `applySnapshot()`).
@@ -27,15 +27,18 @@ Każdy ma własny link, własny plan i własny PIN do kopii w chmurze. Wpisują 
 
 - GitHub Pages z gałęzi `main`, repo `monczyk1/Plan-Micha-a`. Linki: `…/Plan-Micha-a/` (Michał), `/damian/`, `/mateusz/`.
 - Użytkownicy mają ją jako skrót na ekranie iPhone'a (PWA). `sw.js` jest network-first, więc nowa wersja dochodzi przy następnym otwarciu z internetem. Aplikacja pokazuje pasek „Jest nowa wersja” i raz „Co nowego”.
-- Wydanie: zmiana w głównym `index.html` → podbij `APP_BUILD` i dopisz wpis w `version.json` (ten sam numer; lista zmian po polsku, językiem użytkownika) → `./sync.sh` (kopiuje do `damian/`, `mateusz/`; tych kopii nie edytuj ręcznie) → testy → zgoda → push.
+- Wydanie: zmiana w plikach głównych → podbij `APP_BUILD` w `kod/aplikacja.js` i dopisz wpis w `version.json` (ten sam numer; lista zmian po polsku, językiem użytkownika) → `./sync.sh` (sprawdza numer, formatuje kod, wpisuje `?v=<numer>` przy plikach, tworzy `index.html`/`sw.js` w `damian/`, `mateusz/` – tych nie edytuj ręcznie) → testy → zgoda → push.
+- Nowy wspólny plik (np. `dane/x.js`): dopisz go w `index.html` **i** na liście `SHARED` w `sw.js` – inaczej nie zadziała bez internetu (`./sync.sh` tego pilnuje).
 - **Cofnięcie złej wersji:** `git revert <commit>` + push na `main`. Dane w telefonach zostają (są w localStorage), aplikacja wraca do poprzedniego kodu przy następnym otwarciu. Jeśli wersja zdążyła przeliczyć dane (migracja), sprawdź, czy stara wersja je rozumie – zanim cofniesz.
 
 ## Sprawdzanie zmian
 
 - Lokalnie: `python3 -m http.server 8765` w katalogu repo → http://localhost:8765/ (i `/damian/`, `/mateusz/`).
-- Testy: `cd dev && npm install && npx playwright install chromium` (raz), potem `./run-tests.sh` (wszystkie, ok. 10 min) albo `./run-tests.sh mt ton`.
+- Testy: `cd dev && npm install && npx playwright install chromium` (raz). Po każdej zmianie `./run-tests.sh calc` (kilka sekund: tonaż, masa ciała, plan, profile); przed wydaniem `./run-tests.sh` (wszystkie, ok. 10 min); wybrane: `./run-tests.sh mt ton`.
   Skrypt stawia własne serwery i atrapę skryptu Google (prawdziwy `Code.gs` w Node) – prawdziwy arkusz nie jest dotykany. Ma się kończyć „WSZYSTKO OK”.
   Jeśli celowo zmieniasz tekst lub zasadę sprawdzaną w teście – popraw test w tej samej zmianie.
+  Blokada: jeśli w kopii testowej zostanie adres prawdziwego arkusza, testy się zatrzymają. `CLOUD_URL` musi zostać w jednej linii.
+- Dziennik błędów: w ważnych miejscach zamiast pustego `catch` wołaj `blad("gdzie", e)` (`kod/profil.js`, tylko w pamięci; w konsoli `BLEDY`). Puste `catch` tylko dla funkcji urządzenia (wibracja, dźwięk) – z komentarzem.
 - Najważniejsze ścieżki (sprawdź ręcznie po większej zmianie, na szerokości telefonu 390 px):
   1. wybór dnia → wpisanie serii → ✓ (minutnik przerwy) → Zakończ → podsumowanie (tonaż, porównanie, miejsce w rankingu) → Zapisz,
   2. Historia (poprawianie starego treningu), Postępy (tonaż, wykres masy ciała),
@@ -53,7 +56,7 @@ Każdy ma własny link, własny plan i własny PIN do kopii w chmurze. Wpisują 
 
 ## Decyzje i ich powody
 
-- Jeden plik `index.html`, bez frameworka i budowania – GitHub Pages serwuje go wprost, Damian może to utrzymać.
+- Bez frameworka i budowania: zwykłe pliki, które GitHub Pages serwuje wprost. Od 24.11.2026 podzielone (zgoda Damiana): `index.html` (ekrany), `styl.css`, `dane/` (plany, ćwiczenia, rysunki, opisy), `kod/` (`profil.js`, `plan.js`, `aplikacja.js`). Kolejność `<script>` w `index.html` ma znaczenie – pliki dzielą zmienne globalne, a dane nie mogą wołać funkcji z `aplikacja.js`.
 - Bez logowania: osoba = ścieżka w linku + prefiks localStorage. PIN tylko do chmury.
 - PIN nadaje Damian w arkuszu; nie ma samodzielnej rejestracji – link jest publiczny, więc każdy mógłby się dopisać.
 - **Tylko kilogramy.** Wpisywanie poziomów maszyn (lvl) zostało zrobione i porzucone na prośbę Damiana – nie wracać do tego.
@@ -89,4 +92,4 @@ Do zrobienia / otwarte:
 - Przed zmianą wyglądu lub działania: zapytaj, najlepiej z makietą lub zrzutem („pokaż, zanim napiszesz kod”). Poprawki kodu bez wpływu na użytkownika – rób bez pytania.
 - Pytania zadawaj z gotowymi propozycjami odpowiedzi do wyboru.
 - Jakość „na piątkę”: każda zmiana z testem i sprawdzeniem na ekranie telefonu, także w trybie ciemnym.
-- Oszczędzaj limit: czytaj fragmenty `index.html` (ok. 220 kB) grepem, nie całość; nie odpalaj wszystkich testów, gdy wystarczą wybrane.
+- Oszczędzaj limit: szukaj grepem w `kod/aplikacja.js` (ok. 4,5 tys. linii) zamiast czytać całość; zmiana planu osoby = tylko `dane/plan-<osoba>.js`; nie odpalaj wszystkich testów, gdy wystarczy `calc` lub wybrane.

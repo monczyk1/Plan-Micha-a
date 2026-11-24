@@ -3,7 +3,8 @@
   "private": true,
   "description": "Testy automatyczne aplikacji Tytanowa siła (Playwright). Start: ./run-tests.sh",
   "devDependencies": {
+    "axe-core": "4.10.2",
     "playwright": "1.63.0",
-    "axe-core": "4.10.2"
+    "prettier": "^3.10.1"
   }
 }
