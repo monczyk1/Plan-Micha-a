@@ -78,20 +78,20 @@ Każdy ma własny link, własny plan i własny PIN do kopii w chmurze. Wpisują 
 
 ## Stan prac
 
-Działa: trzy profile, chmura z PIN-ami, ranking, tonaż (Postępy + szczegóły tygodnia), podsumowanie z obrazkiem do udostępnienia, nowy trening, kolejność, aktualizacje z „Co nowego”, masa ciała, ankieta, film-przewodnik (`film/`, gotowe mp4 w `film/wideo/`).
+Działa: kalkulator talerzy (`kod/talerze.js`, sztanga 20 kg, talerze do odznaczenia w Ustawieniach), odznaki (`kod/odznaki.js`, 12 kamieni milowych liczonych z historii), edycja/usuwanie treningu spod kafelków z „Cofnij”, notatka do ćwiczenia i duplikat w edytorze (wersja 13), trzy profile, chmura z PIN-ami, ranking, tonaż (Postępy + szczegóły tygodnia), podsumowanie z obrazkiem do udostępnienia, nowy trening, kolejność, aktualizacje z „Co nowego”, masa ciała, ankieta, film-przewodnik (`film/`, gotowe mp4 w `film/wideo/`).
 
 Do zrobienia / otwarte:
 - Mateusz: jeszcze nie połączony z chmurą (po pierwszym zapisie powstaną jego karty w arkuszu). W planie martwy ciąg 3 × 5–8 bez ciężaru.
 - Odświeżenie filmu o nowe funkcje (ranking, tonaż, nowy trening, kolejność, masa ciała) – albo krótki film „Co nowego”.
 - Wyprosty na ławce rzymskiej z talerzem nie liczą się do tonażu – Damian nie zdecydował.
 - PIN-y są krótkie i przewidywalne – zalecona zmiana na litery + cyfry (zmienia Damian w arkuszu).
-- Pomysł: kalkulator talerzy (talerze na stronę pod seriami ze sztangą).
+- Pomysły z makiet (zaakceptowane do zrobienia później): wykres siły w ćwiczeniu (szacowany max + wykrywanie zastoju), „Wyślij raport” (wersja + `BLEDY` przez udostępnianie, bez treningów i PIN-u), liczba odznak w Rankingu (wymaga `Code.gs`).
 
 ## Jak pracować z Damianem
 
 - Po polsku, krótko, bez żargonu; tłumacz pojęcia techniczne i prowadź krok po kroku.
 - Interfejs aplikacji po polsku, prostym językiem z siłowni.
-- Przed zmianą wyglądu lub działania: zapytaj, najlepiej z makietą lub zrzutem („pokaż, zanim napiszesz kod”). Poprawki kodu bez wpływu na użytkownika – rób bez pytania.
+- Gdy Damian jasno opisał, czego chce – rób od razu, testuj i wdrażaj (24.11.2026: „nie rób makiety, zrób zmiany i wdrażaj”). Makietę lub pytanie tylko przy niejasnym pomyśle albo gdy zmiana dotyka danych użytkowników. Poprawki kodu bez wpływu na użytkownika – rób bez pytania.
 - Pytania zadawaj z gotowymi propozycjami odpowiedzi do wyboru.
 - Jakość „na piątkę”: każda zmiana z testem i sprawdzeniem na ekranie telefonu, także w trybie ciemnym.
 - Oszczędzaj limit: szukaj grepem w `kod/aplikacja.js` (ok. 4,5 tys. linii) zamiast czytać całość; zmiana planu osoby = tylko `dane/plan-<osoba>.js`; między zmianami odpalaj `szybkie` + pasujący zestaw, wszystkie dopiero przed wydaniem.
