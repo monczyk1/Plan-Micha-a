@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Twój plan w apce</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* VOICE: koleżeńska, krótka ankieta z siłowni – zero formalności
+   IDEA: karta z notatnika treningowego „Tytanowa siła” – te same kolory i litery co aplikacja
+   PICTURE: sama ankieta – duże przyciski wyboru pod kciuk, licznik postępu u góry
+   COLOUR and TYPE: grafit + pomarańcz aplikacji; Barlow Condensed na tytuły, IBM Plex Sans na tekst
+   LAYOUT: jedna spokojna kolumna, przyklejony pasek postępu i zapisu */
+:root{color-scheme:light dark;
+  --bg:light-dark(#f3f4f2,#121514);--card:light-dark(#ffffff,#1b1f1e);--line:light-dark(#dfe3e0,#2c3230);
+  --ink:light-dark(#15191a,#e9ecea);--mute:light-dark(#5d6763,#9aa39f);--acc:#ea580c;--acc2:light-dark(#c2410c,#fb923c);
+  --accbg:light-dark(#fff1e8,#2a1d14);--ok:light-dark(#15803d,#4ade80)}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 "IBM Plex Sans",system-ui,sans-serif;overflow-x:clip}
+.wrap{max-width:640px;margin:0 auto;padding:0 max(16px,4vw) 120px}
+header{padding:32px 0 8px}
+h1{font:700 clamp(34px,7vw,48px)/1.02 "Barlow Condensed",sans-serif;margin:0 0 10px;text-wrap:balance;text-transform:uppercase}
+h2{font:700 24px/1.1 "Barlow Condensed",sans-serif;text-transform:uppercase;margin:28px 0 10px}
+.lead{color:var(--mute);margin:0 0 14px;max-width:60ch}
+.bar{position:sticky;top:0;z-index:5;background:var(--bg);padding:10px 0;border-bottom:1px solid var(--line);display:flex;gap:12px;align-items:center}
+.prog{flex:1;height:8px;border-radius:99px;background:var(--line);overflow:hidden}.prog i{display:block;height:100%;width:0;background:var(--acc);transition:width .3s}
+.cnt{font-weight:600;font-size:14px;white-space:nowrap}.st{font-size:13px;color:var(--mute);white-space:nowrap}.st.ok{color:var(--ok)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;margin:12px 0}
+.q{font-weight:600;margin:0 0 4px}.q b{color:var(--acc2);font-family:"Barlow Condensed",sans-serif;font-size:20px;margin-right:6px}
+.ctx{font-size:13px;color:var(--mute);margin:0 0 10px}
+.opts{display:grid;gap:8px}
+.opt{display:flex;gap:10px;align-items:center;min-height:48px;padding:10px 12px;border:1.5px solid var(--line);border-radius:12px;cursor:pointer;font-size:15px;line-height:1.3}
+.opt input{width:20px;height:20px;accent-color:var(--acc);flex:none;margin:0}
+.opt:has(input:checked){border-color:var(--acc);background:var(--accbg)}
+.opt:focus-within{outline:2px solid var(--acc);outline-offset:2px}
+.note{width:100%;margin-top:8px;font:16px "IBM Plex Sans",sans-serif;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:transparent;color:var(--ink)}
+.note::placeholder{color:var(--mute)}
+.asm{list-style:none;margin:0;padding:0}
+.asm li{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px 10px;align-items:center;padding:10px 0;border-top:1px solid var(--line)}
+.asm li:first-child{border-top:0}.asm .from{font-weight:600}.asm .to{font-size:14px;color:var(--mute)}
+.yn{display:flex;gap:6px}.yn button{min-width:52px;min-height:44px;border-radius:10px;border:1.5px solid var(--line);background:none;color:var(--ink);font:600 14px "IBM Plex Sans",sans-serif;cursor:pointer}
+.yn button[aria-pressed=true].y{background:var(--acc);border-color:var(--acc);color:#fff}.yn button[aria-pressed=true].n{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+.asm .note{grid-column:1/-1;margin-top:2px}
+.name{display:flex;gap:10px;align-items:center;margin:6px 0 0}.name label{font-weight:600;white-space:nowrap}
+.foot{position:fixed;left:0;right:0;bottom:0;background:var(--card);border-top:1px solid var(--line);padding:12px max(16px,4vw) calc(12px + env(safe-area-inset-bottom))}
+.foot .in{max-width:640px;margin:0 auto;display:flex;gap:10px;align-items:center}
+.btn{min-height:48px;padding:0 18px;border-radius:12px;border:0;background:var(--acc);color:#fff;font:700 18px "Barlow Condensed",sans-serif;letter-spacing:.03em;text-transform:uppercase;cursor:pointer}
+.btn.sec{background:none;border:1.5px solid var(--line);color:var(--ink)}
+.foot .msg{flex:1;font-size:13px;color:var(--mute)}
+.done{display:none;text-align:center;padding:24px 8px}.done.show{display:block}.done b{font:700 30px "Barlow Condensed",sans-serif;text-transform:uppercase;display:block}
+@media(prefers-reduced-motion:reduce){.prog i{transition:none}}
+@media(max-width:420px){.foot .msg{display:none}.foot .btn{flex:1}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Twój plan w aplikacji Tytanowa siła</h1>
+    <p class="lead">Wpisuję Twój plan do aplikacji i dopasowuję ćwiczenia do jej katalogu. Zaznacz, jak naprawdę je robisz. Zajmie to ok. 3 minut. Na koniec jednym przyciskiem wyślesz odpowiedzi Damianowi.</p>
+    <div class="name"><label for="nm">Twoje imię</label><input id="nm" class="note" style="margin:0" value="Mateusz" autocomplete="given-name"></div>
+  </header>
+  <div class="bar" role="status"><div class="prog" aria-hidden="true"><i id="pg"></i></div><span class="cnt" id="cnt">0 / 18</span><span class="st" id="st">…</span></div>
+
+  <h2>Nie jestem pewien</h2>
+  <div id="qs"></div>
+
+  <h2>Te zakładam</h2>
+  <p class="lead">Wszystkie są ustawione na „Tak”. Przełącz na „Nie” i dopisz, jeśli coś się nie zgadza.</p>
+  <div class="card"><ul class="asm" id="asm"></ul></div>
+
+  <div class="card done" id="done"><b>Dzięki! 💪</b>Odpowiedzi poszły do Damiana. Jeśli coś zmienisz, wyślij jeszcze raz.</div>
+</div>
+<div class="foot"><div class="in"><span class="msg" id="fmsg">Odpowiedzi zostają w telefonie. Na koniec wyślij je Damianowi.</span><button class="btn" id="fin" type="button">Wyślij Damianowi</button></div></div>
+
+<script>
+{
+const Q=[
+ {t:"Wyciskanie siedząc (25 kg na stronę)",c:"Dzień KLATA, 12/10/8",o:["Maszyna na talerze – talerze z każdej strony osobno","Maszyna ze stosem (bolec)"]},
+ {t:"Rozpiętki na poziomach 9/10/11",c:"Dzień KLATA, + roller",o:["Butterfly – maszyna z oparciem","Brama z linkami"]},
+ {t:"Wyciąg dół („następnym razem góra”)",c:"Dzień KLATA",o:["Rozpiętki z dolnych wyciągów – ręce łukiem w górę","Coś innego – dopisz co"]},
+ {t:"Hantel zza pleców leżąc (30–34 kg)",c:"Dzień KLATA",o:["Pullover – jeden hantel trzymany oburącz","Inaczej – dopisz jak"]},
+ {t:"Wyciskanie wąskie hantli (środek klatki)",c:"Dzień KLATA, opcjonalne",o:["Dwa hantle dociskane do siebie (squeeze press)","Jeden hantel trzymany oburącz"]},
+ {t:"Francuz",c:"Dzień ŁAPY",o:["Sztanga łamana","Sztanga prosta"]},
+ {t:"Hantel zza głowy (triceps, „na rękę”)",c:"Dzień ŁAPY",o:["Jednorącz – najpierw jedna ręka, potem druga","Dwa hantle naraz","Jeden hantel trzymany oburącz"]},
+ {t:"Wyprost tułowia w opadzie + rotator",c:"Dzień PLECY, 10–20 kg",o:["Wyprosty na ławce rzymskiej z talerzem","Skłony ze sztangą na karku (good morning)"],ask:"Co znaczy „rotator”?"},
+ {t:"Wiosło („sztanga z ziemi – maszyna”)",c:"Dzień PLECY, 40–60 kg",o:["T-bar","Maszyna na talerze","Zwykła sztanga w opadzie"]},
+ {t:"Wznios nóg",c:"Dzień BARKI + BRZUCH",o:["Leżąc","W zwisie na drążku","W podporze na poręczach"]},
+ {t:"Wyciskanie hantla leżąc na ławce w tył (barki)",c:"Dzień BARKI, 6–10 kg",o:["Unoszenie hantli na tył barku, leżąc przodem na skośnej ławce","Coś innego – dopisz co"]},
+ {t:"Wyciskanie hantla w bok – prosta ręka",c:"Dzień BARKI",o:["Tak, to unoszenie bokiem, tylko na prostych rękach","Nie – dopisz, co to"]},
+ {t:"Wyciskanie z ciężarem skos dół (brzuch)",c:"Dzień BARKI + BRZUCH, 5–15 kg",o:["Tak, brzuszki na ławce skośnej w dół z talerzem","Nie – dopisz, co to"]},
+ {t:"Maszyna „łydka do dupy”",c:"Dzień NOGI",o:["Uginanie nóg leżąc","Uginanie nóg siedząc"]},
+ {t:"„+20 brzuch” przy dipach",c:"Dzień KLATA",o:["Brzuszki","Unoszenie kolan w podporze na poręczach","Inne – dopisz co"]},
+ {t:"Klata na dniu nóg (2 min × 40 kg)",c:"Dzień NOGI, finisher",o:["Sztanga na ławce płaskiej","Inne – dopisz co"]},
+ {t:"Martwy ciąg",c:"Dzień NOGI – w planie brak ciężaru i powtórzeń",o:["Wpiszę poniżej ciężar i powtórzenia"],ask:"np. 3 × 5 × 100 kg"},
+ {t:"Spacer farmera i Zercher squat (ze znakiem zapytania)",c:"Dzień NOGI",o:["Dodaj oba do dnia NOGI","Dodaj tylko spacer farmera","Dodaj tylko Zercher squat","Na razie nie dodawaj"]}
+];
+const A=[["Ławka płaska","Wyciskanie sztangi leżąc"],["Dip","Pompki na poręczach (dipy)"],["Biceps z supinacją","Uginanie ramion z hantlami"],["Biceps – młotek","Uginanie młotkowe hantli"],["Ściąganie sznurka (triceps)","Prostowanie ramion na wyciągu górnym (linka)"],["Dół wyciąg biceps","Uginanie ramion na wyciągu dolnym"],["Kaptury","Szrugsy z hantlami"],["Przyciąganie drążka, wyciąg góra","Ściąganie drążka do klatki"],["Wyciąg dół (plecy)","Wiosłowanie na wyciągu dolnym siedząc"],["Wyciskanie hantla w górę","Wyciskanie hantli siedząc"],["Wyciskanie hantla w bok","Unoszenie hantli bokiem"],["W przód z supinacją","Unoszenie hantli w przód"],["Opuszczanie hantla przy ciele","Skłony boczne z hantlem"],["Przekładanie ketla na skosy","Russian twist z kettlem"],["Roller","Kółko do brzucha"],["Allahy","Spięcia brzucha na wyciągu"],["Suwnica, wyprost nóg, martwy ciąg, łydki stojąc","Suwnica · prostowanie nóg na maszynie · martwy ciąg klasyczny · wspięcia na palce stojąc"]];
+const esc=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const $=id=>document.getElementById(id);
+let S={q:{},note:{},asm:{},asmNote:{},done:false};
+try{const l=JSON.parse(localStorage.getItem("ankieta")||"null");if(l&&l.q)S=Object.assign(S,l)}catch(e){}
+$("qs").innerHTML=Q.map((q,i)=>'<div class="card" role="group" aria-labelledby="q'+i+'"><p class="q" id="q'+i+'"><b>'+(i+1)+'</b>'+esc(q.t)+'</p><p class="ctx">'+esc(q.c)+'</p><div class="opts">'+q.o.map((o,j)=>'<label class="opt"><input type="radio" name="r'+i+'" value="'+j+'">'+esc(o)+'</label>').join("")+'</div><input class="note" data-n="'+i+'" placeholder="'+esc(q.ask||"Dopisz, jeśli trzeba")+'" aria-label="Uwagi do pytania '+(i+1)+'"></div>').join("");
+$("asm").innerHTML=A.map((a,i)=>'<li><div><div class="from">'+esc(a[0])+'</div><div class="to">→ '+esc(a[1])+'</div></div><div class="yn" role="group" aria-label="Czy się zgadza: '+esc(a[0])+'"><button type="button" class="y" data-a="'+i+'" data-v="1">Tak</button><button type="button" class="n" data-a="'+i+'" data-v="0">Nie</button></div><input class="note" data-an="'+i+'" placeholder="Jak to robisz?" hidden aria-label="Uwagi: '+esc(a[0])+'"></li>').join("");
+function paint(){Q.forEach((q,i)=>{const v=S.q[i];document.querySelectorAll('input[name="r'+i+'"]').forEach(r=>r.checked=String(r.value)===String(v))});
+  document.querySelectorAll("[data-n]").forEach(n=>{if(document.activeElement!==n)n.value=S.note[n.dataset.n]||""});
+  A.forEach((a,i)=>{const ok=S.asm[i]!==false;document.querySelectorAll('[data-a="'+i+'"]').forEach(b=>b.setAttribute("aria-pressed",String((b.dataset.v==="1")===ok)));const n=document.querySelector('[data-an="'+i+'"]');n.hidden=ok;if(document.activeElement!==n)n.value=S.asmNote[i]||""});
+  const n=Q.filter((q,i)=>S.q[i]!=null).length;$("cnt").textContent=n+" / "+Q.length;$("pg").style.width=Math.round(n/Q.length*100)+"%";$("done").classList.toggle("show",!!S.done)}
+function local(){try{localStorage.setItem("ankieta",JSON.stringify(S))}catch(e){}}
+function status(t,ok){$("st").textContent=t;$("st").classList.toggle("ok",!!ok)}
+function changed(){local();paint();status("zapisane w telefonie",true)}
+document.addEventListener("change",e=>{const t=e.target;if(t.type==="radio"){S.q[t.name.slice(1)]=+t.value;changed()}});
+document.addEventListener("input",e=>{const t=e.target;if(t.dataset.n!=null){S.note[t.dataset.n]=t.value.slice(0,300);changed()}else if(t.dataset.an!=null){S.asmNote[t.dataset.an]=t.value.slice(0,300);changed()}else if(t.id==="nm")changed()});
+document.addEventListener("click",e=>{const b=e.target.closest("[data-a]");if(!b)return;S.asm[b.dataset.a]=b.dataset.v==="1";changed();if(b.dataset.v==="0")setTimeout(()=>{const n=document.querySelector('[data-an="'+b.dataset.a+'"]');if(n)n.focus()},0)});
+function text(){const L=["Odpowiedzi – "+($("nm").value.trim()||"Mateusz"),""];Q.forEach((q,i)=>{const v=S.q[i];L.push((i+1)+". "+q.t+": "+(v==null?"–":String.fromCharCode(97+v)+") "+q.o[v])+(S.note[i]?" | "+S.note[i]:""))});
+  const no=A.map((a,i)=>S.asm[i]===false?"✗ "+a[0]+" ≠ "+a[1]+(S.asmNote[i]?" – "+S.asmNote[i]:""):null).filter(Boolean);L.push("",no.length?"Nie zgadza się:":"Założenia: wszystkie się zgadzają ✓",...no);return L.join("\n")}
+async function send(){const t=text();
+  if(navigator.share){try{await navigator.share({text:t});return true}catch(e){if(e&&e.name==="AbortError")return false}}
+  try{await navigator.clipboard.writeText(t);$("fmsg").textContent="Skopiowane – wklej Damianowi na WhatsAppie.";return true}catch(e){$("fmsg").textContent="Nie mogę skopiować – zrób zrzut ekranu i wyślij Damianowi.";return false}}
+$("fin").onclick=async()=>{const miss=Q.map((q,i)=>S.q[i]==null?i+1:null).filter(Boolean);
+  if(miss.length&&!S.warned){S.warned=true;local();$("fmsg").textContent="Brakuje odpowiedzi: "+miss.join(", ")+". Kliknij jeszcze raz, żeby wysłać bez nich.";document.querySelector('[aria-labelledby="q'+(miss[0]-1)+'"]').scrollIntoView({behavior:"smooth",block:"center"});return}
+  if(await send()){S.done=true;changed();$("done").scrollIntoView({behavior:"smooth"})}};
+paint();status(Object.keys(S.q).length?"zapisane w telefonie":"",true);
+}
+</script>
+</body>
+</html>
