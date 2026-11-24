@@ -2466,3 +2466,147 @@ img {
   padding-top: env(safe-area-inset-top, 0px);
   padding-bottom: env(safe-area-inset-bottom, 0px);
 }
+/* Kalkulator talerzy (kod/talerze.js) */
+.plates {
+  margin: 8px 0 0 32px;
+  padding: 8px 12px;
+  border: 1px dashed var(--accent);
+  border-radius: 10px;
+  background: var(--surface);
+  font-size: 14px;
+  line-height: 1.4;
+}
+.plates small {
+  color: var(--muted);
+}
+#plSet {
+  grid-template-columns: repeat(4, 1fr);
+}
+/* Odznaki (kod/odznaki.js) */
+.odz {
+  margin: 16px 0;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--surface);
+}
+.odzh {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 10px;
+}
+.odzg {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+.odzk {
+  border: 1px dashed var(--line);
+  border-radius: 12px;
+  padding: 10px 4px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.odzk b {
+  font-family: var(--f-display);
+  font-size: 22px;
+  color: var(--muted);
+}
+.odzk small {
+  font-size: 11px;
+  color: var(--muted);
+}
+.odzk.zdobyta {
+  border: 1px solid var(--accent);
+}
+.odzk.zdobyta b {
+  color: var(--accent);
+}
+.odzk.zdobyta small {
+  color: var(--fg);
+}
+.odznew {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin: 10px 0;
+  padding: 12px;
+  border: 2px solid var(--accent);
+  border-radius: 14px;
+}
+.odznew > b {
+  font-family: var(--f-display);
+  font-size: 26px;
+  color: var(--accent);
+  min-width: 64px;
+  text-align: center;
+}
+.odznew small {
+  display: block;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  color: var(--accent);
+}
+.odznew span {
+  font-weight: 600;
+}
+/* Edycja i usuwanie treningu z ekranu treningu */
+.daytools {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+  flex-wrap: wrap;
+}
+.daytools .mini {
+  flex: 1;
+  min-height: 40px;
+}
+.daytools .mini.warn {
+  border-color: var(--accent);
+  color: var(--accent);
+  font-weight: 600;
+}
+.exnote {
+  display: block;
+  margin-top: 4px;
+  font-size: 13px;
+  color: var(--muted);
+}
+.ednote {
+  width: 100%;
+  box-sizing: border-box;
+  margin-top: 6px;
+}
+.toast.undo {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+.toast.undo[hidden] {
+  display: none;
+}
+.toast.undo button {
+  background: none;
+  border: 0;
+  color: inherit;
+  font-weight: 700;
+  text-transform: uppercase;
+  text-decoration: underline;
+  min-height: 40px;
+  cursor: pointer;
+}
+.odzk i {
+  font-style: normal;
+  font-family: var(--f-mono);
+  font-size: 11px;
+  color: var(--muted);
+}

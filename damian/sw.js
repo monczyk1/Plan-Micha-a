@@ -2,7 +2,7 @@
 // Najpierw próbuje pobrać najnowszą wersję (z pominięciem pamięci przeglądarki), a gdy nie ma sieci – używa zapisanej.
 // ROOT i BUILD ustawia ./sync.sh (w folderach osób ROOT="../", bo wspólne pliki leżą piętro wyżej). Nie zmieniaj ręcznie.
 const ROOT = "../";
-const BUILD = 12;
+const BUILD = 13;
 const C = "tytanowa-b" + BUILD;
 // Wspólne pliki aplikacji – ta sama lista co w index.html (./sync.sh pilnuje, żeby niczego nie brakowało)
 const SHARED = [
@@ -15,6 +15,8 @@ const SHARED = [
   "dane/cwiczenia.js",
   "dane/rysunki.js",
   "dane/opisy.js",
+  "kod/talerze.js",
+  "kod/odznaki.js",
   "kod/aplikacja.js",
 ];
 self.addEventListener("install", (e) => {

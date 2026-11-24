@@ -4,7 +4,7 @@
 <link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="icon-180.png"><link rel="icon" href="icon-192.png"><meta name="theme-color" content="#c2410c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Tytanowa siła">
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap">
-<link rel="stylesheet" href="../styl.css?v=12">
+<link rel="stylesheet" href="../styl.css?v=13">
 </head><body>
 
 <main class="wrap">
@@ -31,6 +31,7 @@
   <section class="sec">
     <div class="lbl">Trening <button class="tip" data-tip="day" aria-label="Wyjaśnienie">?</button></div>
     <div class="seg" id="seg"></div>
+    <div class="daytools" id="dayTools"></div>
     <div class="hint" id="nextHint"></div>
   </section>
 
@@ -73,6 +74,11 @@
     <button class="mini plus" id="editPlan">✎ Edytuj plan</button>
   </section>
   <section class="ex plain">
+    <div class="exh"><span class="exn">Sztanga i talerze</span></div>
+    <div class="hint">Pod seriami ze sztangą (20 kg) aplikacja podpowiada, jakie talerze założyć na każdą stronę. Odznacz talerze, których nie ma na Twojej siłowni – podpowiedź się dopasuje.</div>
+    <div class="chips" id="plSet" role="group" aria-label="Talerze dostępne na siłowni"></div>
+  </section>
+  <section class="ex plain">
     <div class="exh"><span class="exn">Masa ciała</span></div>
     <div class="hint" id="bmSetTxt"></div>
     <button class="mini plus" data-bm>⚖️ Wpisz masę ciała</button>
@@ -109,6 +115,7 @@
 </main>
 
 <div class="toast" id="toast" hidden role="status"></div>
+<div class="toast ok undo" id="undo" hidden role="status"><span id="undoTxt"></span><button id="undoBtn">Cofnij</button></div>
 <section class="sheet" id="finSheet" hidden role="dialog" aria-labelledby="finT">
   <div class="exh"><b id="finT">Podsumowanie treningu</b><button class="mini" id="finBack">Wróć</button></div>
   <div class="finstats" id="finStats"></div>
@@ -161,7 +168,7 @@
   <div class="edlist" id="edList"></div>
   <div class="edadd"><select id="edCat" aria-label="Dodaj z katalogu"></select><button class="mini plus" id="edAddCat">+ Dodaj</button></div>
   <div class="edadd"><input id="edCustom" placeholder="Własne ćwiczenie – wpisz nazwę"><button class="mini plus" id="edAddCustom">+ Dodaj</button></div>
-  <div class="tools"><button class="mini" id="edNewDay">+ Nowy trening</button><button class="mini" id="edDelDay">Usuń ten trening</button><button class="mini" id="edReset">Przywróć plan startowy</button></div>
+  <div class="tools"><button class="mini" id="edNewDay">+ Nowy trening</button><button class="mini" id="edDup">Duplikuj trening</button><button class="mini" id="edDelDay">Usuń ten trening</button><button class="mini" id="edReset">Przywróć plan startowy</button></div>
   <div class="hint">Zmiany w planie nie usuwają historii. Zapisane treningi zostają takie, jakie były.</div>
   <button class="save" id="edSave">Zapisz plan</button>
 </section>
@@ -206,14 +213,16 @@
 
 
 
-<script src="../kod/profil.js?v=12"></script>
-<script src="../dane/plan-start.js?v=12"></script>
-<script src="../dane/plan-damian.js?v=12"></script>
-<script src="../dane/plan-mateusz.js?v=12"></script>
-<script src="../kod/plan.js?v=12"></script>
-<script src="../dane/cwiczenia.js?v=12"></script>
-<script src="../dane/rysunki.js?v=12"></script>
-<script src="../dane/opisy.js?v=12"></script>
-<script src="../kod/aplikacja.js?v=12"></script>
+<script src="../kod/profil.js?v=13"></script>
+<script src="../dane/plan-start.js?v=13"></script>
+<script src="../dane/plan-damian.js?v=13"></script>
+<script src="../dane/plan-mateusz.js?v=13"></script>
+<script src="../kod/plan.js?v=13"></script>
+<script src="../dane/cwiczenia.js?v=13"></script>
+<script src="../dane/rysunki.js?v=13"></script>
+<script src="../dane/opisy.js?v=13"></script>
+<script src="../kod/talerze.js?v=13"></script>
+<script src="../kod/odznaki.js?v=13"></script>
+<script src="../kod/aplikacja.js?v=13"></script>
 
 </body></html>

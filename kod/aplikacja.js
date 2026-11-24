@@ -253,6 +253,7 @@ function renderSeg() {
     a.onclick = openNT;
     $("seg").append(a);
   }
+  renderDayTools();
   const last = sessions[0];
   const nx = nextReg();
   $("nextHint").textContent = last
@@ -1123,7 +1124,9 @@ function renderEx(fromDraft) {
       ex.r +
       " · przerwa " +
       (ex.ss && !ex.swapOf ? "po obu ćwiczeniach" : rest >= 120 ? "2–3 min" : "60–120 s") +
-      '</span></div><button class="x" data-drop="' +
+      "</span>" +
+      (ex.note ? '<span class="exnote">📌 ' + esc(ex.note) + "</span>" : "") +
+      '</div><button class="x" data-drop="' +
       (ex.swapOf || ex.k) +
       '" aria-label="Usuń ćwiczenie z tej sesji">✕</button></div>';
     h += '<button class="csum" data-open="' + ex.k + '" aria-label="Rozwiń ćwiczenie"></button><div class="cbody">';
@@ -1301,7 +1304,9 @@ function renderEx(fromDraft) {
         '" aria-label="Seria zrobiona">✓</button></div>';
     }
     h +=
-      '</div><div class="tools"><button class="mini" data-add="' +
+      "</div>" +
+      (BAR20.has(ex.k) ? '<div class="plates" id="' + ex.k + '_pl" aria-live="polite" hidden></div>' : "") +
+      '<div class="tools"><button class="mini" data-add="' +
       ex.k +
       '">+ seria</button>' +
       '<button class="mini" data-rm="' +
@@ -1323,6 +1328,7 @@ function renderEx(fromDraft) {
     c.innerHTML = h;
     box.append(c);
     cardState(ex.k, c, n);
+    plUpd(ex.k);
   });
   if (st.removed.length) {
     const rr = document.createElement("div");
@@ -1807,7 +1813,9 @@ function finExtra(vol, mins, nPR) {
   $("finCmp").innerHTML =
     (cmp.length
       ? '<div class="cmp">vs poprzedni ' + esc(lbl) + " (" + fmtDate(prev.date) + "): " + cmp.join(" · ") + "</div>"
-      : "") + rec;
+      : "") +
+    rec +
+    odzNowe(curS());
   finData = { vol, mins, sets: curSets(), nPR, lbl, t: sessOf(day).length + 1, date: $("date").value || today() };
   finRank();
 }
@@ -2399,6 +2407,7 @@ function renderProg() {
     el.innerHTML =
       bmBlock() +
       tonBlock() +
+      odzBlock() +
       '<div class="hint">Po kilku treningach zobaczysz tu, jak rosną ciężary i powtórzenia – tydzień po tygodniu.</div>';
     return;
   }
@@ -2420,6 +2429,7 @@ function renderProg() {
   el.innerHTML =
     bmBlock() +
     tonBlock() +
+    odzBlock() +
     '<div class="phead"><span>Ćwiczenie</span><span>Start → teraz</span><span></span></div>' +
     order
       .map((k) => {
@@ -3416,7 +3426,11 @@ function edRender() {
           i +
           '"' +
           (e.m ? " checked" : "") +
-          '> z rozgrzewką</label></div></div><button class="x" data-del="' +
+          '> z rozgrzewką</label></div><input class="ednote" data-f="note" data-i="' +
+          i +
+          '" value="' +
+          esc(e.note || "") +
+          '" placeholder="Notatka, np. siedzisko 4, oparcie 2" aria-label="Notatka do ćwiczenia" maxlength="60"></div><button class="x" data-del="' +
           i +
           '" aria-label="Usuń ćwiczenie">✕</button></div>'
       )
@@ -3474,20 +3488,101 @@ function edPull() {
       if (!e) return;
       const f = el.dataset.f;
       if (f === "m") e.m = el.checked ? 1 : 0;
-      else if (f === "s") e.s = Math.max(1, Math.min(10, parseInt(el.value) || 1));
+      else if (f === "note") {
+        if (el.value.trim()) e.note = el.value.trim().slice(0, 60);
+        else delete e.note;
+      } else if (f === "s") e.s = Math.max(1, Math.min(10, parseInt(el.value) || 1));
       else e[f] = el.value.trim() || e[f];
     });
 }
-$("editPlan").onclick = () => {
-  ed = JSON.parse(JSON.stringify(PLAN));
-  edDay = day;
-  edRender();
-  $("edSheet").hidden = false;
-};
+$("editPlan").onclick = () => openEditor(day);
 $("edX").onclick = () => {
+  const b = $("edX");
+  edPull();
+  if (ed && JSON.stringify(ed) !== JSON.stringify(PLAN) && b.dataset.armed !== "1") {
+    b.dataset.armed = "1";
+    b.textContent = "Wyjść bez zapisu?";
+    setTimeout(() => {
+      b.dataset.armed = "";
+      b.textContent = "Anuluj";
+    }, 4000);
+    return;
+  }
+  b.dataset.armed = "";
+  b.textContent = "Anuluj";
   $("edSheet").hidden = true;
   ed = null;
 };
+$("edDup").onclick = () => {
+  edPull();
+  const src = ed[edDay],
+    key = "X" + Date.now().toString(36);
+  const name = ((src.extra ? src.name : "Trening " + dl(edDay)) + " – kopia").slice(0, 24);
+  ed[key] = { name, sub: "dodatkowy", extra: 1, ex: JSON.parse(JSON.stringify(src.ex)) };
+  edDay = key;
+  edRender();
+  toast("Kopia gotowa jako trening dodatkowy – zmień nazwę i ćwiczenia, potem Zapisz plan.", true);
+};
+// Edycja i usuwanie treningu prosto z ekranu treningu (przyciski pod kafelkami)
+function openEditor(d) {
+  ed = JSON.parse(JSON.stringify(PLAN));
+  edDay = d && ed[d] ? d : day;
+  edRender();
+  $("edSheet").hidden = false;
+}
+function canDelDay(d) {
+  return !!PLAN[d] && (isX(d) || regDays().length > 1);
+}
+let undoT = null;
+function showUndo(msg, fn) {
+  $("undoTxt").textContent = msg;
+  $("undo").hidden = false;
+  $("undoBtn").onclick = () => {
+    $("undo").hidden = true;
+    fn();
+  };
+  clearTimeout(undoT);
+  undoT = setTimeout(() => ($("undo").hidden = true), 8000);
+}
+function delDay(d) {
+  const prev = JSON.parse(JSON.stringify(PLAN)),
+    name = isX(d) ? "„" + PLAN[d].name + "”" : "Trening " + dl(d);
+  persist();
+  const np = JSON.parse(JSON.stringify(PLAN));
+  delete np[d];
+  applyPlan(np, true);
+  showUndo("Usunięto " + name + ". Zapisane treningi zostają w Historii.", () => {
+    applyPlan(prev, true);
+    day = d;
+    viewT = null;
+    render(true);
+  });
+}
+function renderDayTools() {
+  const box = $("dayTools");
+  if (!box || !PLAN[day]) return;
+  const name = isX(day) ? "„" + PLAN[day].name + "”" : dl(day);
+  box.innerHTML =
+    '<button class="mini" id="dtEdit">✎ Edytuj ' +
+    esc(name) +
+    "</button>" +
+    (canDelDay(day) ? '<button class="mini" id="dtDel">Usuń ' + esc(name) + "</button>" : "");
+  $("dtEdit").onclick = () => openEditor(day);
+  const del = $("dtDel");
+  if (del)
+    del.onclick = () => {
+      if (del.dataset.armed !== "1") {
+        del.dataset.armed = "1";
+        del.classList.add("warn");
+        del.textContent = "Na pewno usunąć " + name + "? Stuknij jeszcze raz";
+        setTimeout(() => {
+          if (del.isConnected) renderDayTools();
+        }, 4000);
+        return;
+      }
+      delDay(day);
+    };
+}
 $("edAddCat").onclick = () => {
   const k = $("edCat").value;
   if (!k) return;
@@ -3523,7 +3618,7 @@ $("edDelDay").onclick = () => {
   const b = $("edDelDay");
   if (b.dataset.armed !== "1") {
     b.dataset.armed = "1";
-    b.textContent = "Na pewno usunąć " + dl(edDay) + "?";
+    b.textContent = "Na pewno usunąć " + (ed[edDay].extra ? "„" + ed[edDay].name + "”" : dl(edDay)) + "?";
     return;
   }
   delete ed[edDay];
@@ -3833,7 +3928,7 @@ $("cloudRestore").onclick = async () => {
 $("cloudNow").onclick = () => cloudSync();
 window.addEventListener("online", () => cloudSync(true));
 // ===== Aktualizacje: numer wersji w aplikacji vs version.json na serwerze =====
-const APP_BUILD = 12;
+const APP_BUILD = 13;
 function verItems(j, from) {
   return ((j && j.zmiany) || []).filter((x) => x.build > from);
 }
@@ -4396,9 +4491,17 @@ document.addEventListener("input", (e) => {
   if (t.closest("#exList")) {
     const m = t.id.match(/^(.+)_kg_(\d+)$/);
     if (m) spread(m[1], +m[2]);
+    const w = t.id.match(/^(.+)_(w?)kg_(\d+)$/);
+    if (w) plUpd(w[1], +w[3], !!w[2]);
     updSum();
     persist();
   } else if (COMMON.includes(t.id)) persist();
+});
+// kalkulator talerzy pokazuje serię, w której osoba właśnie wpisuje ciężar
+document.addEventListener("focusin", (e) => {
+  const t = e.target,
+    w = t && t.id && t.closest && t.closest("#exList") && t.id.match(/^(.+)_(w?)kg_(\d+)$/);
+  if (w) plUpd(w[1], +w[3], !!w[2]);
 });
 document.addEventListener("keydown", (e) => {
   if (e.key === "Escape") {
@@ -4449,6 +4552,11 @@ try {
   renderBmSet();
 } catch (e) {
   blad("masa ciała w Ustawieniach", e);
+}
+try {
+  renderPlatesSet();
+} catch (e) {
+  blad("talerze w Ustawieniach", e);
 } // przeliczenie tonażu i serii wg aktualnych zasad
 pickStart();
 render(true);
