@@ -1,7 +1,14 @@
 {
- "build": 10,
+ "build": 11,
  "data": "24.11.2026",
  "zmiany": [
+  {
+   "build": 11,
+   "data": "24.11.2026",
+   "lista": [
+    "Rozpiętki na bramie: wpisujesz ciężar jednej strony (jednego stosu), aplikacja liczy obie linki ×2"
+   ]
+  },
   {
    "build": 10,
    "data": "24.11.2026",

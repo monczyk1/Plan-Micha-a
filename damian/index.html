@@ -979,13 +979,15 @@ let viewT=null,pvDirty=false;
 // Nie wlicza się: ćwiczenia z ciężarem ciała, na czas lub dystans, dynamika, core i cardio z planu.
 // Podciąganie i dipy: w kg wpisujesz masę ciała (z obciążeniem razem) – liczy się do tonażu
 const BWL=new Set(["pull","chinup","dips"]);
+// Brama: dwie linki, dwa stosy – wpisujesz ciężar jednej strony, liczymy ×2 (jak dwa hantle)
+const CAB2=new Set(["cablecross","lowcablefly"]);
 const DB1=new Set(["ohext","dbrow","goblet","kbswing","pullover","conccurl","kickback","sidebend","suitcase","landmine"]);
 const TONX=new Set([...BW,"hang","hollow","copen","hangraise","mbslam","mbrot","mbchest","boxjump","broadjump","plyopush","pogo","lmpunch","stepdown"]);
 function rOf(k){const c=CATALOG[k];return c?String(c.r||""):""}
 function tonRule(k){const c=CATALOG[k]||{};const r=rOf(k);
   if(c.kind)return {x:"poza sekcją Ćwiczenia"};if(BWL.has(k))return {f:1,l:"masa ciała"};if(TONX.has(k))return {x:"ciężar ciała"};
   if(/\d\s*(s|sek|min)\b|\d\s*m\b|^max$/i.test(r))return {x:"na czas lub dystans"};
-  let f=1;const l=[];if(DB.has(k)&&!DB1.has(k)){f*=2;l.push("2 hantle")}
+  let f=1;const l=[];if(DB.has(k)&&!DB1.has(k)){f*=2;l.push("2 hantle")}if(CAB2.has(k)){f*=2;l.push("2 linki")}
   if(/\/(nogę|rękę|str)/.test(r)||/jednorącz|jednonóż|na jednej nodze/i.test(c.n||"")){f*=2;l.push("2 strony")}
   return {f,l:l.join(" × ")}}
 function vf(k){const R=tonRule(k);return R.x?0:R.f}
@@ -996,7 +998,7 @@ function setsOfS(s){let n=0;for(const e of (s.ex||[])){if(e.kind)continue;for(co
 function fmtKg(v){return Math.round(v).toLocaleString("pl")+" kg"}
 function fmtT(v){return v>=1000?(Math.round(v/100)/10).toLocaleString("pl")+" t":fmtKg(v)}
 function monOf(d){const x=new Date(String(d)+"T12:00:00");x.setDate(x.getDate()-((x.getDay()+6)%7));return x}
-const RULES_V=2; // podbij przy zmianie zasad liczenia tonażu/serii
+const RULES_V=3; // podbij przy zmianie zasad liczenia tonażu/serii
 function saveSessions(){sessions.forEach(x=>{x.vol=volOf(x);x.nsets=setsOfS(x);x.rv=RULES_V});const ok=ls.set(P+"sessions",sessions);ls.set(P+"changed",Date.now());try{cloudDirty()}catch(e){}return ok}
 function reloadSessions(){sessions=(ls.get(P+"sessions")||[]).map(x=>Object.assign(x,{local:true}));sortS()}
 function sessOf(d){return sessions.filter(x=>x.day===d).sort((a,b)=>String(a.date).localeCompare(String(b.date))||(a.created||0)-(b.created||0))}
@@ -1058,12 +1060,15 @@ $("exList").addEventListener("change",ev=>{const el=ev.target;if(!el||el.tagName
   $("valOk").onclick=()=>{el.dataset.ok=el.value;$("valAsk").hidden=true};
   $("valFix").onclick=()=>{$("valAsk").hidden=true;el.value="";try{persist();updSum()}catch(e){}el.focus()}});
 // Jednorazowe pytania kontrolne (np. podejrzany wpis) – pokazywane przy uruchomieniu, aż do odpowiedzi
-const ASKS=[{id:"cc40",prof:"",date:"2026-11-24",k:"cablecross",kg:"40",txt:"W treningu A z 24.11 wpisałeś w rozpiętkach na bramie 40 kg × 12 (3 serie). Czy to się zgadza? To sporo jak na rozpiętki – sprawdzamy, żeby ranking kilogramów był uczciwy."}];
+const ASKS=[{id:"cc40b",prof:"",date:"2026-11-24",k:"cablecross",kg:"40",half:true,yes:"Tak, 40 kg na każdą stronę",no:"Nie, 40 kg razem z obu stron",
+  txt:"W treningu A z 24.11 wpisałeś w rozpiętkach na bramie 40 kg × 12. Czy to ciężar na jedną stronę – każda linka osobno? Od teraz przy bramie wpisuje się ciężar jednej strony, a aplikacja liczy obie."}];
 function askOnce(){const q=ASKS.find(a=>a.prof===PROF&&!ls.get(P+"ask_"+a.id)&&sessions.some(s=>s.date===a.date&&(s.ex||[]).some(e=>e.k===a.k&&(e.sets||[]).some(t=>String(t.kg)===a.kg))));if(!q)return;
-  $("qAskB").textContent=q.txt;$("qFixBox").hidden=true;$("qFix").textContent="Popraw ciężar";$("qAsk").hidden=false;
-  $("qYes").onclick=()=>{ls.set(P+"ask_"+q.id,"ok");$("qAsk").hidden=true;toast("Dzięki! Zostaje 40 kg.",true)};
+  $("qAskB").textContent=q.txt;$("qFixBox").hidden=true;$("qYes").textContent=q.yes||"Tak, zgadza się";$("qFix").textContent=q.no||"Popraw ciężar";$("qAsk").hidden=false;
+  $("qYes").onclick=()=>{ls.set(P+"ask_"+q.id,"ok");$("qAsk").hidden=true;toast("Dzięki! Zostaje "+q.kg+" kg"+(q.half?" na stronę.":"."),true)};
   $("qLater").onclick=()=>{$("qAsk").hidden=true};
-  $("qFix").onclick=()=>{if($("qFixBox").hidden){$("qFixBox").hidden=false;$("qFix").textContent="Zapisz poprawkę";$("qKg").focus();return}
+  $("qFix").onclick=()=>{if(q.half){const v=String(num(q.kg)/2).replace(".",",");let n=0;for(const s of sessions)if(s.date===q.date)for(const e of (s.ex||[]))if(e.k===q.k)for(const t of (e.sets||[]))if(String(t.kg)===q.kg){t.kg=v;n++}
+      saveSessions();renderHist();ls.set(P+"ask_"+q.id,"half:"+v);$("qAsk").hidden=true;toast("Zmieniono na "+v+" kg na stronę ("+q.kg+" kg razem). Dzięki!",true);return}
+    if($("qFixBox").hidden){$("qFixBox").hidden=false;$("qFix").textContent="Zapisz poprawkę";$("qKg").focus();return}
     const v=$("qKg").value.trim().replace(".",",");if(!(num(v)>0)){$("qKg").focus();return}let n=0;
     for(const s of sessions)if(s.date===q.date)for(const e of (s.ex||[]))if(e.k===q.k)for(const t of (e.sets||[]))if(String(t.kg)===q.kg){t.kg=v;n++}
     saveSessions();renderHist();ls.set(P+"ask_"+q.id,"fixed:"+v);$("qAsk").hidden=true;toast("Poprawiono "+n+" "+(n===1?"serię":"serie")+" na "+v+" kg. Dzięki!",true)}}
@@ -1110,9 +1115,10 @@ function renderEx(fromDraft){
     h+=suggest(ex,prev);
     if(prev)h+='<div class="prev">Ostatnio '+fmtDate(prev.s.date)+': '+prev.e.sets.filter(t=>t.kg||t.r).map(t=>esc((t.kg?t.kg+"×":"")+(t.r||"–"))).join(" · ")+(prev.e.rir?" · RIR "+esc(prev.e.rir):"")+'</div>';
     if(BWL.has(ex.k))h+='<div class="hint bwl">W kg wpisz swoją masę ciała. Z obciążeniem – razem, np. 80 + 3 kg = 83.</div>';
+    else if(CAB2.has(ex.k))h+='<div class="hint bwl">🔗 Wpisz ciężar <b>jednej strony</b> (jednego stosu). Aplikacja sama policzy obie linki.</div>';
     else if(DB.has(ex.k)&&!DB1.has(ex.k))h+='<div class="hint bwl">🏋️ Wpisz ciężar <b>jednego</b> hantla (2 × 15 kg → wpisz 15). Aplikacja sama policzy oba.</div>';
     else if(DB1.has(ex.k))h+='<div class="hint bwl">🏋️ Wpisz ciężar hantla lub odważnika, którym ćwiczysz.</div>';
-    h+='<div class="sets"><div class="set cols"><span><button class="tip" data-tip="sets" aria-label="Wyjaśnienie">?</button></span><span>'+(DB.has(ex.k)?'kg / hantel':BWL.has(ex.k)?'kg ciała':BW.has(ex.k)?'kg (opc.)':'kg')+'</span><span>'+unit+'</span><span>✓</span></div>';
+    h+='<div class="sets"><div class="set cols"><span><button class="tip" data-tip="sets" aria-label="Wyjaśnienie">?</button></span><span>'+(DB.has(ex.k)?'kg / hantel':CAB2.has(ex.k)?'kg / stronę':BWL.has(ex.k)?'kg ciała':BW.has(ex.k)?'kg (opc.)':'kg')+'</span><span>'+unit+'</span><span>✓</span></div>';
     if(ex.m){const top=prev?Math.max(...prev.e.sets.map(t=>num(t.kg))):0;const wuOpen=st.wus[ex.k]||[0,1].some(i=>keep[ex.k+"_wkg_"+i]||keep[ex.k+"_wr_"+i]);
       h+='<button class="wutog" data-wus="'+ex.k+'" aria-expanded="'+wuOpen+'">'+(wuOpen?'− ':'+ ')+'serie rozgrzewkowe (R1, R2)</button><div class="wubox"'+(wuOpen?'':' hidden')+'>';[[.5,"10"],[.75,"5"]].forEach(([f,r],i)=>{h+='<div class="set wu"><span class="n">R'+(i+1)+'</span><input id="'+ex.k+'_wkg_'+i+'" inputmode="decimal" placeholder="'+(top?r25(top*f):Math.round(f*100)+"%")+'" aria-label="Rozgrzewka '+(i+1)+' kg"><input id="'+ex.k+'_wr_'+i+'" inputmode="numeric" placeholder="'+r+'" aria-label="Rozgrzewka '+(i+1)+' powtórzenia"><span></span></div>'});h+='</div><div class="wul">Serie robocze</div>'}
     for(let i=0;i<n;i++){const p=prev&&prev.e.sets[i];h+='<div class="set"><span class="n">'+(i+1)+'</span><input id="'+ex.k+'_kg_'+i+'" inputmode="decimal" placeholder="'+(p&&p.kg?esc(p.kg):"kg")+'" aria-label="Seria '+(i+1)+' kg"><input id="'+ex.k+'_r_'+i+'" inputmode="numeric" placeholder="'+(p&&p.r?esc(p.r):unit)+'" aria-label="Seria '+(i+1)+' '+unit+'"><button class="ok" data-k="'+ex.k+'" data-i="'+i+'" data-rest="'+rest+'" aria-pressed="'+(!!st.done[ex.k+'_'+i])+'" aria-label="Seria zrobiona">✓</button></div>'}
@@ -1526,7 +1532,7 @@ $("cloudRestore").onclick=async()=>{if(!cloud.pin){$("cloudPinBox").hidden=false
 $("cloudNow").onclick=()=>cloudSync();
 window.addEventListener("online",()=>cloudSync(true));
 // ===== Aktualizacje: numer wersji w aplikacji vs version.json na serwerze =====
-const APP_BUILD=10;
+const APP_BUILD=11;
 function verItems(j,from){return (j&&j.zmiany||[]).filter(x=>x.build>from)}
 function verHtml(list){return list.map(x=>'<h4>'+esc(x.data)+' · wersja '+x.build+'</h4><ul>'+x.lista.map(t=>'<li>'+esc(t)+'</li>').join("")+'</ul>').join("")}
 function renderVer(){const j=ls.get(P+"verc");const cur=(j&&j.zmiany||[]).find(x=>x.build===APP_BUILD);
