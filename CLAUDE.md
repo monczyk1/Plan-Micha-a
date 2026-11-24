@@ -29,6 +29,7 @@ Każdy ma własny link, własny plan i własny PIN do kopii w chmurze. Wpisują 
 - Użytkownicy mają ją jako skrót na ekranie iPhone'a (PWA). `sw.js` jest network-first, więc nowa wersja dochodzi przy następnym otwarciu z internetem. Aplikacja pokazuje pasek „Jest nowa wersja” i raz „Co nowego”.
 - Wydanie: zmiana w plikach głównych → podbij `APP_BUILD` w `kod/aplikacja.js` i dopisz wpis w `version.json` (ten sam numer; lista zmian po polsku, językiem użytkownika) → `./sync.sh` (sprawdza numer, formatuje kod, wpisuje `?v=<numer>` przy plikach, tworzy `index.html`/`sw.js` w `damian/`, `mateusz/` – tych nie edytuj ręcznie) → testy → zgoda → push.
 - Nowy wspólny plik (np. `dane/x.js`): dopisz go w `index.html` **i** na liście `SHARED` w `sw.js` – inaczej nie zadziała bez internetu (`./sync.sh` tego pilnuje).
+- **Po każdym wdrożeniu:** znacznik wersji (`git tag -a v<numer> -m … && git push origin v<numer>`) i kopia kodu na Dysk Google: `./dev/backup.sh` (jeden plik `.bundle` z całą historią, 10 ostatnich; przywrócenie: `git clone plik.bundle nowy-folder`). Znacznik `v<numer>` to też najprostszy punkt powrotu: `git revert` do tego commita.
 - **Cofnięcie złej wersji:** `git revert <commit>` + push na `main`. Dane w telefonach zostają (są w localStorage), aplikacja wraca do poprzedniego kodu przy następnym otwarciu. Jeśli wersja zdążyła przeliczyć dane (migracja), sprawdź, czy stara wersja je rozumie – zanim cofniesz.
 
 ## Sprawdzanie zmian
