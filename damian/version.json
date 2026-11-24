@@ -1,7 +1,15 @@
 {
- "build": 15,
+ "build": 16,
  "data": "24.11.2026",
  "zmiany": [
+  {
+   "build": 16,
+   "data": "24.11.2026",
+   "lista": [
+    "Podpowiedź na dziś ma przycisk „Wstaw”, np. „Wstaw 82,5 kg × 6”. Cel pojawia się w polach jako szary podgląd, a zapisuje się dopiero po stuknięciu ✓",
+    "Nowy rekord od razu na karcie ćwiczenia: po serii, która bije dotychczasowy wynik, pojawia się „🏆 Nowy rekord!” z poprzednim wynikiem. Puchar zostaje też w zwiniętej linii ćwiczenia"
+   ]
+  },
   {
    "build": 15,
    "data": "24.11.2026",

@@ -2926,3 +2926,50 @@ img {
   border-radius: 50%;
   background: #d32f2f;
 }
+
+/* ===== Wersja 16: cel z przyciskiem „Wstaw” i „Nowy rekord!” w trakcie treningu ===== */
+.sugb {
+  margin-left: 8px;
+  min-height: 36px;
+  padding: 4px 12px;
+  border: 1px solid currentColor;
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--fg);
+  font: 600 13px var(--f-body);
+  cursor: pointer;
+}
+.sugb:disabled {
+  opacity: 0.7;
+  cursor: default;
+}
+.prl {
+  margin: 8px 0 0 32px;
+  padding: 10px 12px;
+  border: 2px solid var(--ok);
+  border-radius: 10px;
+  background: var(--surface);
+  font-size: 15px;
+  line-height: 1.35;
+}
+.prl[hidden] {
+  display: none;
+}
+.prl.flash {
+  animation: prflash 0.9s ease-out;
+}
+@keyframes prflash {
+  0% {
+    transform: scale(0.96);
+    background: var(--ok);
+  }
+  100% {
+    transform: scale(1);
+    background: var(--surface);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .prl.flash {
+    animation: none;
+  }
+}

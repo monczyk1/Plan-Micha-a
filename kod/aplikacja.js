@@ -3,6 +3,27 @@ function topRep(r) {
   const m = String(r).match(/(\d+)\s*[–-]\s*(\d+)/);
   return m ? +m[2] : null;
 }
+function lowRep(r) {
+  const m = String(r).match(/(\d+)\s*[–-]\s*(\d+)/);
+  return m ? +m[1] : null;
+}
+// Przycisk w podpowiedzi: wstawia cel do pól jako szary podgląd (placeholder) – nic się nie zapisuje, dopóki nie stukniesz ✓
+function sugBtn(k, kg, r) {
+  const pl = (v) => String(v).replace(".", ",");
+  return (
+    ' <button class="q sugb" data-sug="' +
+    k +
+    '" data-kg="' +
+    pl(kg) +
+    '" data-r="' +
+    (r || "") +
+    '">Wstaw ' +
+    pl(kg) +
+    " kg" +
+    (r ? " × " + r : "") +
+    "</button>"
+  );
+}
 function num(v) {
   return parseFloat(String(v == null ? "" : v).replace(",", ".")) || 0;
 }
@@ -34,9 +55,19 @@ function suggest(ex, prev) {
     return (
       '<div class="sug up">Wszystkie serie na górze zakresu → dziś ' +
       (DB.has(ex.k) ? "cięższe hantle (następne po " + pl(kg) + " kg)" : pl(kg + (BIG.has(ex.k) ? 5 : 2.5)) + " kg") +
+      (DB.has(ex.k) ? "" : sugBtn(ex.k, kg + (BIG.has(ex.k) ? 5 : 2.5), lowRep(ex.r))) +
       "</div>"
     );
-  return '<div class="sug">Zostań przy ' + pl(kg) + " kg i dołóż powtórzenia (cel: " + t + " w każdej serii)</div>";
+  const minR = Math.min(...ws.map((x) => parseInt(x.r) || 0));
+  return (
+    '<div class="sug">Zostań przy ' +
+    pl(kg) +
+    " kg i dołóż powtórzenia (cel: " +
+    t +
+    " w każdej serii)" +
+    (minR ? sugBtn(ex.k, kg, Math.min(t, minR + 1)) : "") +
+    "</div>"
+  );
 }
 const PULL = [
   "1 · ściąganie 3×8–12 + negatywy 3×3",
@@ -1306,6 +1337,9 @@ function renderEx(fromDraft) {
     }
     h +=
       "</div>" +
+      '<div class="prl" id="' +
+      ex.k +
+      '_prl" aria-live="polite" hidden></div>' +
       (BAR20.has(ex.k) ? '<div class="plates" id="' + ex.k + '_pl" aria-live="polite" hidden></div>' : "") +
       '<div class="tools"><button class="mini" data-add="' +
       ex.k +
@@ -1332,6 +1366,7 @@ function renderEx(fromDraft) {
     c.dataset.last = prev && bestSet(prev.e) ? fmtSet(bestSet(prev.e)).replace(" kg × ", "×") : "";
     cardState(ex.k, c, n);
     plUpd(ex.k);
+    prLive(ex.k, true);
   });
   if (st.removed.length) {
     const rr = document.createElement("div");
@@ -1492,6 +1527,7 @@ function renderEx(fromDraft) {
         if (!st.done[key]) st.open[k] = false;
         updSum();
         persist();
+        prLive(k);
         const c = b.closest(".ex");
         refreshCards();
         // po skończeniu ćwiczenia następne (bieżące) wjeżdża na środek ekranu
@@ -1618,7 +1654,11 @@ function cardState(k, c, n) {
     b.hidden = !canFold;
     b.innerHTML = col
       ? all
-        ? '<span class="chk">✓</span><span class="cs">' + esc(setSummary(k, c)) + '</span><span class="chev">▾</span>'
+        ? '<span class="chk">✓' +
+          (c.dataset.pr === "1" ? "🏆" : "") +
+          '</span><span class="cs">' +
+          esc(setSummary(k, c)) +
+          '</span><span class="chev">▾</span>'
         : '<span class="cs">' +
           esc((c.dataset.plan || "") + (c.dataset.last ? " · ostatnio " + c.dataset.last : "")) +
           '</span><span class="chev">▾</span>'
@@ -1746,6 +1786,50 @@ function prBest(sets, bw) {
   }
   return best;
 }
+// Dotychczasowy rekord w ćwiczeniu (z zapisanych treningów) – wspólny dla podsumowania i „Nowy rekord!” w trakcie treningu
+function prOld(k) {
+  let old = null;
+  for (const s of sessions)
+    for (const x of s.ex || [])
+      if (x.k === k && !x.kind) {
+        const b = prBest(x.sets || []);
+        if (b && (!old || b.v > old.v)) old = b;
+      }
+  return old;
+}
+const prFmt = (b) => (b.kg ? String(b.kg).replace(".", ",") + " kg × " : "") + b.r;
+// „Nowy rekord!” na karcie: liczy się z odhaczonych serii, tak samo jak w podsumowaniu (prBest). Pokazuje się, gdy był wcześniejszy wynik do pobicia.
+function prLive(k, quiet) {
+  const c = document.querySelector('#exList [data-card="' + k + '"]'),
+    box = $(k + "_prl");
+  if (!c || !box) return;
+  const st = S(),
+    sets = [];
+  for (let i = 0; i < 12; i++) {
+    const kg = $(k + "_kg_" + i);
+    if (!kg) break;
+    if (st.done[k + "_" + i]) sets.push({ kg: kg.value, r: ($(k + "_r_" + i) || {}).value });
+  }
+  const nb = prBest(sets),
+    old = nb && prOld(k),
+    rec = !!(old && nb.v > old.v + 1e-9),
+    was = c.dataset.pr === "1";
+  c.dataset.pr = rec ? "1" : "";
+  box.hidden = !rec;
+  if (rec) {
+    box.innerHTML =
+      "🏆 <b>Nowy rekord!</b> " + esc(prFmt(nb)) + ' <span class="hint">(dotąd ' + esc(prFmt(old)) + ")</span>";
+    if (!was && !quiet) {
+      box.classList.remove("flash");
+      void box.offsetWidth;
+      box.classList.add("flash");
+      try {
+        if (navigator.vibrate) navigator.vibrate([60, 40, 60]);
+      } catch (e) {} // wibracja to funkcja urządzenia – brak nie szkodzi
+    }
+  }
+  if (was !== rec) cardState(k, c, c.querySelectorAll(".ok[data-k]").length);
+}
 function openFinish() {
   if (ordMode) {
     ordMode = false;
@@ -1774,13 +1858,7 @@ function openFinish() {
     }
     const nb = prBest(cur);
     if (!nb) continue;
-    let old = null;
-    for (const s of sessions)
-      for (const x of s.ex || [])
-        if (x.k === e.k && !x.kind) {
-          const b = prBest(x.sets || []);
-          if (b && (!old || b.v > old.v)) old = b;
-        }
+    const old = prOld(e.k);
     if (old && nb.v > old.v + 1e-9)
       prs.push(
         "<li>🏆 <b>" +
@@ -3979,7 +4057,7 @@ $("cloudRestore").onclick = async () => {
 $("cloudNow").onclick = () => cloudSync();
 window.addEventListener("online", () => cloudSync(true));
 // ===== Aktualizacje: numer wersji w aplikacji vs version.json na serwerze =====
-const APP_BUILD = 15;
+const APP_BUILD = 16;
 function verItems(j, from) {
   return ((j && j.zmiany) || []).filter((x) => x.build > from);
 }
@@ -4581,9 +4659,27 @@ document.addEventListener("input", (e) => {
     if (m) spread(m[1], +m[2]);
     const w = t.id.match(/^(.+)_(w?)kg_(\d+)$/);
     if (w) plUpd(w[1], +w[3], !!w[2]);
+    const pr = t.id.match(/^(.+)_(kg|r)_\d+$/);
+    if (pr) prLive(pr[1]);
     updSum();
     persist();
   } else if (COMMON.includes(t.id)) persist();
+});
+// „Wstaw” w podpowiedzi: cel jako szary podgląd w pustych polach (zapis dopiero po ✓)
+$("exList").addEventListener("click", (ev) => {
+  const b = ev.target.closest && ev.target.closest("[data-sug]");
+  if (!b) return;
+  const k = b.dataset.sug;
+  for (let i = 0; i < 12; i++) {
+    const kg = $(k + "_kg_" + i),
+      r = $(k + "_r_" + i);
+    if (!kg) break;
+    if (!kg.value) kg.placeholder = b.dataset.kg;
+    if (r && !r.value && b.dataset.r) r.placeholder = b.dataset.r;
+  }
+  plUpd(k);
+  b.textContent = "✓ wstawiono";
+  b.disabled = true;
 });
 // kalkulator talerzy pokazuje serię, w której osoba właśnie wpisuje ciężar
 document.addEventListener("focusin", (e) => {
