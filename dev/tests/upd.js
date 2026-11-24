@@ -10,7 +10,7 @@ const go=async(p,v)=>{await p.click('.tabs [data-view="'+v+'"]');await p.waitFor
 // 1. aktualna wersja
 let p=await mk(R);ok('A1 brak paska przy aktualnej wersji',!(await p.$('#updBar')));
 await go(p,'set');ok('A1 numer wersji',(await p.textContent('#verTxt')).includes(B+' ('+VB.data+')'),await p.textContent('#verTxt'));
-ok('A1 lista zmian',(await p.innerHTML('#verList')).includes('Ranking'));
+ok('A1 lista zmian (najnowszy wpis widoczny)',(await p.innerHTML('#verList')).includes(VB.zmiany[0].lista[0].slice(0,8)));
 await p.click('#verChk');await p.waitForTimeout(300);ok('A2 ręczne sprawdzenie: najnowsza',(await p.textContent('#toast')).includes('najnowszą'));
 ok('A3 nowy użytkownik bez okna „co nowego”',await p.isHidden('#tipSheet'));
 // 2. nowsza wersja na serwerze

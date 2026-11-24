@@ -78,14 +78,14 @@ Każdy ma własny link, własny plan i własny PIN do kopii w chmurze. Wpisują 
 
 ## Stan prac
 
-Działa: ekran treningu w trybie „tylko bieżące ćwiczenie rozwinięte” (`P+"focus"`, wersja 14; starsze testy wymuszają stary widok przez `dev/tests/legacy.js`), kalkulator talerzy (`kod/talerze.js`, sztanga 20 kg, talerze do odznaczenia w Ustawieniach), odznaki (`kod/odznaki.js`, 12 kamieni milowych liczonych z historii), edycja/usuwanie treningu spod kafelków z „Cofnij”, notatka do ćwiczenia i duplikat w edytorze (wersja 13), trzy profile, chmura z PIN-ami, ranking, tonaż (Postępy + szczegóły tygodnia), podsumowanie z obrazkiem do udostępnienia, nowy trening, kolejność, aktualizacje z „Co nowego”, masa ciała, ankieta, film-przewodnik (`film/`, gotowe mp4 w `film/wideo/`).
+Działa: wykres siły w ćwiczeniu z wykrywaniem zastoju (`kod/sila.js`) i „Wyślij raport” w Ustawieniach (`kod/raport.js`, bez treningów i PIN-u; czerwona kropka z błędami tylko u właściciela) (wersja 15), ekran treningu w trybie „tylko bieżące ćwiczenie rozwinięte” (`P+"focus"`, wersja 14; starsze testy wymuszają stary widok przez `dev/tests/legacy.js`), kalkulator talerzy (`kod/talerze.js`, sztanga 20 kg, talerze do odznaczenia w Ustawieniach), odznaki (`kod/odznaki.js`, 12 kamieni milowych liczonych z historii), edycja/usuwanie treningu spod kafelków z „Cofnij”, notatka do ćwiczenia i duplikat w edytorze (wersja 13), trzy profile, chmura z PIN-ami, ranking, tonaż (Postępy + szczegóły tygodnia), podsumowanie z obrazkiem do udostępnienia, nowy trening, kolejność, aktualizacje z „Co nowego”, masa ciała, ankieta, film-przewodnik (`film/`, gotowe mp4 w `film/wideo/`).
 
 Do zrobienia / otwarte:
 - Mateusz: jeszcze nie połączony z chmurą (po pierwszym zapisie powstaną jego karty w arkuszu). W planie martwy ciąg 3 × 5–8 bez ciężaru.
 - Odświeżenie filmu o nowe funkcje (ranking, tonaż, nowy trening, kolejność, masa ciała) – albo krótki film „Co nowego”.
 - Wyprosty na ławce rzymskiej z talerzem nie liczą się do tonażu – Damian nie zdecydował.
 - PIN-y są krótkie i przewidywalne – zalecona zmiana na litery + cyfry (zmienia Damian w arkuszu).
-- Pomysły z makiet (zaakceptowane do zrobienia później): wykres siły w ćwiczeniu (szacowany max + wykrywanie zastoju), „Wyślij raport” (wersja + `BLEDY` przez udostępnianie, bez treningów i PIN-u), liczba odznak w Rankingu (wymaga `Code.gs`).
+- Pomysł z makiet na później: liczba odznak w Rankingu (wymaga `Code.gs`).
 
 ## Jak pracować z Damianem
 

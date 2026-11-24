@@ -1,7 +1,16 @@
 {
- "build": 14,
+ "build": 15,
  "data": "24.11.2026",
  "zmiany": [
+  {
+   "build": 15,
+   "data": "24.11.2026",
+   "lista": [
+    "Postępy → „Siła w ćwiczeniu”: wybierasz ćwiczenie i widzisz wykres szacowanego maksa na 1 powtórzenie, tydzień po tygodniu. Gdy ćwiczenie stoi w miejscu od 4 tygodni, aplikacja podpowiada, co zmienić",
+    "Postępy: „Największy wzrost w 8 tygodni” – trzy ćwiczenia, które poszły najbardziej w górę",
+    "Ustawienia → „Coś nie działa?”: jednym przyciskiem wysyłasz Damianowi raport (wersja, telefon, stan kopii, błędy). Raport nie zawiera Twoich treningów ani PIN-u"
+   ]
+  },
   {
    "build": 14,
    "data": "24.11.2026",

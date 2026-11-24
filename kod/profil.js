@@ -6,6 +6,7 @@ function blad(gdzie, e) {
   window.BLEDY.push({ gdzie, msg: String((e && e.message) || e), t: Date.now() });
   if (window.BLEDY.length > 50) window.BLEDY.shift();
   console.warn("[Tytanowa siła] " + gdzie + ":", e);
+  if (window.onBlad) window.onBlad(); // czerwona kropka u właściciela (kod/raport.js)
 }
 // Uczestnicy: ta sama aplikacja pod adresem …/<id>/ (np. …/damian/) ma osobne miejsce na dane w telefonie.
 // Nowa osoba: wpis tutaj + folder z manifest.webmanifest (patrz README) + wiersz z PIN-em w karcie „Uczestnicy” w arkuszu.

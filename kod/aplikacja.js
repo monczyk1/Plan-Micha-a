@@ -2478,6 +2478,7 @@ function renderProg() {
   el.innerHTML =
     bmBlock() +
     tonBlock() +
+    silaBlock() +
     odzBlock() +
     '<div class="phead"><span>Ćwiczenie</span><span>Start → teraz</span><span></span></div>' +
     order
@@ -2520,6 +2521,7 @@ function renderProg() {
         );
       })
       .join("");
+  silaBind(el);
 }
 let histLimit = 20;
 function renderHist() {
@@ -3977,7 +3979,7 @@ $("cloudRestore").onclick = async () => {
 $("cloudNow").onclick = () => cloudSync();
 window.addEventListener("online", () => cloudSync(true));
 // ===== Aktualizacje: numer wersji w aplikacji vs version.json na serwerze =====
-const APP_BUILD = 14;
+const APP_BUILD = 15;
 function verItems(j, from) {
   return ((j && j.zmiany) || []).filter((x) => x.build > from);
 }
@@ -4521,7 +4523,12 @@ $("optCollapse").onchange = () => {
   ls.set(P + "collapse", optCollapse);
   renderEx();
 };
-// Ustawienia → Widok treningu
+// Ustawienia → Raport (kod/raport.js) i Widok treningu
+try {
+  raportInit();
+} catch (e) {
+  blad("raport", e);
+}
 $("optFocus1").checked = focusOn();
 $("optFocus0").checked = !focusOn();
 [$("optFocus1"), $("optFocus0")].forEach(

@@ -2794,3 +2794,135 @@ img {
   bottom: var(--barh, 0px);
   border-radius: 14px 14px 0 0;
 }
+
+/* ===== Wersja 15: siła w ćwiczeniu (kod/sila.js) i raport (kod/raport.js) ===== */
+.sila,
+.silaz,
+.silag {
+  margin: 16px 0;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--surface);
+}
+.silasel {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 6px 0 10px;
+}
+.silasel select {
+  min-height: 44px;
+  font: 500 15px var(--f-body);
+  color: var(--fg);
+  background: var(--field);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 0 10px;
+}
+.silamax {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+.silamax b {
+  font: 700 34px/1 var(--f-display);
+}
+.silamax span {
+  font-size: 13px;
+  color: var(--muted);
+}
+.silaw {
+  width: 100%;
+  height: auto;
+  margin-top: 8px;
+}
+.silaw .sg {
+  stroke: var(--line);
+}
+.silaw .st {
+  font: 10px var(--f-mono);
+  fill: var(--muted);
+}
+.silaw .sp {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 3;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+.silaw .sd {
+  fill: var(--accent);
+}
+.silaw .sz {
+  fill: var(--accent);
+  opacity: 0.12;
+}
+.silaw .sl {
+  font: 600 10px var(--f-body);
+  fill: var(--fg);
+}
+.silaz {
+  border-color: var(--accent);
+}
+.silaz ul {
+  margin: 6px 0 0;
+  padding-left: 20px;
+  font-size: 14px;
+}
+.silaz p {
+  margin: 6px 0;
+  font-size: 14px;
+}
+.silar {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 8px 0;
+  border-top: 1px solid var(--line);
+  font-size: 14px;
+}
+.silar b {
+  font-family: var(--f-mono);
+  color: var(--ok);
+}
+.rapopis {
+  width: 100%;
+  box-sizing: border-box;
+  margin: 6px 0 10px;
+  padding: 10px;
+  font: 14px var(--f-body);
+  color: var(--fg);
+  background: var(--field);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+}
+#rapSend {
+  width: 100%;
+  font-size: 18px;
+}
+#rapBledy {
+  color: #c0262d;
+  font-weight: 600;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) #rapBledy {
+    color: #ff7b7b;
+  }
+}
+:root[data-theme="dark"] #rapBledy {
+  color: #ff7b7b;
+}
+.tabs button.errdot {
+  position: relative;
+}
+.tabs button.errdot::after {
+  content: "";
+  position: absolute;
+  top: 6px;
+  right: 22%;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #d32f2f;
+}
