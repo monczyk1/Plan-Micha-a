@@ -11,6 +11,7 @@ Każda osoba ma własny adres aplikacji i własne miejsce na dane w telefonie:
 |--------|-----------------------------------------|-----------------|------------------|
 | Michał | `…/Plan-Micha-a/`                       | A/B             | `gora_*`         |
 | Damian | `…/Plan-Micha-a/damian/`                | 5 dni (PN–PT)   | `goradamian_*`   |
+| Mateusz | `…/Plan-Micha-a/mateusz/`               | 5 dni po kolei (Klata → Nogi) | `goramateusz_*` |
 
 Dwie osoby na tym samym telefonie nie mieszają danych.
 

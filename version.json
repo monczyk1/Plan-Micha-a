@@ -1,7 +1,17 @@
 {
- "build": 11,
+ "build": 12,
  "data": "24.11.2026",
  "zmiany": [
+  {
+   "build": 12,
+   "data": "24.11.2026",
+   "lista": [
+    "Masa ciała: wpisujesz ją raz (Ustawienia lub pytanie na początku tygodnia), a w Postępach widzisz wykres zmian",
+    "Podciąganie, dipy i ćwiczenia z masą ciała: w kg wpisujesz tylko dodatkowe kg do masy własnej (bez obciążenia 0, z pasem np. 7,5) – masę ciała aplikacja dodaje sama. Stare wpisy przeliczą się po wpisaniu masy",
+    "Nowe ćwiczenia w katalogu: squeeze press, rozpiętki „dookoła świata”, rozpiętki z górnych wyciągów, przysiad Zerchera i inne",
+    "Rozpiętki z górnych wyciągów jako zamiennik dla rozpiętek z dolnych"
+   ]
+  },
   {
    "build": 11,
    "data": "24.11.2026",

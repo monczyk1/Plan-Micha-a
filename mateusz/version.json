@@ -1,0 +1,124 @@
+{
+ "build": 12,
+ "data": "24.11.2026",
+ "zmiany": [
+  {
+   "build": 12,
+   "data": "24.11.2026",
+   "lista": [
+    "Masa ciała: wpisujesz ją raz (Ustawienia lub pytanie na początku tygodnia), a w Postępach widzisz wykres zmian",
+    "Podciąganie, dipy i ćwiczenia z masą ciała: w kg wpisujesz tylko dodatkowe kg do masy własnej (bez obciążenia 0, z pasem np. 7,5) – masę ciała aplikacja dodaje sama. Stare wpisy przeliczą się po wpisaniu masy",
+    "Nowe ćwiczenia w katalogu: squeeze press, rozpiętki „dookoła świata”, rozpiętki z górnych wyciągów, przysiad Zerchera i inne",
+    "Rozpiętki z górnych wyciągów jako zamiennik dla rozpiętek z dolnych"
+   ]
+  },
+  {
+   "build": 11,
+   "data": "24.11.2026",
+   "lista": [
+    "Rozpiętki na bramie: wpisujesz ciężar jednej strony (jednego stosu), aplikacja liczy obie linki ×2"
+   ]
+  },
+  {
+   "build": 10,
+   "data": "24.11.2026",
+   "lista": [
+    "Podciąganie i dipy: w kg wpisujesz swoją masę ciała (z obciążeniem razem, np. 80 + 3 = 83) – liczy się do tonażu",
+    "Serie rozgrzewkowe R1/R2 w ćwiczeniach liczą się teraz także jako serie (ranking, podsumowanie)",
+    "Przypomnienie przy hantlach: wpisujesz ciężar jednego hantla",
+    "Po aktualizacji treningi przeliczają się same i trafiają do chmury – ranking pokazuje te same kilogramy co Postępy"
+   ]
+  },
+  {
+   "build": 9,
+   "data": "24.11.2026",
+   "lista": [
+    "Ranking: przełącznik Tydzień / Miesiąc / Od początku (po aktualizacji skryptu w arkuszu)",
+    "Ranking: zmiana wobec poprzedniego tygodnia, seria tygodni z treningiem 🔥 i ostatnia aktywność",
+    "Ranking: historia konkursów z 8 tygodni i oznaczenie NOWY przy świeżych rekordach",
+    "Ochrona przed literówkami: pytanie „Na pewno?”, gdy wpis jest ponad 2× większy niż Twój dotychczasowy najlepszy"
+   ]
+  },
+  {
+   "build": 8,
+   "data": "24.11.2026",
+   "lista": [
+    "Dokładniejszy tonaż: ×2 tylko przy dwóch hantlach, ×2 gdy ćwiczysz na stronę (wykroki, jednorącz), wliczone serie rozgrzewkowe R1/R2",
+    "Do tonażu nie wliczają się ćwiczenia z ciężarem ciała ani na czas czy dystans",
+    "Postępy: stuknij słupek tygodnia – zobaczysz treningi i kilogramy z każdego ćwiczenia",
+    "Serie w rankingu i porównaniach: tylko serie robocze z sekcji Ćwiczenia (bez rozgrzewki, dynamiki, core i cardio)",
+    "Katalog: 41 nowych popularnych ćwiczeń (np. butterfly, martwy ciąg sumo, modlitewnik, szrugsy, wykroki w marszu, brzuszki)",
+    "Podsumowanie treningu: sam tonaż, szczegóły są w Postępach"
+   ]
+  },
+  {
+   "build": 7,
+   "data": "24.11.2026",
+   "lista": [
+    "Postępy: tonaż – ile kilogramów przerzuciłeś łącznie, w tym tygodniu i miesiącu, z wykresem 8 tygodni",
+    "Podsumowanie treningu: porównanie z poprzednim takim treningiem (objętość, czas, serie) i rekord objętości 🏆",
+    "Podsumowanie: rozpiska ćwiczeń (serie × kg × powtórzenia i suma kg) oraz Twoje miejsce w rankingu tygodnia po tym treningu",
+    "Przycisk „📤 Udostępnij wynik” – obrazek z treningiem do wysłania np. na WhatsAppie",
+    "Kilogramy przy hantlach liczone ×2 (dwa hantle)"
+   ]
+  },
+  {
+   "build": 6,
+   "data": "24.11.2026",
+   "lista": [
+    "Przycisk „⇅ Kolejność” nad ćwiczeniami: zmieniasz kolejność strzałkami ▲▼, np. gdy maszyna jest zajęta",
+    "Przy ćwiczeniu z superserii aplikacja pyta, czy przesunąć tylko je, czy całą superserię",
+    "Przy „Zakończ trening” wybierasz: nowa kolejność tylko dziś czy na stałe w planie"
+   ]
+  },
+  {
+   "build": 5,
+   "data": "23.11.2026",
+   "lista": [
+    "Kafelek „+ Nowy trening”: własny trening dodatkowy z wybranych ćwiczeń (zaznaczasz ptaszkiem, filtr po partiach: klatka, plecy, biceps, nogi…)",
+    "Trening dodatkowy zostaje jako kafelek z Twoją nazwą (np. „Nogi 1”) i nie zmienia kolejki planu",
+    "Rozgrzewka dobiera się sama do wybranych partii",
+    "Ćwiczenie dodane na dole treningu dodatkowego zostaje w nim na kolejne razy",
+    "Poprawka: zapis planu w edytorze nie zmienia już kolejności dni"
+   ]
+  },
+  {
+   "build": 4,
+   "data": "23.11.2026",
+   "lista": [
+    "Nowa zakładka Ranking: konkurs tygodnia (PN–ND) na liczbę serii, puchar 🏆 dla lidera, puchary za wygrane tygodnie i rekordy w ćwiczeniach",
+    "W Ustawieniach ptaszek „Pokazuj mnie w rankingu” – możesz się ukryć",
+    "Pasek postępu na dole ekranu: ile procent treningu za Tobą i ile minut zostało",
+    "Pasek „Jest nowa wersja” i przycisk „Sprawdź aktualizację” z listą zmian",
+    "Trening zapisany bez internetu sam trafi do chmury, gdy złapiesz zasięg"
+   ]
+  },
+  {
+   "build": 3,
+   "data": "23.11.2026",
+   "lista": [
+    "Kopia w chmurze dla kilku osób – każdy ma własny PIN i nie widzi danych innych",
+    "Poprawki: nazwy dni w edytorze planu i w historii"
+   ]
+  },
+  {
+   "build": 2,
+   "data": "22.11.2026",
+   "lista": [
+    "Zakładki na dole: Trening, Historia, Postępy, Ustawienia",
+    "„Zakończ trening” z podsumowaniem i rekordami",
+    "Zrobione ćwiczenie zwija się do jednej linii",
+    "Nowe rysunki ćwiczeń i link do filmu z techniką",
+    "Polskie nazwy ćwiczeń, więcej zamienników w katalogu",
+    "Naprawione usuwanie dodanego ćwiczenia po wpisaniu ciężaru"
+   ]
+  },
+  {
+   "build": 1,
+   "data": "22.11.2026",
+   "lista": [
+    "Pierwsza wersja: plan A/B, numery treningów T1–T9, historia, kopia zapasowa"
+   ]
+  }
+ ]
+}
