@@ -9,7 +9,7 @@ const ses=[mk("2026-11-10",1,"A",[{k:"incline",n:"Wyciskanie hantli na ławce sk
  mk("2026-11-17",3,"A",[{k:"incline",n:"Wyciskanie hantli na ławce skośnej dodatniej",sets:S("22,5","9",3),rir:"2"},{k:"bench",n:"Wyciskanie sztangi leżąc",sets:S("52,5","8",3),rir:"1"},{k:"chestrow",n:"Wiosłowanie hantlami z klatką opartą o ławkę",sets:S("20","10",3)}]),
  mk("2026-11-20",4,"B",[{k:"dbohp",n:"Wyciskanie hantli siedząc",sets:S("16","8",3)},{k:"bbrow",n:"Wiosłowanie sztangą",sets:S("52,5","10",3)}])];
 await c.addInitScript(s=>{try{if(!localStorage.getItem("seeded")){localStorage.setItem("gora_sessions",JSON.stringify(s));localStorage.setItem("gora_welcome","1");localStorage.setItem("gora_lastbk",String(Date.now()+1e9));localStorage.setItem("seeded","1")}}catch(e){}},ses);
-const p=await c.newPage();await p.goto('file:///home/claude/plan-micha-a/index.html');await p.addStyleTag({path:'fonts.css'});await p.waitForTimeout(800);
+const p=await c.newPage();await p.goto('file://'+require('path').resolve(__dirname,'../index.html'));await p.addStyleTag({path:require('path').join(__dirname,'fonts.css')});await p.waitForTimeout(800);
 const shot=async n=>{await p.waitForTimeout(250);await p.screenshot({path:'cap/'+n+'.jpg',type:'jpeg',quality:92})};
 const box=async sel=>{const r=await p.$eval(sel,e=>{const b=e.getBoundingClientRect();return[b.x+b.width/2,b.y+b.height/2]});return r};
 await p.click('#seg button:nth-child(1)');await p.evaluate(()=>scrollTo(0,0));await shot('c1');pos.c1={segA:await box('#seg button:nth-child(1)'),t3:await box('#tgrid button[aria-pressed="true"]')};

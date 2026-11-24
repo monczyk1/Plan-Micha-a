@@ -1,0 +1,54 @@
+// „+ Nowy trening” – trening dodatkowy jako kafelek
+const {chromium}=require('playwright');const fs=require('fs');
+const R='http://localhost:8765/';
+const ok=(n,c,i)=>console.log((c?'PASS ':'FAIL ')+n+(c?'':'  → '+JSON.stringify(i)));
+(async()=>{const b=await chromium.launch({args:['--lang=pl-PL']});
+const mk=async url=>{const c=await b.newContext({viewport:{width:393,height:852},deviceScaleFactor:2,locale:'pl-PL',colorScheme:'dark',serviceWorkers:'block'});await c.route(/fonts\.(googleapis|gstatic)/,r=>r.abort());await c.route(/version\.json/,r=>r.abort());c.setDefaultTimeout(5000);const p=await c.newPage();p.errs=[];p.on('pageerror',e=>p.errs.push(e.message));await p.goto(url);await p.waitForTimeout(400);await p.click('#welcomeOk').catch(()=>{});return p};
+const tiles=p=>p.$$eval('#seg button',bs=>bs.map(x=>x.innerText.replace(/\n/g,'|')+(x.getAttribute('aria-pressed')==='true'?'*':'')));
+const save=async p=>{await p.click('#finish');await p.click('#save');await p.waitForTimeout(250);await p.click('#ssLater').catch(()=>{});await p.click('#tipX').catch(()=>{})};
+const go=async(p,v)=>{await p.click('.tabs [data-view="'+v+'"]');await p.waitForTimeout(60)};
+const p=await mk(R+'damian/');
+let t=await tiles(p);ok('N1 kafelek „+ Nowy trening” za PT',t.length===6&&t[5].startsWith('+|Nowy trening'),t);
+await p.click('#seg .addt');ok('N2 okno wyboru',await p.isVisible('#ntSheet'));ok('N2 start nieaktywny bez ćwiczeń',await p.isDisabled('#ntGo'));
+const chips=await p.$$eval('#ntChips button',x=>x.map(e=>e.textContent));ok('N2 filtry partii z bicepsem i tricepsem',['Klatka','Plecy','Biceps','Triceps','Nogi','Core'].every(c=>chips.includes(c)),chips);
+await p.fill('#ntName','Nogi 1');await p.click('#ntChips [data-g="Nogi"]');
+const groups=await p.$$eval('#ntList .ntg',x=>x.map(e=>e.textContent));ok('N3 filtr pokazuje tylko nogi',JSON.stringify(groups)==='["Nogi"]',groups);
+await p.check('#ntList [data-k="squat"]');await p.click('#ntChips [data-g="Nogi"]');await p.click('#ntChips [data-g="Pośladki"]');await p.check('#ntList [data-k="legcurl"]');
+await p.click('#ntChips [data-g="Core"]');await p.check('#ntList [data-k="plank"]');
+ok('N3 zaznaczenia zostają po zmianie filtra',await p.isChecked('#ntList [data-k="legcurl"]'));
+ok('N4 przycisk z liczbą',(await p.textContent('#ntGo'))==='Zacznij trening · 3 ćwiczenia',await p.textContent('#ntGo'));
+await p.click('#ntGo');await p.waitForTimeout(200);
+t=await tiles(p);ok('N5 nowy kafelek „Nogi 1” wybrany, + na końcu',t[5]==='Nogi 1|dodatkowy*'&&t[6].startsWith('+'),t);
+const exn=await p.$$eval('.ex[data-card] .exn',x=>x.map(e=>e.textContent));ok('N5 ćwiczenia w kolejności, core na końcu',exn.length===3&&/Przysiad/.test(exn[0])&&/Uginanie nóg/.test(exn[1])&&/Deska/.test(exn[2]),exn);
+const wu=await p.$$eval('.wlist .wn',x=>x.map(e=>e.textContent));ok('N6 rozgrzewka pod nogi',wu.some(x=>x.includes('Biodro 90/90'))&&wu.some(x=>x.includes('Serie dochodzące – Przysiad'))&&!wu.some(x=>x.includes('Ślizgi')),wu);
+ok('N6 tytuł numeru',(await p.textContent('#tLbl')).includes('Nogi 1'));
+await p.fill('#squat_kg_0','100');await p.fill('#squat_r_0','5');await save(p);
+t=await tiles(p);ok('N7 po treningu dodatkowym podpowiedź PN (kolejka bez zmian)',t[0]==='PN|Push*',t);
+ok('N7 opis: ostatnio Nogi 1 → następny PN',(await p.textContent('#nextHint')).includes('Nogi 1 (dodatkowy)')&&(await p.textContent('#nextHint')).includes('następny PN'),await p.textContent('#nextHint'));
+await p.fill('#bench_kg_0','60');await p.fill('#bench_r_0','8');await save(p);
+t=await tiles(p);ok('N8 po PN → WT',t[1]==='WT|Pull*',t);
+await p.click('#seg button:nth-child(6)');await p.waitForTimeout(100);ok('N9 drugi raz Nogi 1 = T2',(await p.$eval('#tgrid [aria-pressed="true"], #tgrid .on',e=>e.textContent).catch(()=>''))==='T2');
+// dodanie ćwiczenia na dole → zostaje w treningu
+await p.selectOption('#catalog','calf');await p.click('#addEx');await p.waitForTimeout(150);
+ok('N10 dodane na dole zostaje w szablonie',await p.evaluate(()=>PLAN[DAYS[5]].ex.some(e=>e.k==='calf')));
+await p.fill('#squat_kg_0','105');await p.fill('#squat_r_0','5');await save(p);
+t=await tiles(p);ok('N11 po 2. Nogi 1 dalej WT',t[1]==='WT|Pull*',t);
+await p.reload();await p.waitForTimeout(300);t=await tiles(p);ok('N12 kafelek po odświeżeniu',t[5]==='Nogi 1|dodatkowy',t);
+await p.click('#seg button:nth-child(6)');ok('N12 łydki po odświeżeniu',(await p.$$eval('.ex[data-card] .exn',x=>x.map(e=>e.textContent))).some(x=>/łydki|palce/i.test(x)));
+await go(p,'hist');const h=await p.textContent('#hist');ok('N13 historia z nazwą',h.includes('Nogi 1'),h.slice(0,200));
+// edytor: zmiana nazwy, kolejność dni, usunięcie
+await go(p,'set');await p.click('#editPlan');const et=await p.$$eval('#edTabs button',x=>x.map(e=>e.textContent));ok('N14 edytor: zakładka Nogi 1',et.includes('Nogi 1'),et);
+await p.click('#edTabs button:nth-child(6)');ok('N14 pole nazwy',(await p.textContent('label[for="edSub"]')).includes('Nazwa'));await p.fill('#edSub','Nogi A');await p.click('#edSave');await p.waitForTimeout(150);
+await go(p,'train');t=await tiles(p);ok('N15 zmiana nazwy + PN–PT w kolejności (bez sortowania)',t.slice(0,6).map(x=>x.split('|')[0]).join(',')==='PN,WT,ŚR,CZW,PT,Nogi A',t);
+await go(p,'set');await p.click('#editPlan');await p.click('#edTabs button:nth-child(6)');await p.click('#edDelDay');await p.click('#edDelDay');await p.click('#edSave');await p.waitForTimeout(150);
+await go(p,'train');t=await tiles(p);ok('N16 usunięty kafelek',t.length===6&&!t.some(x=>x.includes('Nogi A')),t);
+await go(p,'hist');ok('N16 historia zachowuje nazwę',(await p.textContent('#hist')).includes('Nogi 1'));
+// Michał: A/B + extra
+const m=await mk(R);t=await tiles(m);ok('M1 Michał: A, B, +',t.length===3&&t[2].startsWith('+'),t);
+await m.click('#seg .addt');await m.click('#ntChips [data-g="Biceps"]');const bi=await m.$$eval('#ntList .nti',x=>x.map(e=>e.textContent));ok('M2 biceps bez tricepsa',bi.length&&bi.every(x=>/Uginanie/i.test(x)),bi);
+await m.check('#ntList .nti input');await m.click('#ntGo');await m.waitForTimeout(150);t=await tiles(m);ok('M3 domyślna nazwa',t[2]==='Dodatkowy 1|dodatkowy*',t);
+const wm=await m.$$eval('.wlist .wn',x=>x.map(e=>e.textContent));ok('M3 rozgrzewka pod plecy/biceps',wm.some(x=>x.includes('Zwis')),wm);
+await m.fill('.ex[data-card] input[id$="_kg_0"]','12');await m.fill('.ex[data-card] input[id$="_r_0"]','10');await save(m);t=await tiles(m);ok('M4 po dodatkowym podpowiedź A',t[0]==='A|Klatka · plecy · barki · ramiona*',t);
+await m.setViewportSize({width:393,height:852});await p.click('.tabs [data-view="train"]');
+ok('Z brak błędów JS',!p.errs.length&&!m.errs.length,[p.errs,m.errs]);
+await b.close()})();

@@ -43,3 +43,9 @@ Zakładka **Ranking** (wymaga kopii w chmurze i skryptu w wersji 3): konkurs tyg
 (z wpisem albo ✓; rozgrzewka się nie liczy), puchary za wygrane tygodnie (remis = puchar dla każdego) i rekordy –
 największy ciężar w serii roboczej w ćwiczeniach, które robią co najmniej 2 osoby (przy równym ciężarze wygrywa więcej powtórzeń).
 Ptaszek „Pokazuj mnie w rankingu” w Ustawieniach ukrywa osobę (kolumna *Ranking* w karcie Uczestnicy).
+
+## Praca w Claude Code
+
+- `CLAUDE.md` – zasady projektu, budowa aplikacji, reguły tonażu i kroki wydania (Claude Code czyta go sam).
+- `dev/` – testy automatyczne: `cd dev && npm install && npx playwright install chromium`, potem `./run-tests.sh`.
+- `film/` – źródła i gotowe pliki filmu-przewodnika.

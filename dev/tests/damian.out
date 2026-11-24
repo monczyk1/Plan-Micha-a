@@ -1,0 +1,28 @@
+PASS D1 5 dni PN–PT
+PASS D1 opis 5 treningów
+PASS D1 tytuł
+PASS D1 powitanie PN–PT
+PASS D2 rozgrzewka PN 8 punktów ze skakanką
+PASS D2 każdy punkt ma rysunek
+PASS D3 sekcje Dynamika/Ćwiczenia/Core/Cardio
+PASS D3 superseria
+PASS D3 PN: bench, OHP, StairMaster
+PASS D4 cardio ✓ bez minutnika przerwy
+PASS D4 dynamika ✓ startuje minutnik
+PASS D5 dane tylko w goradamian_*
+PASS D5 następny dzień WT
+PASS D5 historia: PN T1
+PASS D6 sekcja chmury z PIN-em z arkusza
+PASS D7 katalog bez undefined
+PASS D8 edytor ma PN–PT
+PASS D9 Michał: A/B
+PASS D9 Michał: pusta historia
+PASS D9 kopia Michała bez danych Damiana
+PASS D9 cloud u Michała widoczny
+PASS D10 Damian nadal 1 trening
+PASS D10 kopia Damiana tylko jego klucze
+PASS D11 okno przywracania
+PASS D11 po przywróceniu 1 trening
+PASS D11 dane Michała nietknięte
+PASS D12 obca kopia rozpoznana (1 trening)
+PASS D13 brak błędów JS

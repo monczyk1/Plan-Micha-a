@@ -1,9 +1,10 @@
 # Film-przewodnik „Tytanowa siła” – jak odtworzyć
 
 Pionowy film 1080×1920, 30 fps, 50 s, 12 scen (podział w `render.js` → `cuts`). Telefon pokazany z ekranami aplikacji, napisy i „stuknięcia” animowane w przeglądarce.
-Gotowe wersje: bez muzyki, rock 80s (`music.py`, 120 BPM) i ciężki hip-hop (`music_hh.py`, 90 BPM). Mocny akcent (drop) w obu na 2,6 s.
+Gotowe pliki w `wideo/` (też online: https://monczyk1.github.io/Plan-Micha-a/film/wideo/Tytanowa-sila-przewodnik-muzyka.mp4 itd.). Wersje: bez muzyki, rock 80s (`music.py`, 120 BPM) i ciężki hip-hop (`music_hh.py`, 90 BPM). Mocny akcent (drop) w obu na 2,6 s.
 
 ## Przebieg
+Uruchamiaj z folderu `film/`.
 1. `node capture.js` – Playwright otwiera `../index.html` (393×852, skala 2,5, tryb ciemny, pl-PL) z danymi **pokazowymi Michała** (A/B, 4 sesje z listopada) i robi zrzuty ekranów do `cap/*.jpg` (c1, w0–w2, e0–e3, t1, a1, f0, f1, h1, p1, s1, s2).
 2. `stage.html` + `timeline.js` – scena: telefon, zrzuty, napisy. Dane do edycji w `timeline.js`:
    - `shots` – który zrzut kiedy i jakim przejściem (cut/fade/sheet/up/pop/appopen),
