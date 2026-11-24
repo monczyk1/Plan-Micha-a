@@ -1,7 +1,18 @@
 {
- "build": 6,
+ "build": 7,
  "data": "24.11.2026",
  "zmiany": [
+  {
+   "build": 7,
+   "data": "24.11.2026",
+   "lista": [
+    "Postępy: tonaż – ile kilogramów przerzuciłeś łącznie, w tym tygodniu i miesiącu, z wykresem 8 tygodni",
+    "Podsumowanie treningu: porównanie z poprzednim takim treningiem (objętość, czas, serie) i rekord objętości 🏆",
+    "Podsumowanie: rozpiska ćwiczeń (serie × kg × powtórzenia i suma kg) oraz Twoje miejsce w rankingu tygodnia po tym treningu",
+    "Przycisk „📤 Udostępnij wynik” – obrazek z treningiem do wysłania np. na WhatsAppie",
+    "Kilogramy przy hantlach liczone ×2 (dwa hantle)"
+   ]
+  },
   {
    "build": 6,
    "data": "24.11.2026",

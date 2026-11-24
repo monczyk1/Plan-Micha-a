@@ -1,7 +1,8 @@
 /**
  * @OnlyCurrentDoc
  *
- * Tytanowa siła – kopia w chmurze i ranking dla wielu osób (Google Apps Script), wersja 3
+ * Tytanowa siła – kopia w chmurze i ranking dla wielu osób (Google Apps Script), wersja 4
+ * (4: ranking „Kilogramy tygodnia” i puchary za kilogramy)
  *
  * Skrypt ma dostęp TYLKO do arkusza, w którym go zainstalujesz.
  * Nie widzi żadnych innych plików na Twoim Dysku.
@@ -55,7 +56,7 @@ function doPost(e) {
   }
 }
 
-function doGet() { return out_({ ok: true, app: "tytanowa-sila", v: 3 }); }
+function doGet() { return out_({ ok: true, app: "tytanowa-sila", v: 4 }); }
 
 // Uruchom raz po wklejeniu kodu. Można uruchamiać wielokrotnie – niczego nie nadpisze.
 function setup() {
@@ -227,6 +228,14 @@ function monday_(s) { const d = day_(s); if (!d) return ""; d.setUTCDate(d.getUT
 function plusDays_(s, n) { const d = day_(s); d.setUTCDate(d.getUTCDate() + n); return d.toISOString().slice(0, 10); }
 function kg_(v) { const t = String(v == null ? "" : v).trim().replace(",", "."); return /^\d+(\.\d+)?$/.test(t) ? Number(t) : 0; }
 
+// Tonaż treningu: aplikacja zapisuje go w polu vol (hantle ×2); dla starszych zapisów liczymy kg × powtórzenia
+function vol_(s) {
+  if (typeof s.vol === "number") return s.vol;
+  let v = 0;
+  (s.ex || []).forEach(function (e) { if (e.kind) return; (e.sets || []).forEach(function (t) { if (!t.w) v += kg_(t.kg) * (parseInt(t.r, 10) || 0); }); });
+  return Math.round(v);
+}
+
 // Serie z wpisem (siłowe) albo odhaczone (dynamika, core, cardio); serie rozgrzewkowe się nie liczą
 function setsOf_(s) {
   let n = 0;
@@ -242,17 +251,19 @@ function setsOf_(s) {
 function rank_(me, today) {
   if (!/^\d{4}-\d{2}-\d{2}$/.test(String(today || ""))) today = new Date().toISOString().slice(0, 10);
   const wk = monday_(today), prev = plusDays_(wk, -7);
-  const ppl = [], weeks = {}, rec = {};
+  const ppl = [], weeks = {}, weeksKg = {}, rec = {};
   rows_().forEach(function (u) {
     if (!u.active || !u.rank) return;
     const snap = latest_(u);
     if (!snap || !Array.isArray(snap.sessions)) return;
-    const p = { name: u.name, me: u.row === me.row, sets: 0, trainings: 0 };
+    const p = { name: u.name, me: u.row === me.row, sets: 0, trainings: 0, kg: 0 };
     snap.sessions.forEach(function (s) {
       const w = monday_(s.date); if (!w || w > wk) return;
       const n = setsOf_(s);
+      const v = vol_(s);
       weeks[w] = weeks[w] || {}; weeks[w][u.name] = (weeks[w][u.name] || 0) + n;
-      if (w === wk) { p.sets += n; if (n) p.trainings++; }
+      weeksKg[w] = weeksKg[w] || {}; weeksKg[w][u.name] = (weeksKg[w][u.name] || 0) + v;
+      if (w === wk) { p.sets += n; p.kg += v; if (n) p.trainings++; }
       (s.ex || []).forEach(function (e) {
         if (e.kind || !e.k) return;
         (e.sets || []).forEach(function (t) {
@@ -270,15 +281,20 @@ function rank_(me, today) {
   ppl.sort(function (a, b) { return b.sets - a.sets || a.name.localeCompare(b.name); });
   const top = ppl.length && ppl[0].sets ? ppl[0].sets : 0;
   ppl.forEach(function (p) { p.lead = top > 0 && p.sets === top; });
-  const cups = {}; let last = null;
-  Object.keys(weeks).forEach(function (w) {
-    if (w >= wk) return;
-    const names = Object.keys(weeks[w]); const mx = Math.max.apply(null, names.map(function (n) { return weeks[w][n]; }));
-    if (!(mx > 0)) return;
-    const win = names.filter(function (n) { return weeks[w][n] === mx; });
-    win.forEach(function (n) { cups[n] = (cups[n] || 0) + 1; });
-    if (w === prev) last = { names: win, sets: mx };
-  });
+  function cupsOf(W) {
+    const c = {}; let l = null;
+    Object.keys(W).forEach(function (w) {
+      if (w >= wk) return;
+      const names = Object.keys(W[w]); const mx = Math.max.apply(null, names.map(function (n) { return W[w][n]; }));
+      if (!(mx > 0)) return;
+      const win = names.filter(function (n) { return W[w][n] === mx; });
+      win.forEach(function (n) { c[n] = (c[n] || 0) + 1; });
+      if (w === prev) l = { names: win, v: mx };
+    });
+    return { list: Object.keys(c).map(function (n) { return { name: n, n: c[n] }; }).sort(function (a, b) { return b.n - a.n || a.name.localeCompare(b.name); }), last: l };
+  }
+  const cs = cupsOf(weeks), ck = cupsOf(weeksKg);
+  const last = cs.last ? { names: cs.last.names, sets: cs.last.v } : null;
   const records = Object.keys(rec).map(function (k) {
     const list = Object.keys(rec[k].by).map(function (n) { return rec[k].by[n]; });
     list.sort(function (a, b) { return b.kg - a.kg || b.r - a.r || a.date.localeCompare(b.date); });
@@ -287,7 +303,7 @@ function rank_(me, today) {
   records.sort(function (a, b) { return b.list.length - a.list.length || b.list[0].kg - a.list[0].kg; });
   return {
     ok: true, week: wk, people: ppl, last: last, records: records,
-    cups: Object.keys(cups).map(function (n) { return { name: n, n: cups[n] }; }).sort(function (a, b) { return b.n - a.n || a.name.localeCompare(b.name); }),
+    cups: cs.list, kgCups: ck.list, lastKg: ck.last ? { names: ck.last.names, kg: ck.last.v } : null,
     me: { name: me.name, rank: me.rank }
   };
 }
