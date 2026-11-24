@@ -44,7 +44,7 @@ h2{font:700 24px/1.1 "Barlow Condensed",sans-serif;text-transform:uppercase;marg
 .yn{display:flex;gap:6px}.yn button{min-width:52px;min-height:44px;border-radius:10px;border:1.5px solid var(--line);background:none;color:var(--ink);font:600 14px "IBM Plex Sans",sans-serif;cursor:pointer}
 .yn button[aria-pressed=true].y{background:var(--acc);border-color:var(--acc);color:#fff}.yn button[aria-pressed=true].n{background:var(--ink);border-color:var(--ink);color:var(--bg)}
 .asm .note{grid-column:1/-1;margin-top:2px}
-.name{display:flex;gap:10px;align-items:center;margin:6px 0 0}.name label{font-weight:600;white-space:nowrap}
+.name{display:flex;gap:10px;align-items:center;margin:6px 0 0}.name label{font-weight:600;white-space:nowrap;flex:none}
 .foot{position:fixed;left:0;right:0;bottom:0;background:var(--card);border-top:1px solid var(--line);padding:12px max(16px,4vw) calc(12px + env(safe-area-inset-bottom))}
 .foot .in{max-width:640px;margin:0 auto;display:flex;gap:10px;align-items:center}
 .btn{min-height:48px;padding:0 18px;border-radius:12px;border:0;background:var(--acc);color:#fff;font:700 18px "Barlow Condensed",sans-serif;letter-spacing:.03em;text-transform:uppercase;cursor:pointer}
@@ -62,9 +62,12 @@ h2{font:700 24px/1.1 "Barlow Condensed",sans-serif;text-transform:uppercase;marg
     <p class="lead">Wpisuję Twój plan do aplikacji i dopasowuję ćwiczenia do jej katalogu. Zaznacz, jak naprawdę je robisz. Zajmie to ok. 3 minut. Na koniec jednym przyciskiem wyślesz odpowiedzi Damianowi.</p>
     <div class="name"><label for="nm">Twoje imię</label><input id="nm" class="note" style="margin:0" value="Mateusz" autocomplete="given-name"></div>
   </header>
-  <div class="bar" role="status"><div class="prog" aria-hidden="true"><i id="pg"></i></div><span class="cnt" id="cnt">0 / 18</span><span class="st" id="st">…</span></div>
+  <div class="bar" role="status"><div class="prog" aria-hidden="true"><i id="pg"></i></div><span class="cnt" id="cnt">0 / 22</span><span class="st" id="st">…</span></div>
 
-  <h2>Nie jestem pewien</h2>
+  <h2>Jak trenujesz</h2>
+  <div id="qs2"></div>
+
+  <h2>Które to ćwiczenie?</h2>
   <div id="qs"></div>
 
   <h2>Te zakładam</h2>
@@ -96,13 +99,19 @@ const Q=[
  {t:"Klata na dniu nóg (2 min × 40 kg)",c:"Dzień NOGI, finisher",o:["Sztanga na ławce płaskiej","Inne – dopisz co"]},
  {t:"Martwy ciąg",c:"Dzień NOGI – w planie brak ciężaru i powtórzeń",o:["Wpiszę poniżej ciężar i powtórzenia"],ask:"np. 3 × 5 × 100 kg"},
  {t:"Spacer farmera i Zercher squat (ze znakiem zapytania)",c:"Dzień NOGI",o:["Dodaj oba do dnia NOGI","Dodaj tylko spacer farmera","Dodaj tylko Zercher squat","Na razie nie dodawaj"]}
+ ,{t:"Jak rozkładasz dni treningowe?",c:"Klata · Łapy · Plecy · Barki + Brzuch · Nogi + core",o:["Stałe dni tygodnia (np. poniedziałek = Klata)","Po kolei – następny dzień po ostatnim zrobionym","Różnie, bez reguły"],ask:"Ile razy w tygodniu trenujesz?",sec:1}
+ ,{t:"Poziomy na maszynach (np. rozpiętki 9/10/11)",c:"Aplikacja liczy kilogramy",o:["Wiem, ile kg to dany poziom – dopiszę niżej","Wolę wpisywać sam numer poziomu","Nie wiem, ile kg to poziom"],ask:"np. poziom 9 = 45 kg",sec:1}
+ ,{t:"Dzień Barki + Brzuch ma 12 ćwiczeń",c:"Jak go robisz?",o:["Wszystkie za każdym razem","Dzielę na dwa warianty – dopisz jak","Wybieram część, zależnie od dnia"],sec:1}
+ ,{t:"Twoje wyniki z lipca i sierpnia",c:"Rekordy i postępy w aplikacji",o:["Wpisz je jako historię – rekordy liczą się od nich","Zaczynam od zera"],sec:1}
 ];
 const A=[["Ławka płaska","Wyciskanie sztangi leżąc"],["Dip","Pompki na poręczach (dipy)"],["Biceps z supinacją","Uginanie ramion z hantlami"],["Biceps – młotek","Uginanie młotkowe hantli"],["Ściąganie sznurka (triceps)","Prostowanie ramion na wyciągu górnym (linka)"],["Dół wyciąg biceps","Uginanie ramion na wyciągu dolnym"],["Kaptury","Szrugsy z hantlami"],["Przyciąganie drążka, wyciąg góra","Ściąganie drążka do klatki"],["Wyciąg dół (plecy)","Wiosłowanie na wyciągu dolnym siedząc"],["Wyciskanie hantla w górę","Wyciskanie hantli siedząc"],["Wyciskanie hantla w bok","Unoszenie hantli bokiem"],["W przód z supinacją","Unoszenie hantli w przód"],["Opuszczanie hantla przy ciele","Skłony boczne z hantlem"],["Przekładanie ketla na skosy","Russian twist z kettlem"],["Roller","Kółko do brzucha"],["Allahy","Spięcia brzucha na wyciągu"],["Suwnica, wyprost nóg, martwy ciąg, łydki stojąc","Suwnica · prostowanie nóg na maszynie · martwy ciąg klasyczny · wspięcia na palce stojąc"]];
 const esc=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const $=id=>document.getElementById(id);
 let S={q:{},note:{},asm:{},asmNote:{},done:false};
 try{const l=JSON.parse(localStorage.getItem("ankieta")||"null");if(l&&l.q)S=Object.assign(S,l)}catch(e){}
-$("qs").innerHTML=Q.map((q,i)=>'<div class="card" role="group" aria-labelledby="q'+i+'"><p class="q" id="q'+i+'"><b>'+(i+1)+'</b>'+esc(q.t)+'</p><p class="ctx">'+esc(q.c)+'</p><div class="opts">'+q.o.map((o,j)=>'<label class="opt"><input type="radio" name="r'+i+'" value="'+j+'">'+esc(o)+'</label>').join("")+'</div><input class="note" data-n="'+i+'" placeholder="'+esc(q.ask||"Dopisz, jeśli trzeba")+'" aria-label="Uwagi do pytania '+(i+1)+'"></div>').join("");
+const ORD=[...Q.keys()].sort((a,b)=>(Q[b].sec?1:0)-(Q[a].sec?1:0)||a-b),no=i=>ORD.indexOf(i)+1;
+const card=(q,i)=>'<div class="card" role="group" aria-labelledby="q'+i+'"><p class="q" id="q'+i+'"><b>'+no(i)+'</b>'+esc(q.t)+'</p><p class="ctx">'+esc(q.c)+'</p><div class="opts">'+q.o.map((o,j)=>'<label class="opt"><input type="radio" name="r'+i+'" value="'+j+'">'+esc(o)+'</label>').join("")+'</div><input class="note" data-n="'+i+'" placeholder="'+esc(q.ask||"Dopisz, jeśli trzeba")+'" aria-label="Uwagi do pytania '+no(i)+'"></div>';
+$("qs").innerHTML=Q.map((q,i)=>q.sec?"":card(q,i)).join("");$("qs2").innerHTML=Q.map((q,i)=>q.sec?card(q,i):"").join("");
 $("asm").innerHTML=A.map((a,i)=>'<li><div><div class="from">'+esc(a[0])+'</div><div class="to">→ '+esc(a[1])+'</div></div><div class="yn" role="group" aria-label="Czy się zgadza: '+esc(a[0])+'"><button type="button" class="y" data-a="'+i+'" data-v="1">Tak</button><button type="button" class="n" data-a="'+i+'" data-v="0">Nie</button></div><input class="note" data-an="'+i+'" placeholder="Jak to robisz?" hidden aria-label="Uwagi: '+esc(a[0])+'"></li>').join("");
 function paint(){Q.forEach((q,i)=>{const v=S.q[i];document.querySelectorAll('input[name="r'+i+'"]').forEach(r=>r.checked=String(r.value)===String(v))});
   document.querySelectorAll("[data-n]").forEach(n=>{if(document.activeElement!==n)n.value=S.note[n.dataset.n]||""});
@@ -114,13 +123,13 @@ function changed(){local();paint();status("zapisane w telefonie",true)}
 document.addEventListener("change",e=>{const t=e.target;if(t.type==="radio"){S.q[t.name.slice(1)]=+t.value;changed()}});
 document.addEventListener("input",e=>{const t=e.target;if(t.dataset.n!=null){S.note[t.dataset.n]=t.value.slice(0,300);changed()}else if(t.dataset.an!=null){S.asmNote[t.dataset.an]=t.value.slice(0,300);changed()}else if(t.id==="nm")changed()});
 document.addEventListener("click",e=>{const b=e.target.closest("[data-a]");if(!b)return;S.asm[b.dataset.a]=b.dataset.v==="1";changed();if(b.dataset.v==="0")setTimeout(()=>{const n=document.querySelector('[data-an="'+b.dataset.a+'"]');if(n)n.focus()},0)});
-function text(){const L=["Odpowiedzi – "+($("nm").value.trim()||"Mateusz"),""];Q.forEach((q,i)=>{const v=S.q[i];L.push((i+1)+". "+q.t+": "+(v==null?"–":String.fromCharCode(97+v)+") "+q.o[v])+(S.note[i]?" | "+S.note[i]:""))});
-  const no=A.map((a,i)=>S.asm[i]===false?"✗ "+a[0]+" ≠ "+a[1]+(S.asmNote[i]?" – "+S.asmNote[i]:""):null).filter(Boolean);L.push("",no.length?"Nie zgadza się:":"Założenia: wszystkie się zgadzają ✓",...no);return L.join("\n")}
+function text(){const L=["Odpowiedzi – "+($("nm").value.trim()||"Mateusz"),""];ORD.forEach(i=>{const q=Q[i];const v=S.q[i];L.push(no(i)+". "+q.t+": "+(v==null?"–":String.fromCharCode(97+v)+") "+q.o[v])+(S.note[i]?" | "+S.note[i]:""))});
+  const bad=A.map((a,i)=>S.asm[i]===false?"✗ "+a[0]+" ≠ "+a[1]+(S.asmNote[i]?" – "+S.asmNote[i]:""):null).filter(Boolean);L.push("",bad.length?"Nie zgadza się:":"Założenia: wszystkie się zgadzają ✓",...bad);return L.join("\n")}
 async function send(){const t=text();
   if(navigator.share){try{await navigator.share({text:t});return true}catch(e){if(e&&e.name==="AbortError")return false}}
   try{await navigator.clipboard.writeText(t);$("fmsg").textContent="Skopiowane – wklej Damianowi na WhatsAppie.";return true}catch(e){$("fmsg").textContent="Nie mogę skopiować – zrób zrzut ekranu i wyślij Damianowi.";return false}}
-$("fin").onclick=async()=>{const miss=Q.map((q,i)=>S.q[i]==null?i+1:null).filter(Boolean);
-  if(miss.length&&!S.warned){S.warned=true;local();$("fmsg").textContent="Brakuje odpowiedzi: "+miss.join(", ")+". Kliknij jeszcze raz, żeby wysłać bez nich.";document.querySelector('[aria-labelledby="q'+(miss[0]-1)+'"]').scrollIntoView({behavior:"smooth",block:"center"});return}
+$("fin").onclick=async()=>{const miss=ORD.filter(i=>S.q[i]==null).map(no);
+  if(miss.length&&!S.warned){S.warned=true;local();$("fmsg").textContent="Brakuje odpowiedzi: "+miss.join(", ")+". Kliknij jeszcze raz, żeby wysłać bez nich.";document.querySelector('[aria-labelledby="q'+ORD[miss[0]-1]+'"]').scrollIntoView({behavior:"smooth",block:"center"});return}
   if(await send()){S.done=true;changed();$("done").scrollIntoView({behavior:"smooth"})}};
 paint();status(Object.keys(S.q).length?"zapisane w telefonie":"",true);
 }
