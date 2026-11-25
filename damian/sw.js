@@ -18,6 +18,7 @@ const SHARED = [
   "kod/talerze.js",
   "kod/odznaki.js",
   "kod/postepy.js",
+  "kod/cele.js",
   "kod/sila.js",
   "kod/raport.js",
   "kod/aplikacja.js",

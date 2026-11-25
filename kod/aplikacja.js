@@ -1841,7 +1841,9 @@ function updSum() {
     " serii</small></b> " +
     '<span class="meta">' +
     eta +
-    (vol ? '<span class="vol"> · ' + Math.round(vol).toLocaleString("pl") + " kg</span>" : "") +
+    '<span class="vol"> · przerzucone ' +
+    Math.round(vol).toLocaleString("pl") +
+    " kg</span>" +
     "</span>";
   if (pb) pb.parentNode.classList.toggle("full", fin);
   $("finishBar").hidden = !fin;
