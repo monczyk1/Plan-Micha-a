@@ -23,3 +23,12 @@ const PROF = (() => {
 })();
 const PRO = PROFILES[PROF] || {};
 const P = PROF ? "gora" + PROF + "_" : "gora_";
+// Wygląd: automatycznie (jak telefon), jasny albo ciemny – P+"theme". Ustawiane od razu, żeby ekran nie mrugał w złym kolorze.
+function applyTheme() {
+  try {
+    const t = JSON.parse(localStorage.getItem(P + "theme"));
+    if (t === "light" || t === "dark") document.documentElement.dataset.theme = t;
+    else delete document.documentElement.dataset.theme;
+  } catch (e) {} // uszkodzone ustawienie = automatycznie
+}
+applyTheme();

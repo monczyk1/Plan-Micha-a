@@ -1002,20 +1002,67 @@ function orderChanged() {
   if (!st.order || !st.order.length) return false;
   return exList(true).map(oid).join("|") !== exList().map(oid).join("|");
 }
-function orderToPlan(d) {
-  const ids = exList().map(oid);
-  const P_ = PLAN[d];
+// Zmiany w planie zrobione w trakcie tego treningu (zamiana, dodanie, usunięcie, liczba serii, kolejność) – lista do pytania przy „Zakończ”
+function planDiff() {
+  const st = S(),
+    P_ = PLAN[day];
+  if (!P_) return [];
   const byK = {};
   P_.ex.forEach((e) => (byK[e.k] = e));
-  const sorted = ids.filter((id) => byK[id]).map((id) => byK[id]);
-  let q = 0;
-  let ne = P_.ex.map((e) => (ids.includes(e.k) ? sorted[q++] : e));
-  ne = ne.map((e, i, a) =>
+  const nm = (k) => (byK[k] ? byK[k].n : CATALOG[k] ? CATALOG[k].n : k);
+  const L = [];
+  const added = st.added.filter((k) => CATALOG[k]);
+  if (added.length) L.push("➕ Dodane: " + added.map(nm).join(", "));
+  const removed = st.removed.filter((k) => byK[k]);
+  if (removed.length) L.push("➖ Usunięte: " + removed.map(nm).join(", "));
+  const sw = Object.keys(st.swaps).filter((o) => byK[o] && CATALOG[st.swaps[o]]);
+  if (sw.length) L.push("↔ Zamiana: " + sw.map((o) => nm(o) + " → " + nm(st.swaps[o])).join(", "));
+  const ns = exList().filter((e) => (st.extra[e.k] || 0) !== 0);
+  if (ns.length)
+    L.push(
+      "Liczba serii: " +
+        ns.map((e) => nm(e.k) + " " + (st.extra[e.k] > 0 ? "+" : "−") + Math.abs(st.extra[e.k])).join(", ")
+    );
+  if (orderChanged()) L.push("⇅ Kolejność ćwiczeń");
+  return L;
+}
+// „Zapamiętaj w planie”: plan dnia = lista ćwiczeń taka, jak w tym treningu (kolejność, zamiany, dodane, usunięte, liczba serii)
+function planKeep(d) {
+  const st = S(),
+    P_ = PLAN[d];
+  const byK = {};
+  P_.ex.forEach((e) => (byK[e.k] = e));
+  const out = exList().map((e) => {
+    let x;
+    if (e.swapOf && byK[e.swapOf] && CATALOG[e.k]) {
+      const c = CATALOG[e.k],
+        base = byK[e.swapOf];
+      x = Object.assign(
+        { k: e.k, n: c.n, s: base.s, r: c.r || base.r, m: c.m ? 1 : 0 },
+        c.kind ? { kind: c.kind } : {}
+      );
+      if (base.ss) x.ss = base.ss;
+    } else if (e.added && CATALOG[e.k]) {
+      const c = CATALOG[e.k];
+      x = Object.assign(
+        { k: e.k, n: c.n, s: c.s || 3, r: c.r || "8–12", m: c.m ? 1 : 0 },
+        c.kind ? { kind: c.kind } : {}
+      );
+    } else x = Object.assign({}, byK[e.k] || e);
+    delete x.swapOf;
+    delete x.added;
+    const extra = st.extra[e.k] || 0;
+    if (extra) x.s = Math.max(1, (x.s || 3) + extra);
+    return x;
+  });
+  if (!out.length) return false; // plan nie może zostać bez ćwiczeń
+  // superseria tylko, gdy oba ćwiczenia są obok siebie
+  P_.ex = out.map((e, i, a) =>
     e.ss && !((a[i - 1] && a[i - 1].ss === e.ss) || (a[i + 1] && a[i + 1].ss === e.ss))
       ? Object.fromEntries(Object.entries(e).filter(([k]) => k !== "ss"))
       : e
   );
-  P_.ex = ne;
+  if (P_.extra) P_.warm = genWarm(P_.ex);
   ls.set(P + "plan", PLAN);
   ls.set(P + "changed", Date.now());
   try {
@@ -1023,6 +1070,7 @@ function orderToPlan(d) {
   } catch (e) {
     blad("oznaczenie zmian do chmury", e);
   }
+  return true;
 }
 let ordKeep = "today";
 function renderEx(fromDraft) {
@@ -1917,14 +1965,17 @@ function openFinish() {
         ".</div>"
       : "");
   finExtra(vol, mins, prs.length);
-  const oc = orderChanged();
-  $("finOrd").hidden = !oc;
-  if (oc) {
+  const dif = planDiff();
+  $("finOrd").hidden = !dif.length;
+  if (dif.length) {
     ordKeep = isX(day) ? "perm" : "today";
+    $("finOrdH").textContent =
+      dif.length === 1 && dif[0].startsWith("⇅") ? "⇅ Zmieniłeś kolejność ćwiczeń" : "✎ Zmieniłeś plan w tym treningu";
     $("finOrdT").textContent =
-      "Zapamiętać tę kolejność w planie " +
+      dif.join("\n") +
+      "\nZapamiętać w planie " +
       (isX(day) ? "„" + dl(day) + "”" : dl(day)) +
-      "? Przy „Tylko dziś” następnym razem wróci kolejność z planu.";
+      "? Przy „Tylko dziś” następnym razem wróci plan taki, jak był.";
     ordSeg();
   }
   $("finSheet").hidden = false;
@@ -2190,7 +2241,9 @@ $("save").onclick = async () => {
   s.local = true;
   s.id = "loc" + s.created;
   $("finSheet").hidden = true;
-  if (!$("finOrd").hidden && ordKeep === "perm" && PLAN[s.day]) orderToPlan(s.day);
+  if (!$("finOrd").hidden && ordKeep === "perm" && PLAN[s.day] && s.day === day) {
+    if (planKeep(s.day)) toast("Plan „" + (isX(s.day) ? PLAN[s.day].name : dl(s.day)) + "” zapamiętany.", true);
+  }
   ordMode = false;
   for (const k in ssPick) delete ssPick[k];
   sessions.unshift(s);
@@ -4108,7 +4161,7 @@ $("cloudRestore").onclick = async () => {
 $("cloudNow").onclick = () => cloudSync();
 window.addEventListener("online", () => cloudSync(true));
 // ===== Aktualizacje: numer wersji w aplikacji vs version.json na serwerze =====
-const APP_BUILD = 17;
+const APP_BUILD = 18;
 function verItems(j, from) {
   return ((j && j.zmiany) || []).filter((x) => x.build > from);
 }
@@ -4652,6 +4705,21 @@ $("optCollapse").onchange = () => {
   ls.set(P + "collapse", optCollapse);
   renderEx();
 };
+// Ustawienia → Wygląd aplikacji (motyw)
+{
+  const cur = ls.get(P + "theme");
+  $(cur === "light" ? "themeLight" : cur === "dark" ? "themeDark" : "themeAuto").checked = true;
+  [
+    ["themeAuto", "auto"],
+    ["themeLight", "light"],
+    ["themeDark", "dark"],
+  ].forEach(([id, v]) =>
+    $(id).addEventListener("change", () => {
+      ls.set(P + "theme", v);
+      applyTheme();
+    })
+  );
+}
 // Ustawienia → Raport (kod/raport.js) i Widok treningu
 try {
   raportInit();

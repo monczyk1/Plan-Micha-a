@@ -4,7 +4,7 @@
 <link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="icon-180.png"><link rel="icon" href="icon-192.png"><meta name="theme-color" content="#c2410c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Tytanowa siła">
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap">
-<link rel="stylesheet" href="../styl.css?v=17">
+<link rel="stylesheet" href="../styl.css?v=18">
 </head><body>
 
 <main class="wrap">
@@ -94,6 +94,15 @@
   </section>
 
   <section class="ex plain">
+    <div class="exh"><span class="exn">Wygląd aplikacji</span></div>
+    <div role="radiogroup" aria-label="Wygląd aplikacji">
+      <label class="cloudrow" for="themeAuto"><input type="radio" name="theme" id="themeAuto"><span><b>Automatycznie</b><br><span class="hint">Jak w telefonie: ciemna wieczorem, jasna w dzień.</span></span></label>
+      <label class="cloudrow" for="themeLight"><input type="radio" name="theme" id="themeLight"><span><b>Zawsze jasna</b></span></label>
+      <label class="cloudrow" for="themeDark"><input type="radio" name="theme" id="themeDark"><span><b>Zawsze ciemna</b><br><span class="hint">Łagodniejsza dla oczu na siłowni.</span></span></label>
+    </div>
+  </section>
+
+  <section class="ex plain">
     <div class="exh"><span class="exn">Podczas treningu</span></div>
     <div class="hint" id="focusLbl">Widok treningu</div>
     <div role="radiogroup" aria-labelledby="focusLbl">
@@ -138,7 +147,7 @@
   <div class="finpr" id="finPR"></div>
   <div class="finrank" id="finRank" hidden></div>
   <button class="mini share" id="finShare">📤 Udostępnij wynik</button>
-  <div class="ordq" id="finOrd" hidden><b>⇅ Zmieniłeś kolejność ćwiczeń</b><p id="finOrdT"></p><div class="sg" role="group" aria-label="Zapamiętać kolejność"><button type="button" id="ordToday">Tylko dziś</button><button type="button" id="ordPerm">Na stałe</button></div></div>
+  <div class="ordq" id="finOrd" hidden><b id="finOrdH">⇅ Zmieniłeś kolejność ćwiczeń</b><p id="finOrdT"></p><div class="sg" role="group" aria-label="Zapamiętać kolejność"><button type="button" id="ordToday">Tylko dziś</button><button type="button" id="ordPerm">Zapamiętaj w planie</button></div></div>
   <div class="row2">
     <div class="field"><label class="lbl" for="date">Data <button class="tip" data-tip="data" aria-label="Wyjaśnienie">?</button></label><input type="date" id="date"></div>
     <div class="field"><label class="lbl" for="bw">Masa ciała (kg)</label><input id="bw" inputmode="decimal" placeholder="opcjonalnie"></div>
@@ -229,18 +238,18 @@
 
 
 
-<script src="../kod/profil.js?v=17"></script>
-<script src="../dane/plan-start.js?v=17"></script>
-<script src="../dane/plan-damian.js?v=17"></script>
-<script src="../dane/plan-mateusz.js?v=17"></script>
-<script src="../kod/plan.js?v=17"></script>
-<script src="../dane/cwiczenia.js?v=17"></script>
-<script src="../dane/rysunki.js?v=17"></script>
-<script src="../dane/opisy.js?v=17"></script>
-<script src="../kod/talerze.js?v=17"></script>
-<script src="../kod/odznaki.js?v=17"></script>
-<script src="../kod/sila.js?v=17"></script>
-<script src="../kod/raport.js?v=17"></script>
-<script src="../kod/aplikacja.js?v=17"></script>
+<script src="../kod/profil.js?v=18"></script>
+<script src="../dane/plan-start.js?v=18"></script>
+<script src="../dane/plan-damian.js?v=18"></script>
+<script src="../dane/plan-mateusz.js?v=18"></script>
+<script src="../kod/plan.js?v=18"></script>
+<script src="../dane/cwiczenia.js?v=18"></script>
+<script src="../dane/rysunki.js?v=18"></script>
+<script src="../dane/opisy.js?v=18"></script>
+<script src="../kod/talerze.js?v=18"></script>
+<script src="../kod/odznaki.js?v=18"></script>
+<script src="../kod/sila.js?v=18"></script>
+<script src="../kod/raport.js?v=18"></script>
+<script src="../kod/aplikacja.js?v=18"></script>
 
 </body></html>
