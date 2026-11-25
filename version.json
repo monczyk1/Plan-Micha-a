@@ -1,7 +1,16 @@
 {
- "build": 16,
- "data": "24.11.2026",
+ "build": 17,
+ "data": "25.11.2026",
  "zmiany": [
+  {
+   "build": 17,
+   "data": "25.11.2026",
+   "lista": [
+    "Większa odporność: uszkodzony wpis w historii nie blokuje już całej aplikacji – pozostałe treningi działają, a uszkodzone zostają odłożone na bok, nic nie przepada",
+    "Przywracanie kopii: aplikacja najpierw sprawdza plik. Jeśli zapis się nie uda, Twoje dotychczasowe dane zostają bez zmian",
+    "Dodatkowe zabezpieczenia nazw i opisów w planie"
+   ]
+  },
   {
    "build": 16,
    "data": "24.11.2026",

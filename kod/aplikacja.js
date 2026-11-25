@@ -490,8 +490,33 @@ function saveSessions() {
   }
   return ok;
 }
+// Treningi z telefonu / kopii: odrzuca uszkodzone wpisy zamiast wywracać całą aplikację.
+// Oryginał trafia raz do kopii ratunkowej P+"zepsute" (poza kopiami zapasowymi), żeby nic nie przepadło po cichu.
+function cleanSessions(raw, src) {
+  const list = Array.isArray(raw) ? raw : [];
+  const out = [];
+  for (const x of list) {
+    if (!x || typeof x !== "object" || Array.isArray(x) || typeof x.date !== "string" || !Array.isArray(x.ex)) continue;
+    x.ex = x.ex
+      .filter((e) => e && typeof e === "object" && !Array.isArray(e) && typeof e.k === "string")
+      .map((e) => (Array.isArray(e.sets) ? e : Object.assign(e, { sets: [] })));
+    x.ex.forEach((e) => (e.sets = e.sets.filter((t) => t && typeof t === "object")));
+    out.push(x);
+  }
+  const bad = (Array.isArray(raw) ? raw.length : raw == null ? 0 : 1) - out.length;
+  if (bad > 0) {
+    blad("uszkodzone treningi pominięte (" + bad + ")", src || "wczytanie");
+    try {
+      if (localStorage.getItem(P + "zepsute") == null)
+        localStorage.setItem(P + "zepsute", JSON.stringify({ ts: Date.now(), raw: raw }));
+    } catch (e) {
+      blad("kopia ratunkowa uszkodzonych treningów", e);
+    }
+  }
+  return out;
+}
 function reloadSessions() {
-  sessions = (ls.get(P + "sessions") || []).map((x) => Object.assign(x, { local: true }));
+  sessions = cleanSessions(ls.get(P + "sessions"), "przeładowanie").map((x) => Object.assign(x, { local: true }));
   sortS();
 }
 function sessOf(d) {
@@ -505,7 +530,7 @@ function renderWeeks() {
     max = Math.max(9, cur);
   week = cur;
   $("tLbl").innerHTML =
-    "Trening " + dl(day) + ' – numer <button class="tip" data-tip="tnum" aria-label="Wyjaśnienie">?</button>';
+    "Trening " + esc(dl(day)) + ' – numer <button class="tip" data-tip="tnum" aria-label="Wyjaśnienie">?</button>';
   $("tgrid").innerHTML = Array.from({ length: max }, (_, i) => {
     const t = i + 1,
       done = t < cur,
@@ -1101,7 +1126,7 @@ function renderEx(fromDraft) {
         '</span><span class="target">' +
         n +
         " × " +
-        ex.r +
+        esc(ex.r) +
         '</span></div><button class="x" data-drop="' +
         ex.k +
         '" aria-label="Usuń z tej sesji">✕</button></div>';
@@ -1153,7 +1178,7 @@ function renderEx(fromDraft) {
       '</span><span class="target">' +
       WEEK[week].f(ex.s) +
       " serie × " +
-      ex.r +
+      esc(ex.r) +
       " · przerwa " +
       (ex.ss && !ex.swapOf ? "po obu ćwiczeniach" : rest >= 120 ? "2–3 min" : "60–120 s") +
       "</span>" +
@@ -2772,6 +2797,7 @@ const SNAP_SKIP = new Set([
   P + "verc",
   P + "seenBuild",
   P + "updTry",
+  P + "zepsute",
 ]);
 function snapKeys() {
   const o = {};
@@ -2915,10 +2941,20 @@ function importBackup(txt) {
   }
   let ses = [];
   try {
-    ses = JSON.parse(store[P + "sessions"] || "[]") || [];
+    const parsed = JSON.parse(store[P + "sessions"] || "[]");
+    if (!Array.isArray(parsed)) throw new Error("treningi w kopii nie są listą");
+    ses = cleanSessions(parsed, "plik kopii");
+    store[P + "sessions"] = JSON.stringify(ses);
+    if (store[P + "plan"] != null) {
+      const pl = JSON.parse(store[P + "plan"]);
+      if (!pl || typeof pl !== "object" || Array.isArray(pl)) throw new Error("plan w kopii jest uszkodzony");
+    }
   } catch (e) {
-    blad("przywracanie: odczyt treningów", e);
+    blad("przywracanie: kopia uszkodzona", e);
+    toast("Ten plik kopii jest uszkodzony – nic nie zostało zmienione. Spróbuj wczytać inną kopię.");
+    return;
   }
+  for (const k in store) if (typeof store[k] !== "string") delete store[k];
   const now = sessions.length,
     inBk = ses.length;
   const bkCreated = new Set(ses.map((x) => x.created));
@@ -2972,8 +3008,23 @@ function applySnapshot(store, label, isUndo) {
       blad("przywracanie: oznaczenie do chmury", e);
     }
   } catch (e) {
+    blad("przywracanie: zapis", e);
+    try {
+      // wycofanie: wracają dotychczasowe dane (stan sprzed przywracania mamy w pamięci jako cur)
+      const del2 = [];
+      for (let i = 0; i < localStorage.length; i++) {
+        const k = localStorage.key(i);
+        if (k && k.startsWith(P + "") && !SNAP_SKIP.has(k)) del2.push(k);
+      }
+      del2.forEach((k) => localStorage.removeItem(k));
+      for (const k in cur.storage) localStorage.setItem(k, cur.storage[k]);
+    } catch (e2) {
+      blad("przywracanie: wycofanie nie powiodło się", e2);
+    }
     restoring = false;
-    toast("Nie udało się przywrócić – przeglądarka nie pozwala zapisać danych.");
+    toast(
+      "Nie udało się przywrócić – przeglądarka nie pozwala zapisać danych. Twoje dotychczasowe dane zostały bez zmian."
+    );
     return;
   }
   location.reload();
@@ -4057,7 +4108,7 @@ $("cloudRestore").onclick = async () => {
 $("cloudNow").onclick = () => cloudSync();
 window.addEventListener("online", () => cloudSync(true));
 // ===== Aktualizacje: numer wersji w aplikacji vs version.json na serwerze =====
-const APP_BUILD = 16;
+const APP_BUILD = 17;
 function verItems(j, from) {
   return ((j && j.zmiany) || []).filter((x) => x.build > from);
 }
@@ -4718,7 +4769,7 @@ document.addEventListener("visibilitychange", () => {
 });
 $("date").value = today();
 pullStage = ls.get(P + "pull") || 0;
-sessions = (ls.get(P + "sessions") || []).map((s) => Object.assign(s, { local: true }));
+sessions = cleanSessions(ls.get(P + "sessions"), "start").map((s) => Object.assign(s, { local: true }));
 sortS();
 try {
   if (bwMigrate() >= 0) saveSessions();

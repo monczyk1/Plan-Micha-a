@@ -8,9 +8,36 @@ const INFO_TXT =
 const OLD = { A: { n: "FBW A" }, B: { n: "FBW B" }, C: { n: "FBW C" } };
 const PLAN_DEFAULT = JSON.parse(JSON.stringify(PLAN));
 const LETTERS = "ABCDEF";
+// Plan z telefonu / kopii: tylko poprawne dni i ćwiczenia, teksty bez znaczników HTML (klucze ćwiczeń trafiają do atrybutów strony).
+function planClean(sp) {
+  const txt = (v, n) =>
+    String(v == null ? "" : v)
+      .replace(/[<>]/g, "")
+      .slice(0, n);
+  const out = {};
+  if (!sp || typeof sp !== "object" || Array.isArray(sp)) return out;
+  for (const d of Object.keys(sp)) {
+    const day = sp[d];
+    if (!/^[A-Za-z0-9_-]{1,20}$/.test(d) || !day || typeof day !== "object" || !Array.isArray(day.ex)) continue;
+    const c = Object.assign({}, day);
+    for (const f of ["name", "sub"]) if (day[f] != null) c[f] = txt(day[f], 40);
+    c.ex = day.ex
+      .filter((e) => e && typeof e === "object" && typeof e.k === "string" && /^[A-Za-z0-9_-]{1,40}$/.test(e.k))
+      .map((e) => {
+        const x = Object.assign({}, e);
+        if (e.n != null) x.n = txt(e.n, 80);
+        if (e.r != null) x.r = txt(e.r, 30);
+        if (e.note != null) x.note = txt(e.note, 60);
+        if (e.swapOf != null && !/^[A-Za-z0-9_-]{1,40}$/.test(String(e.swapOf))) delete x.swapOf;
+        return x;
+      });
+    out[d] = c;
+  }
+  return out;
+}
 try {
-  const sp = JSON.parse(localStorage.getItem(P + "plan") || "null");
-  if (sp && typeof sp === "object" && Object.keys(sp).length) {
+  const sp = planClean(JSON.parse(localStorage.getItem(P + "plan") || "null"));
+  if (Object.keys(sp).length) {
     for (const k of Object.keys(PLAN)) delete PLAN[k];
     Object.assign(PLAN, sp);
   }

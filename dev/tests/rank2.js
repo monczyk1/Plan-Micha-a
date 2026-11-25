@@ -34,7 +34,7 @@ const p=await c.newPage();const errs=[];p.on('pageerror',e=>errs.push(e.message)
 await p.click('.tabs [data-view="rank"]');await p.waitForTimeout(800);let t=await p.textContent('#rank');
 ok('U1 przełącznik okresu, domyślnie tydzień',(await p.$$('.rper button')).length===3&&(await p.getAttribute('[data-per="w"]','aria-pressed'))==='true');
 ok('U2 lider tygodnia Michał 7 vs Damian 6 z ▲ 50%',(await p.$eval('.rrow.lead',e=>e.textContent)).includes('Michał')&&t.includes('▲ 50%'),t.slice(0,500));
-ok('U2 seria tygodni i ostatnia aktywność',t.includes('🔥 3 tyg. z rzędu')&&t.includes('ostatnio: '+(D(0)===iso(T0)?'dziś':'wczoraj')),t.slice(0,600));
+ok('U2 seria tygodni i ostatnia aktywność',t.includes('🔥 3 tyg. z rzędu')&&t.includes('ostatnio: '+(()=>{const n=Math.round((new Date(iso(T0)+'T12:00:00')-new Date(D(0)+'T12:00:00'))/864e5);return n===0?'dziś':n===1?'wczoraj':n+' dni temu'})()),t.slice(0,600));
 await p.screenshot({path:__dirname+'/dm/rk2a.png'});
 await p.click('[data-per="m"]');t=await p.textContent('#rank');ok('U3 miesiąc: tytuł miesiąca i serie',/listopad|grudzień|styczeń|luty|marzec|kwiecień|maj|czerwiec|lipiec|sierpień|wrzesień|październik/.test(t)&&t.includes('Konkurs miesiąca')&&!t.includes('Puchary'),t.slice(0,300));
 await p.click('[data-per="a"]');t=await p.textContent('#rank');ok('U4 od początku: łączny dorobek 15 serii',t.includes('Łączny dorobek')&&t.includes('15serii')&&!t.includes('jeszcze'),t.slice(0,400));

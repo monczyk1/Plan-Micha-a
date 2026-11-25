@@ -2,7 +2,7 @@
 // Najpierw próbuje pobrać najnowszą wersję (z pominięciem pamięci przeglądarki), a gdy nie ma sieci – używa zapisanej.
 // ROOT i BUILD ustawia ./sync.sh (w folderach osób ROOT="../", bo wspólne pliki leżą piętro wyżej). Nie zmieniaj ręcznie.
 const ROOT = "./";
-const BUILD = 16;
+const BUILD = 17;
 const C = "tytanowa-b" + BUILD;
 // Wspólne pliki aplikacji – ta sama lista co w index.html (./sync.sh pilnuje, żeby niczego nie brakowało)
 const SHARED = [
