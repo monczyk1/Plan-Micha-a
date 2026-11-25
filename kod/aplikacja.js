@@ -2632,11 +2632,16 @@ function renderProg() {
     0
   );
   el.innerHTML =
-    bmBlock() +
-    tonBlock() +
+    pstTydzBlock() +
+    pstRekordyBlock() +
     silaBlock() +
+    pstPartieBlock() +
+    tonBlock() +
+    bmBlock() +
     odzBlock() +
-    '<div class="phead"><span>Ćwiczenie</span><span>Start → teraz</span><span></span></div>' +
+    '<details class="pall"><summary>Wszystkie ćwiczenia: start → teraz (' +
+    order.length +
+    ')</summary><div class="phead"><span>Ćwiczenie</span><span>Start → teraz</span><span></span></div>' +
     order
       .map((k) => {
         const o = by[k];
@@ -2676,7 +2681,8 @@ function renderProg() {
           "</div>"
         );
       })
-      .join("");
+      .join("") +
+    "</details>";
   silaBind(el);
 }
 let histLimit = 20;
@@ -4161,7 +4167,7 @@ $("cloudRestore").onclick = async () => {
 $("cloudNow").onclick = () => cloudSync();
 window.addEventListener("online", () => cloudSync(true));
 // ===== Aktualizacje: numer wersji w aplikacji vs version.json na serwerze =====
-const APP_BUILD = 18;
+const APP_BUILD = 19;
 function verItems(j, from) {
   return ((j && j.zmiany) || []).filter((x) => x.build > from);
 }
@@ -4527,6 +4533,7 @@ function drawRank(j, at, state) {
       '<div class="sm">seria × kg × powtórzenia (z rozgrzewką R1/R2)</div><div style="margin-top:8px">' + kr + "</div>"
     );
   }
+  if (per === "w" && v4) h += rankRazemBlock(ppl);
   if (per === "w") {
     const cups = j.cups || [];
     const hist = (j.history || [])
@@ -4585,12 +4592,15 @@ function drawRank(j, at, state) {
     '<div class="sm">Największy ciężar w serii roboczej · ćwiczenia, które robią co najmniej 2 osoby</div>' +
       (recs.length
         ? recs
-            .map((r) => {
+            .map((r, ri) => {
               const c = CATALOG[r.k];
               let l = r.list.slice(0, 3);
               const mi = r.list.findIndex((x) => x.me);
               if (mi > 2) l = l.concat([r.list[mi]]);
               return (
+                (ri === 5
+                  ? '<details class="rmore"><summary>Pokaż pozostałe (' + (recs.length - 5) + ")</summary>"
+                  : "") +
                 '<div class="exr"><div class="t">' +
                 esc(c ? c.n : r.n) +
                 (DB.has(r.k) ? " <small>kg / hantel</small>" : "") +
@@ -4616,7 +4626,8 @@ function drawRank(j, at, state) {
                     );
                   })
                   .join("") +
-                "</div>"
+                "</div>" +
+                (ri === recs.length - 1 && ri >= 5 ? "</details>" : "")
               );
             })
             .join("")

@@ -28,10 +28,10 @@ sleep 2
 #   wyglad  – dostępność (kontrast, etykiety)
 #   (bez nazw) – wszystkie
 CHMURA="ton rank rank2 cloud3 upd v1guard"   # korzystają ze wspólnej atrapy arkusza – idą po kolei
-ALL="calc nowe sila pr odp zapam full2 newf damian nt ord mt off axe2 $CHMURA"
+ALL="calc nowe sila post pr odp zapam full2 newf damian nt ord mt off axe2 $CHMURA"
 LIST=""
 for a in ${*:-$ALL}; do case $a in
-  szybkie) LIST="$LIST calc";; trening) LIST="$LIST nowe sila pr odp zapam full2 nt ord newf off";; osoby) LIST="$LIST calc damian mt";;
+  szybkie) LIST="$LIST calc";; trening) LIST="$LIST nowe sila post pr odp zapam full2 nt ord newf off";; osoby) LIST="$LIST calc damian mt";;
   chmura) LIST="$LIST $CHMURA";; wyglad) LIST="$LIST axe2";; *) LIST="$LIST $a";; esac; done
 LIST=$(echo $LIST | tr ' ' '\n' | awk '!s[$0]++' | tr '\n' ' ')   # bez powtórzeń
 cd "$T" && mkdir -p dm; RES="$DEV/.wyniki"; rm -rf "$RES"; mkdir -p "$RES"

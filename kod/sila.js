@@ -171,6 +171,61 @@ function silaWykres(pts, zast) {
   );
 }
 
+// Cele: P+"goals" = { klucz ćwiczenia: ciężar docelowy w kg }. Postęp = najcięższa seria robocza w historii.
+let silaGoalEdit = false;
+function silaCele() {
+  const g = ls.get(P + "goals");
+  return g && typeof g === "object" && !Array.isArray(g) ? g : {};
+}
+function silaNajkg(k) {
+  let b = 0;
+  for (const s of sessions)
+    for (const e of s.ex || [])
+      if (e.k === k && !e.kind)
+        for (const t of e.sets || []) if (!t.w && num(t.kg) <= 1000 && num(t.kg) > b) b = num(t.kg);
+  return b;
+}
+function silaCelBlock(k) {
+  const goal = num(silaCele()[k]),
+    best = silaNajkg(k);
+  if (silaGoalEdit)
+    return (
+      '<div class="goal"><label class="hint" for="goalIn">Cel w kg (najcięższa seria robocza)</label><div class="goaledit"><input id="goalIn" inputmode="decimal" placeholder="np. 100" value="' +
+      (goal ? silaKg(goal) : "") +
+      '"><button class="mini plus" id="goalSave">Zapisz</button>' +
+      (goal ? '<button class="mini" id="goalDel">Usuń cel</button>' : "") +
+      '<button class="mini" id="goalX">Anuluj</button></div></div>'
+    );
+  if (!goal) return '<div class="goal"><button class="mini plus" id="goalEdit">🎯 Ustaw cel</button></div>';
+  const pct = Math.min(100, Math.round((best / goal) * 100));
+  return (
+    '<div class="goal"><div class="goalh"><span>🎯 Cel: <b>' +
+    silaKg(goal) +
+    " kg</b></span><span>" +
+    (best >= goal ? "osiągnięty!" : silaKg(best) + " kg · " + pct + "%") +
+    '</span></div><div class="goalbar" role="img" aria-label="Postęp do celu: ' +
+    pct +
+    ' procent"><i class="' +
+    (best >= goal ? "ok" : "") +
+    '" style="width:' +
+    pct +
+    '%"></i></div><button class="q" id="goalEdit">' +
+    (best >= goal ? "Nowy cel" : "Zmień cel") +
+    "</button></div>"
+  );
+}
+// Siła względem masy ciała (tylko sztanga/maszyna: nie hantle i nie ćwiczenia z ciężarem ciała)
+function silaWzgl(k, e1) {
+  const b = bmLast();
+  if (!b || BWL.has(k) || DB.has(k) || !(num(b.kg) > 0)) return "";
+  return (
+    '<div class="hint">≈ <b>' +
+    String(Math.round((e1 / num(b.kg)) * 100) / 100).replace(".", ",") +
+    "× masa ciała</b> (" +
+    silaKg(num(b.kg)) +
+    " kg)</div>"
+  );
+}
 function silaBlock() {
   const L = silaLista(sessions);
   if (!L.length) return "";
@@ -189,6 +244,8 @@ function silaBlock() {
     '<div class="silamax"><b>' +
     silaKg(cur.v) +
     " kg</b><span>szacowany max na 1 powt.</span></div>" +
+    silaWzgl(silaSel, cur.v) +
+    silaCelBlock(silaSel) +
     '<div class="hint">Z najlepszej serii tygodnia (kg × (1 + powt. ÷ 30)). Porównuje treningi z różną liczbą powtórzeń.</div>';
   h +=
     pts.length >= 2
@@ -215,6 +272,43 @@ function silaBind(root) {
   if (s)
     s.onchange = () => {
       silaSel = s.value;
+      silaGoalEdit = false;
       renderProg();
     };
+  const mark = () => {
+    ls.set(P + "changed", Date.now());
+    cloudDirty();
+  };
+  const on = (id, fn) => {
+    const b = root.querySelector("#" + id);
+    if (b) b.onclick = fn;
+  };
+  on("goalEdit", () => {
+    silaGoalEdit = true;
+    renderProg();
+    const i = $("goalIn");
+    if (i) i.focus();
+  });
+  on("goalX", () => {
+    silaGoalEdit = false;
+    renderProg();
+  });
+  on("goalSave", () => {
+    const v = num(($("goalIn") || {}).value);
+    if (!(v > 0) || v > 1000) return toast("Wpisz cel w kg, np. 100.");
+    const g = silaCele();
+    g[silaSel] = Math.round(v * 100) / 100;
+    ls.set(P + "goals", g);
+    mark();
+    silaGoalEdit = false;
+    renderProg();
+  });
+  on("goalDel", () => {
+    const g = silaCele();
+    delete g[silaSel];
+    ls.set(P + "goals", g);
+    mark();
+    silaGoalEdit = false;
+    renderProg();
+  });
 }

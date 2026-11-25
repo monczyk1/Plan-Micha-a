@@ -2978,3 +2978,159 @@ img {
   white-space: pre-line;
   line-height: 1.5;
 }
+
+/* Postępy (wersja 19) */
+.pst {
+  margin: 14px 0;
+}
+.ptiles {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-top: 8px;
+}
+.ptile {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 10px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  align-items: center;
+  text-align: center;
+}
+.ptile b {
+  font-size: 24px;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+}
+.ptile b small {
+  font-size: 13px;
+  font-weight: 600;
+}
+.ptile span {
+  font-size: 12px;
+  color: var(--muted);
+}
+.pchg {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+}
+.pchg.up {
+  color: var(--ok);
+}
+.pchg.dn {
+  color: var(--muted);
+}
+.prec {
+  display: grid;
+  grid-template-columns: 44px 1fr auto;
+  gap: 8px;
+  align-items: baseline;
+  padding: 8px 0;
+  border-top: 1px solid var(--line);
+}
+.pd2 {
+  font-size: 13px;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+.pn3 {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.pk {
+  text-align: right;
+  display: flex;
+  flex-direction: column;
+  font-variant-numeric: tabular-nums;
+}
+.pk small {
+  color: var(--muted);
+  font-size: 12px;
+}
+.pgrp {
+  display: grid;
+  grid-template-columns: 78px 1fr 28px;
+  gap: 8px;
+  align-items: center;
+  padding: 4px 0;
+}
+.pl {
+  font-size: 14px;
+}
+.pb {
+  height: 10px;
+  border-radius: 99px;
+  background: var(--field);
+  overflow: hidden;
+}
+.pb i {
+  display: block;
+  height: 100%;
+  background: var(--accent);
+  border-radius: 99px;
+}
+.pc {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+}
+.goal {
+  margin: 10px 0;
+}
+.goalh {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 14px;
+  margin-bottom: 6px;
+}
+.goalbar {
+  height: 10px;
+  border-radius: 99px;
+  background: var(--field);
+  overflow: hidden;
+}
+.goalbar i {
+  display: block;
+  height: 100%;
+  background: var(--accent);
+  border-radius: 99px;
+}
+.goalbar i.ok {
+  background: var(--ok);
+}
+.goaledit {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 6px;
+}
+.goaledit input {
+  width: 110px;
+}
+.pall {
+  margin-top: 14px;
+}
+.pall > summary {
+  cursor: pointer;
+  font-weight: 600;
+  padding: 10px 0;
+  min-height: 44px;
+}
+.rjump {
+  margin-top: 10px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  background: var(--field);
+  font-size: 14px;
+}
+.rmore > summary {
+  cursor: pointer;
+  font-weight: 600;
+  padding: 10px 0;
+  min-height: 44px;
+}
